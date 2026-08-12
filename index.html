@@ -402,18 +402,16 @@
 
             <form id="login-form" class="space-y-5">
                 <div>
-                    <input type="text" id="username" class="ios-input" placeholder="Nama Pengguna" required autocomplete="off">
-                </div>
-                <div>
-                    <input type="password" id="password" class="ios-input" placeholder="Kata Sandi" required autocomplete="off">
+                    <input type="password" id="password" class="ios-input" placeholder="Sandi Rahasia Admin" required autocomplete="off">
                 </div>
                 <div class="pt-4">
                     <div class="p-1.5 bg-black/5 rounded-[24px] relative">
                         <button type="submit" class="intel-card-outline btn-publish active w-full py-4 bg-white rounded-[18px] text-[11px] font-black uppercase tracking-[0.2em] text-gray-900 shadow-sm transition-all active:scale-[0.98]">
-                            Masuk Ke Akun
+                            Masuk Ke Mode Admin
                         </button>
                     </div>
                 </div>
+                <button type="button" class="w-full text-center text-xs font-bold text-gray-400 mt-4" onclick="switchScreen('screen-home')">Kembali ke Beranda</button>
             </form>
             
             <div class="mt-8 text-center text-sm font-medium text-gray-500 bg-black/5 p-4 rounded-2xl">
@@ -948,9 +946,7 @@
             </div>
         </div>
 
-        <button class="w-full py-4 bg-red-50 text-red-600 rounded-[20px] font-bold text-sm border border-red-100 hover:bg-red-100 transition-colors" onclick="logout()">
-            <i class="fas fa-sign-out-alt mr-2"></i> Keluar dari Akun
-        </button>
+        <div id="profile-action-area"></div>
     </div>
 </div>
 
@@ -1266,23 +1262,109 @@
     // Panggil fungsi ini otomatis saat web pertama kali dibuka
     loadDatabase();
 
-    // --- AUTHENTICATION ---
+    // --- AUTHENTICATION & AUTO-LOGIN (VERSI AMAN) ---
+    function checkAutoLogin() {
+        // Hanya memeriksa memori perangkat lokal, tidak ada token di dalam kode
+        const savedToken = localStorage.getItem('adrias_admin_token');
+        if (savedToken && savedToken.startsWith("ghp_")) {
+            githubToken = savedToken;
+            login('admin'); // Masuk otomatis jika token ditemukan di perangkat ini
+        } else {
+            login('user'); // Masuk sebagai pengunjung biasa
+        }
+    }
+
     document.getElementById('login-form').addEventListener('submit', function(e) {
         e.preventDefault();
-        const user = document.getElementById('username').value.trim().toLowerCase();
-        
-        // Jangan pakai toLowerCase() untuk password, karena token huruf besar/kecilnya sensitif
-        const pass = document.getElementById('password').value.trim(); 
+        const pass = document.getElementById('password').value.trim();
 
-        if (pass.startsWith("ghp_")) { 
-            githubToken = pass; 
+        // Admin wajib memasukkan token asli satu kali
+        if (pass.startsWith("ghp_")) {
+            githubToken = pass;
+            localStorage.setItem('adrias_admin_token', githubToken); // Simpan aman di peramban Admin
             login('admin');
-        } else if (user === 'user' && pass.toLowerCase() === 'user') {
-            login('user');
         } else {
-            showToast('Username atau Token salah!');
+            showToast('Token Admin tidak valid!');
         }
     });
+
+    function login(role) {
+        currentUserRole = role;
+        document.getElementById('profile-name').innerText = role === 'admin' ? "Administrator" : "Pengguna Tamu";
+        document.getElementById('profile-role').innerText = role === 'admin' ? "Akses Penuh" : "Akses Terbatas";
+
+        // Ganti tombol di Profil secara otomatis
+        const profileActionArea = document.getElementById('profile-action-area');
+        if (profileActionArea) {
+            if (role === 'admin') {
+                profileActionArea.innerHTML = `<button class="w-full py-4 bg-red-50 text-red-600 rounded-[20px] font-bold text-sm border border-red-100 hover:bg-red-100 transition-colors" onclick="logout()"><i class="fas fa-sign-out-alt mr-2"></i> Keluar dari Mode Admin</button>`;
+            } else {
+                profileActionArea.innerHTML = `<button class="w-full py-4 bg-blue-50 text-blue-600 rounded-[20px] font-bold text-sm border border-blue-100 hover:bg-blue-100 transition-colors" onclick="switchScreen('screen-login')"><i class="fas fa-shield-alt mr-2"></i> Masuk sebagai Admin</button>`;
+            }
+        }
+
+        if (role === 'admin') showToast('Berhasil masuk sebagai Admin');
+        
+        document.getElementById('bottom-nav').classList.remove('hidden');
+        document.getElementById('bottom-nav').classList.add('flex');
+        
+        renderGames();
+        switchScreen('screen-home', true);
+        
+        // Cek apakah elemen login-form sedang aktif sebelum meresetnya
+        const loginForm = document.getElementById('login-form');
+        if(loginForm) loginForm.reset();
+    }
+
+    function toggleDarkMode() {
+        const body = document.body;
+        const toggle = document.getElementById('dark-mode-toggle');
+        const knob = document.getElementById('dark-mode-knob');
+        body.classList.toggle('dark-theme');
+        const isDark = body.classList.contains('dark-theme');
+        if (isDark) {
+            toggle.classList.replace('bg-gray-200', 'bg-green-500');
+            knob.style.transform = 'translateX(16px)';
+            localStorage.setItem('theme', 'dark');
+        } else {
+            toggle.classList.replace('bg-green-500', 'bg-gray-200');
+            knob.style.transform = 'translateX(0)';
+            localStorage.setItem('theme', 'light');
+        }
+    }
+
+    if (localStorage.getItem('theme') === 'dark') {
+        setTimeout(toggleDarkMode, 100);
+    }
+
+    function logout() {
+        const modal = document.getElementById('logout-modal');
+        const content = document.getElementById('logout-modal-content');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            content.classList.remove('scale-110', 'opacity-0');
+            content.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
+
+    function closeLogoutModal() {
+        const modal = document.getElementById('logout-modal');
+        const content = document.getElementById('logout-modal-content');
+        content.classList.replace('scale-100', 'opacity-100', 'scale-110', 'opacity-0');
+        setTimeout(() => modal.classList.add('hidden'), 200);
+    }
+
+    function confirmLogout() {
+        closeLogoutModal();
+        currentUserRole = null;
+        githubToken = "";
+        localStorage.removeItem('adrias_admin_token'); // Hapus token dari ingatan perangkat
+        showToast("Berhasil keluar dari Mode Admin");
+        login('user'); // Ubah status kembali menjadi pengunjung biasa
+    }
+
+    // Eksekusi jalan pintas saat web pertama kali dibuka
+    setTimeout(checkAutoLogin, 100);
 
     function login(role) {
         currentUserRole = role;
@@ -1387,7 +1469,41 @@
         }
     }
 
-    function goBack() {
+    async function goBack() {
+        // --- FITUR AUTO-SAVE AI (LAZY SAVING) ---
+        // Cek apakah kita sedang di layar Detail Game dan apakah ada game yang sedang dibuka
+        if (document.getElementById('screen-detail').classList.contains('active') && currentDetailedGameId) {
+            const game = gamesDatabase.find(g => g.id === currentDetailedGameId);
+            
+            if (game) {
+                let needsSave = false;
+                
+                // 1. Cek apakah ada Ikon mentah hasil AI yang belum tersimpan
+                if (game.image && game.image.startsWith('data:image')) {
+                    showToast("Menyimpan Ikon AI ke GitHub...");
+                    game.image = await uploadToGitHub(`assets/${game.id}_icon.png`, game.image, `Auto-save AI icon untuk ${game.title}`);
+                    needsSave = true;
+                }
+                
+                // 2. Cek apakah ada Cover mentah hasil AI yang belum tersimpan
+                if (game.screenshots && game.screenshots[0] && game.screenshots[0].startsWith('data:image')) {
+                    showToast("Menyimpan Cover AI ke GitHub...");
+                    game.screenshots[0] = await uploadToGitHub(`assets/${game.id}_cover.png`, game.screenshots[0], `Auto-save AI cover untuk ${game.title}`);
+                    needsSave = true;
+                }
+                
+                // 3. Jika ada gambar yang diunggah, perbarui database.json
+                if (needsSave) {
+                    showToast("Memperbarui database...");
+                    const jsonString = JSON.stringify(gamesDatabase, null, 2);
+                    const jsonBase64 = btoa(unescape(encodeURIComponent(jsonString))); 
+                    await uploadToGitHub('database.json', jsonBase64, `Auto-save database update dari layar Detail`);
+                    showToast("Tersimpan Otomatis!");
+                }
+            }
+        }
+
+        // --- LOGIKA NAVIGASI ASLI ---
         if (navigationHistory.length > 1) {
             navigationHistory.pop();
             const prevScreen = navigationHistory[navigationHistory.length - 1];
