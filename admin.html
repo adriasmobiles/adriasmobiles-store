@@ -1109,23 +1109,12 @@
             const aiInput = document.getElementById('preview-ai-prompt');
             if (aiInput) aiInput.onkeydown = (e) => { if(e.key === 'Enter') runAdminAiMagic('general'); };
 
-            // FIX: AUTO-SAVE GITHUB PINTAR PADA TOMBOL KEMBALI
+            // FIX BUG 1: AUTO-SAVE GITHUB PADA TOMBOL KEMBALI PRATINJAU
             const backBtn = adminContainer.querySelector('.fa-chevron-left').parentElement;
             backBtn.onclick = async (e) => { 
                 e.preventDefault(); 
-                
-                // Deteksi apakah ada gambar baru yang belum diunggah (Berawalan data:image)
-                const hasNewImage = (game.image && game.image.startsWith('data:image')) || 
-                                    (game.screenshots && game.screenshots.some(src => src && src.startsWith('data:image')));
-                
-                if (hasNewImage) {
-                    backBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin text-blue-600 text-xl"></i>';
-                    showToast("Mendeteksi visual baru. Mengunggah ke GitHub...");
-                    await syncGameToGitHub(gameId); 
-                } else {
-                    showToast("Tidak ada visual baru. Membatalkan sinkronisasi gambar.");
-                }
-                
+                backBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin text-blue-600 text-xl"></i>';
+                await syncGameToGitHub(gameId); // Auto-Save memicu upload jika ada gambar baru
                 currentDetailedGameId = null;
                 switchScreen('screen-dashboard'); 
             };
