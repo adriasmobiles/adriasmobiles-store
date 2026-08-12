@@ -1011,7 +1011,7 @@
     }
 
     // =========================================================
-    // DOM FETCHER (SANG JEMBATAN)
+    // DOM FETCHER (SANG JEMBATAN) - FINAL & BEBAS SYNTAX ERROR
     // =========================================================
     async function buildVisualBridge(gameId) {
         try {
@@ -1024,6 +1024,7 @@
             const doc = parser.parseFromString(text, 'text/html');
             const detailScreen = doc.getElementById('screen-detail');
 
+            // Penambal CSS agar elemen tidak pecah
             if (!document.getElementById('bridge-css')) {
                 const style = document.createElement('style');
                 style.id = 'bridge-css';
@@ -1050,6 +1051,7 @@
             const game = gamesDatabase.find(g => g.id === gameId);
             currentDetailedGameId = gameId;
 
+            // Pastikan 4 Slot tersedia
             if (!game.screenshots) game.screenshots = [game.image];
             const placeholders = ['https://placehold.co/400x600/1d1d1f/white?text=Gameplay+1','https://placehold.co/400x600/007aff/white?text=Gameplay+2','https://placehold.co/400x600/34c759/white?text=Gameplay+3'];
             while (game.screenshots.length < 4) { game.screenshots.push(placeholders[game.screenshots.length - 1]); }
@@ -1058,6 +1060,7 @@
             historyIndex = { main: 0, ss0: -1, ss1: -1, ss2: -1, ss3: -1 };
             game.screenshots.forEach((src, idx) => { imageHistory[`ss${idx}`] = [src]; historyIndex[`ss${idx}`] = 0; });
 
+            // Teks Live Edit
             const titleEl = adminContainer.querySelector('#detail-title');
             titleEl.innerText = game.title; titleEl.contentEditable = true;
             titleEl.onblur = () => { game.title = titleEl.innerText; showToast("Teks tersimpan di memori"); };
@@ -1071,6 +1074,7 @@
             adminContainer.querySelector('#detail-resolution').innerText = game.resolution || '240x320';
             adminContainer.querySelector('#detail-size-stat').innerText = game.size || '0 MB';
 
+            // Ikon Utama
             const mainImg = adminContainer.querySelector('#detail-img');
             mainImg.src = game.image;
             mainImg.parentElement.innerHTML = `
@@ -1083,6 +1087,7 @@
                 </div>
             `;
 
+            // Slot Gameplay
             const screenshotSection = adminContainer.querySelector('#screenshot-section');
             const screenshotContainer = adminContainer.querySelector('.detail-image-container');
             screenshotSection.classList.remove('hidden');
@@ -1097,6 +1102,7 @@
                 </div>
             `).join('');
 
+            // Modifikasi Event Alat Edit
             const fileInput = document.getElementById('local-file-input');
             if (fileInput) fileInput.onchange = handleAdminLocalImageUpload;
 
@@ -1109,50 +1115,53 @@
             const aiInput = document.getElementById('preview-ai-prompt');
             if (aiInput) aiInput.onkeydown = (e) => { if(e.key === 'Enter') runAdminAiMagic('general'); };
 
-            // FIX: AUTO-SAVE GITHUB PINTAR PADA TOMBOL KEMBALI
-            const backBtn = adminContainer.querySelector('.fa-chevron-left').parentElement;
-            backBtn.onclick = async (e) => { 
-                e.preventDefault(); 
-                
-                // Deteksi apakah ada gambar baru yang belum diunggah (Berawalan data:image)
-                const hasNewImage = (game.image && game.image.startsWith('data:image')) || 
-                                    (game.screenshots && game.screenshots.some(src => src && src.startsWith('data:image')));
-                
-                if (hasNewImage) {
-                    backBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin text-blue-600 text-xl"></i>';
-                    showToast("Mendeteksi visual baru. Mengunggah ke GitHub...");
-                    await syncGameToGitHub(gameId); 
-                } else {
-                    showToast("Tidak ada visual baru. Membatalkan sinkronisasi gambar.");
-                }
-                
-                currentDetailedGameId = null;
-                switchScreen('screen-dashboard'); 
-            };
-
-            // KEMBALIKAN TOMBOL UNDUH SEPERTI ASLINYA (Hanya matikan fungsinya di mode admin)
+            // KEMBALIKAN TOMBOL UNDUH (Tanpa Mengubah Tampilannya)
             const downloadBtn = adminContainer.querySelector('#btn-download');
             if (downloadBtn) {
                 downloadBtn.onclick = () => showToast("Ini adalah mode Pratinjau Visual. Tombol dimatikan.");
             }
 
+            // AUTO-SAVE GITHUB DI TOMBOL KEMBALI
+            const backBtn = adminContainer.querySelector('.fa-chevron-left').parentElement;
+            backBtn.onclick = async (e) => { 
+                e.preventDefault(); 
+                const hasNewImage = (game.image && game.image.startsWith('data:image')) || (game.screenshots && game.screenshots.some(src => src && src.startsWith('data:image')));
+                if (hasNewImage) {
+                    backBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin text-blue-600 text-xl"></i>';
+                    showToast("Mendeteksi visual baru. Mengunggah ke GitHub...");
+                    await syncGameToGitHub(gameId); 
+                } else {
+                    showToast("Tidak ada visual baru. Menyimpan teks...");
+                }
+                currentDetailedGameId = null;
+                switchScreen('screen-dashboard'); 
+            };
+
             const reviewArea = adminContainer.querySelector('#review-input-area');
             if (reviewArea) reviewArea.parentElement.parentElement.style.display = 'none';
 
-            // FIX BUG MELEBAR: Suntikkan ke dalam kontainer '.max-w-2xl' agar tidak jebol ke samping!
+            // KELOLA MENU GAME DI DALAM PEMBUNGKUS MAX-W-2XL AGAR TIDAK LEBAR
             const innerWrapper = adminContainer.querySelector('.max-w-2xl');
+            const adminActionsHTML = `
+                <div id="admin-actions-area" class="px-5 space-y-3 mt-8 pb-8">
+                    <button class="w-full py-3 bg-gray-100 text-blue-600 rounded-xl font-bold text-sm active:scale-95 transition-all" onclick="openFullEdit('${gameId}')"><i class="fas fa-sliders-h mr-2"></i> Kelola Menu Game</button>
+                    <button class="w-full py-3 text-red-500 font-bold text-sm" onclick="deleteCurrentGame('${gameId}')"><i class="fas fa-trash-alt mr-2"></i> Hapus Game Permanen</button>
+                </div>
+            `;
             if (innerWrapper) {
-                innerWrapper.insertAdjacentHTML('beforeend', `
-                    <div id="admin-actions-area" class="px-5 space-y-3 mt-8 pb-8">
-                        <button class="w-full py-3 bg-gray-100 text-blue-600 rounded-xl font-bold text-sm active:scale-95 transition-all" onclick="openFullEdit('${gameId}')"><i class="fas fa-sliders-h mr-2"></i> Kelola Menu Game</button>
-                        <button class="w-full py-3 text-red-500 font-bold text-sm" onclick="deleteCurrentGame('${gameId}')"><i class="fas fa-trash-alt mr-2"></i> Hapus Game Permanen</button>
-                    </div>
-                `);
+                innerWrapper.insertAdjacentHTML('beforeend', adminActionsHTML);
+            } else {
+                adminContainer.insertAdjacentHTML('beforeend', adminActionsHTML);
             }
 
             initBridgeDragScroll(adminContainer);
             switchScreen('screen-visual-edit');
             showToast("Jembatan Visual Tersambung Sempurna!");
+
+        } catch (error) { 
+            console.error("Kesalahan Try-Catch:", error); 
+            showToast("Gagal merender jembatan visual."); 
+        }
     }
 
     // =========================================================
