@@ -981,7 +981,7 @@
     }
 
     // =========================================================
-    // DOM FETCHER (SANG JEMBATAN)
+    // DOM FETCHER (SANG JEMBATAN) - UPDATE V3
     // =========================================================
     async function buildVisualBridge(gameId) {
         try {
@@ -1021,15 +1021,29 @@
             const game = gamesDatabase.find(g => g.id === gameId);
             currentDetailedGameId = gameId;
 
+            // ==========================================
+            // FIX 1: PAKSA 4 SLOT SCREENSHOT UNTUK ADMIN
+            // ==========================================
+            if (!game.screenshots) game.screenshots = [game.image];
+            
+            const placeholders = [
+                'https://placehold.co/400x600/1d1d1f/white?text=Gameplay+1',
+                'https://placehold.co/400x600/007aff/white?text=Gameplay+2',
+                'https://placehold.co/400x600/34c759/white?text=Gameplay+3'
+            ];
+            
+            // Jika slot kurang dari 4, suntikkan placeholder agar Admin bisa mengisi
+            while (game.screenshots.length < 4) {
+                game.screenshots.push(placeholders[game.screenshots.length - 1]);
+            }
+
             // Inisialisasi History Slot untuk Game Ini
             imageHistory = { main: [game.image], ss0: [], ss1: [], ss2: [], ss3: [] };
             historyIndex = { main: 0, ss0: -1, ss1: -1, ss2: -1, ss3: -1 };
-            if (game.screenshots) {
-                game.screenshots.forEach((src, idx) => {
-                    imageHistory[`ss${idx}`] = [src];
-                    historyIndex[`ss${idx}`] = 0;
-                });
-            }
+            game.screenshots.forEach((src, idx) => {
+                imageHistory[`ss${idx}`] = [src];
+                historyIndex[`ss${idx}`] = 0;
+            });
 
             // Teks Live Edit
             const titleEl = adminContainer.querySelector('#detail-title');
@@ -1051,7 +1065,6 @@
             const mainImg = adminContainer.querySelector('#detail-img');
             mainImg.src = game.image;
             
-            // Rekonstruksi Bungkus Ikon
             const iconWrapper = mainImg.parentElement;
             iconWrapper.innerHTML = `
                 <img id="detail-img" src="${game.image}" class="w-28 h-28 object-cover rounded-[24px] shadow-lg border-2 border-blue-400 cursor-pointer" onclick="openAdvancedEditor('main')">
@@ -1062,26 +1075,19 @@
                 </div>
             `;
 
-            // SLOT GAMEPLAY (Cover + Gameplay)
-            if (!game.screenshots || game.screenshots.length === 0) {
-                game.screenshots = [game.image, 'https://placehold.co/400x600/1d1d1f/white?text=Gameplay+1', 'https://placehold.co/400x600/007aff/white?text=Gameplay+2', 'https://placehold.co/400x600/34c759/white?text=Gameplay+3'];
-            }
+            // SLOT GAMEPLAY (Kini merender 4 Slot Mutlak)
             const screenshotSection = adminContainer.querySelector('#screenshot-section');
             const screenshotContainer = adminContainer.querySelector('.detail-image-container');
             
             screenshotSection.classList.remove('hidden');
             screenshotContainer.innerHTML = game.screenshots.map((src, idx) => `
                 <div class="relative flex-shrink-0 w-48 aspect-[2/3] rounded-2xl overflow-hidden border border-gray-100 shadow-sm group">
-                    <div id="ai-loading-screenshot-${idx}" class="hidden absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-20 text-white">
-                        <i class="fas fa-circle-notch fa-spin text-xl text-white/80 mb-2"></i>
-                        <span class="text-[8px] font-black uppercase tracking-widest text-white/80">AI Melukis...</span>
-                    </div>
                     <img id="screenshot-img-${idx}" src="${src}" class="w-full h-full object-cover cursor-pointer" onclick="openAdvancedEditor('gameplay', ${idx})">
                     <div class="absolute top-2 right-2 flex space-x-1">
-                        <button class="w-7 h-7 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center text-[10px]" onclick="event.stopPropagation(); prepareUpload('gameplay', ${idx}); document.getElementById('local-file-input').click()">
+                        <button class="w-7 h-7 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center text-[10px]" onclick="event.stopPropagation(); prepareUpload('gameplay', ${idx}); document.getElementById('local-file-input').click()" title="Ganti Local">
                             <i class="fas fa-upload"></i>
                         </button>
-                        <button class="w-7 h-7 bg-black/70 text-white rounded-full flex items-center justify-center text-[10px]" onclick="event.stopPropagation(); runAiMagic('improve', ${idx})">
+                        <button class="w-7 h-7 bg-black/70 text-white rounded-full flex items-center justify-center text-[10px]" onclick="event.stopPropagation(); openAdvancedEditor('gameplay', ${idx})" title="Edit di AI Studio">
                             <i class="fas fa-wand-magic-sparkles"></i>
                         </button>
                     </div>
@@ -1099,8 +1105,24 @@
             if (downloadBtn) {
                 downloadBtn.innerText = "SIMPAN KE GITHUB";
                 downloadBtn.className = "bg-gray-900 text-white px-6 py-2 rounded-full font-black text-[10px] uppercase tracking-widest shadow-xl active:scale-95 transition-all";
-                downloadBtn.onclick = () => showToast("Siap diintegrasikan dengan GitHub Push!");
+                downloadBtn.onclick = () => showToast("Gunakan 'Kelola Menu Game' di bawah untuk Finalisasi Data!");
             }
+
+            // ==========================================
+            // FIX 2: INJEKSI TOMBOL KELOLA MENU (ADMIN ONLY)
+            // ==========================================
+            const adminActionsHTML = `
+                <div id="admin-actions-area" class="px-5 space-y-3 mt-8 pb-8">
+                    <button class="w-full py-3 bg-gray-100 text-blue-600 rounded-xl font-bold text-sm active:scale-95 transition-all" onclick="openFullEdit('${gameId}')">
+                        <i class="fas fa-sliders-h mr-2"></i> Kelola Menu Game
+                    </button>
+                    <button class="w-full py-3 text-red-500 font-bold text-sm" onclick="deleteCurrentGame('${gameId}')">
+                        <i class="fas fa-trash-alt mr-2"></i> Hapus Game Permanen
+                    </button>
+                </div>
+            `;
+            // Tempelkan di bagian paling akhir dari konten curian
+            adminContainer.insertAdjacentHTML('beforeend', adminActionsHTML);
 
             switchScreen('screen-visual-edit');
             showToast("Jembatan Visual Tersambung Sempurna!");
