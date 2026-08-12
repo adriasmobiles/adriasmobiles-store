@@ -966,13 +966,15 @@
     // STATE MANAGEMENT: STUDIO AI & JEMBATAN VISUAL
     // =========================================================
     let currentDetailedGameId = null;
-    let currentEditingImgType = 'main'; // 'main' or 'gameplay'
     let currentGameplayIdx = 0;
-    
-    // History independen untuk 1 Ikon + 4 Gameplay Slot
-    let imageHistory = { main: [], ss0: [], ss1: [], ss2: [], ss3: [] };
-    let historyIndex = { main: -1, ss0: -1, ss1: -1, ss2: -1, ss3: -1 };
     let currentUploadContext = { type: 'main', idx: 0 };
+    
+    // HAPUS kata 'let' di bawah ini untuk menimpa variabel lama dari atas script
+    currentEditingImgType = 'main'; 
+    
+    // History independen untuk 1 Ikon + 4 Gameplay Slot (Timpa bawaan lama)
+    imageHistory = { main: [], ss0: [], ss1: [], ss2: [], ss3: [] };
+    historyIndex = { main: -1, ss0: -1, ss1: -1, ss2: -1, ss3: -1 };
 
     function prepareUpload(type, idx = 0) {
         currentUploadContext = { type, idx };
