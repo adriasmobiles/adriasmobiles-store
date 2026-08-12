@@ -1191,7 +1191,14 @@
                     switchScreen('screen-dashboard'); // Kembali ke Daftar Game
                 }
 
+            } catch (error) {
+                console.error(error); 
+                showToast("Terjadi kesalahan saat mengunggah!");
+            } finally {
+                btnSubmit.innerHTML = originalBtnText; 
+                btnSubmit.disabled = false;
             }
+        });
 
     // =========================================================
     // FUNGSI LAINNYA (NAVIGASI MODAL, LOKAL, DLL - DISIAPKAN UNTUK RUANGAN BARU)
