@@ -1184,16 +1184,7 @@
 
         const btnSubmit = e.target.querySelector('button[type="submit"]');
         const originalBtnText = btnSubmit.innerHTML;
-        
-        // Deteksi cerdas: Apakah ada gambar baru?
-        const isUploadingImage = (tempUploadIcon && tempUploadIcon.startsWith('data:image')) || 
-                                 (tempUploadCover && tempUploadCover.startsWith('data:image')) ||
-                                 (tempSupportQr && tempSupportQr.startsWith('data:image'));
-                                 
-        // Ubah teks berdasarkan konteks
-        btnSubmit.innerHTML = isUploadingImage 
-            ? `<i class="fas fa-circle-notch fa-spin mr-2"></i> MENGUNGGAH VISUAL...` 
-            : `<i class="fas fa-circle-notch fa-spin mr-2"></i> MENYIMPAN TEKS...`;
+        btnSubmit.innerHTML = `<i class="fas fa-circle-notch fa-spin mr-2"></i> MENGUNGGAH...`;
         btnSubmit.disabled = true;
 
         try {
