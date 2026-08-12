@@ -1248,16 +1248,19 @@
     const databaseUrl = `https://raw.githubusercontent.com/${usernameGithub}/${namaRepo}/main/database.json`;
 
     async function loadDatabase() {
-        try {
-            const response = await fetch(databaseUrl);
-            if (response.ok) {
-                gamesDatabase = await response.json();
-                console.log("Database berhasil dimuat dari GitHub!");
-            }
-        } catch (error) {
-            console.error("Gagal memuat database:", error);
+    try {
+        const response = await fetch(databaseUrl);
+        if (response.ok) {
+            gamesDatabase = await response.json();
+            console.log("Database berhasil dimuat dari GitHub!");
         }
+    } catch (error) {
+        console.error("Gagal memuat database:", error);
+    } finally {
+        // Panggil inisialisasi tampilan di sini, BUKAN pakai setTimeout
+        checkAutoLogin(); 
     }
+}
 
     // Panggil fungsi ini otomatis saat web pertama kali dibuka
     loadDatabase();
@@ -1362,76 +1365,7 @@
         showToast("Berhasil keluar dari Mode Admin");
         login('user'); // Ubah status kembali menjadi pengunjung biasa
     }
-
-    // Eksekusi jalan pintas saat web pertama kali dibuka
-    setTimeout(checkAutoLogin, 100);
-
-    function login(role) {
-        currentUserRole = role;
-        document.getElementById('profile-name').innerText = role === 'admin' ? "Administrator" : "Pengguna Tamu";
-        document.getElementById('profile-role').innerText = role === 'admin' ? "Akses Penuh" : "Akses Terbatas";
-
-        if (role === 'admin') showToast('Berhasil masuk sebagai Admin');
-        else showToast('Berhasil masuk');
-
-        document.getElementById('bottom-nav').classList.remove('hidden');
-        document.getElementById('bottom-nav').classList.add('flex');
-        
-        renderGames();
-        switchScreen('screen-home', true);
-        document.getElementById('login-form').reset();
-    }
-
-    function toggleDarkMode() {
-        const body = document.body;
-        const toggle = document.getElementById('dark-mode-toggle');
-        const knob = document.getElementById('dark-mode-knob');
-        
-        body.classList.toggle('dark-theme');
-        const isDark = body.classList.contains('dark-theme');
-        
-        if (isDark) {
-            toggle.classList.replace('bg-gray-200', 'bg-green-500');
-            knob.style.transform = 'translateX(16px)';
-            localStorage.setItem('theme', 'dark');
-        } else {
-            toggle.classList.replace('bg-green-500', 'bg-gray-200');
-            knob.style.transform = 'translateX(0)';
-            localStorage.setItem('theme', 'light');
-        }
-    }
-
-    if (localStorage.getItem('theme') === 'dark') {
-        setTimeout(toggleDarkMode, 100);
-    }
-
-    function logout() {
-        const modal = document.getElementById('logout-modal');
-        const content = document.getElementById('logout-modal-content');
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-            content.classList.remove('scale-110', 'opacity-0');
-            content.classList.add('scale-100', 'opacity-100');
-        }, 10);
-    }
-
-    function closeLogoutModal() {
-        const modal = document.getElementById('logout-modal');
-        const content = document.getElementById('logout-modal-content');
-        content.classList.replace('scale-100', 'opacity-100', 'scale-110', 'opacity-0');
-        setTimeout(() => modal.classList.add('hidden'), 200);
-    }
-
-    function confirmLogout() {
-        closeLogoutModal();
-        currentUserRole = null;
-        document.getElementById('bottom-nav').classList.add('hidden');
-        document.getElementById('bottom-nav').classList.remove('flex');
-        switchScreen('screen-login', true);
-        navigationHistory = [];
-        showToast("Berhasil keluar");
-    }
-
+    
     // --- NAVIGATION ---
     function switchScreen(screenId, clearHistory = false) {
         document.querySelectorAll('.screen').forEach(s => {
