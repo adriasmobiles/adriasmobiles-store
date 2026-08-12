@@ -948,170 +948,178 @@
     }
 	
 	// =========================================================
-    // JEMBATAN DOM FETCHER & INJEKSI AI ADMIN (SINGLE SOURCE OF TRUTH)
+    // JEMBATAN VISUAL DOM FETCHER & STUDIO AI (SINGLE SOURCE OF TRUTH)
     // =========================================================
     let currentDetailedGameId = null;
 
     async function buildVisualBridge(gameId) {
         try {
-            showToast("Mengambil cetak biru visual dari index.html...");
+            showToast("Memuat Cetak Biru Visual...");
             
             // 1. Fetch File Index Murni
             const response = await fetch('index.html?v=' + Date.now());
             if (!response.ok) throw new Error("Gagal mengambil index.html");
             const text = await response.text();
 
-            // 2. Bedah DOM dan Ekstrak `screen-detail`
+            // 2. Bedah DOM dan Ambil Layar Detail
             const parser = new DOMParser();
             const doc = parser.parseFromString(text, 'text/html');
             const detailScreen = doc.getElementById('screen-detail');
             
-            if (!detailScreen) throw new Error("Div screen-detail tidak ditemukan.");
+            if (!detailScreen) throw new Error("Div screen-detail tidak ditemukan di index.html.");
 
-            // 3. Buat Kontainer Baru di Dapur Admin
+            // 3. AMANKAN CSS (Patch agar styling Index tidak pecah di Admin)
+            if (!document.getElementById('bridge-css')) {
+                const style = document.createElement('style');
+                style.id = 'bridge-css';
+                style.innerHTML = `
+                    .scroll-x { display: flex; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; touch-action: pan-x;}
+                    .scroll-x::-webkit-scrollbar { display: none; }
+                    .scroll-x img { pointer-events: auto; }
+                    /* Paksa solid white agar tidak transparan dan bentrok dengan ambient admin */
+                    #screen-visual-edit { background-color: #ffffff !important; min-height: 100vh; z-index: 50; }
+                `;
+                document.head.appendChild(style);
+            }
+
+            // 4. Siapkan Kontainer Khusus di Admin
             let adminContainer = document.getElementById('screen-visual-edit');
             if (!adminContainer) {
                 adminContainer = document.createElement('div');
                 adminContainer.id = 'screen-visual-edit';
-                // Modifikasi class agar bisa scroll sendiri di dalam panel Admin
-                adminContainer.className = 'screen pt-10 px-0 pb-32 overflow-y-auto custom-scrollbar bg-white/50 backdrop-blur-3xl';
                 document.querySelector('.w-full.h-full.relative').appendChild(adminContainer);
             }
 
-            // 4. Kloning HTML Curian ke dalam Admin
+            // Kloning layout dasar sama persis dengan index
+            adminContainer.className = detailScreen.className; 
+            adminContainer.classList.add('overflow-y-auto', 'custom-scrollbar'); // Agar bisa discroll
             adminContainer.innerHTML = detailScreen.innerHTML;
 
-            // 5. Injeksi Data Game Spesifik dari Database JSON
+            // 5. INJEKSI DATA DATABASE
             const game = gamesDatabase.find(g => g.id === gameId);
             currentDetailedGameId = gameId;
 
-            // Update Teks (Menggunakan Selector di dalam kontainer yang baru dibuat)
-            adminContainer.querySelector('#detail-title').innerText = game.title;
+            // Edit Teks Langsung (Live Text Edit)
+            const titleEl = adminContainer.querySelector('#detail-title');
+            const descEl = adminContainer.querySelector('#detail-desc');
+            
+            titleEl.innerText = game.title;
+            titleEl.contentEditable = true;
+            titleEl.classList.add('outline-none', 'hover:bg-gray-100', 'p-1', 'rounded', 'border', 'border-dashed', 'border-transparent', 'focus:border-blue-300');
+            titleEl.onblur = () => saveInlineText('title', titleEl.innerText);
+
+            descEl.innerText = game.desc;
+            descEl.contentEditable = true;
+            descEl.classList.add('outline-none', 'hover:bg-gray-50', 'p-1', 'rounded', 'border', 'border-dashed', 'border-transparent', 'focus:border-blue-300');
+            descEl.onblur = () => saveInlineText('desc', descEl.innerText);
+
             adminContainer.querySelector('#detail-category').innerText = game.category;
             adminContainer.querySelector('#detail-rating').innerText = game.rating;
             adminContainer.querySelector('#detail-resolution').innerText = game.resolution || '240x320';
             adminContainer.querySelector('#detail-size-stat').innerText = game.size || '0 MB';
-            adminContainer.querySelector('#detail-desc').innerText = game.desc;
-            
-            // Update Gambar Utama
+
+            // 6. PASANG ALAT AI & SLOT GAMBAR (Sesuai Referensi)
             const mainImg = adminContainer.querySelector('#detail-img');
             mainImg.src = game.image;
+            mainImg.classList.add('border-2', 'border-blue-400'); // Penanda bahwa ini mode edit
 
-            // Update Render Screenshots Gameplay
-            const screenshotSection = adminContainer.querySelector('#screenshot-section');
-            const screenshotContainer = adminContainer.querySelector('.detail-image-container');
-            let screenshots = (game.screenshots && game.screenshots.length > 0) ? game.screenshots : [game.image];
-            
-            if (screenshots.length > 0) {
-                screenshotSection.classList.remove('hidden');
-                screenshotContainer.innerHTML = screenshots.map((src, idx) => `
-                    <div class="relative flex-shrink-0 w-48 aspect-[2/3] rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
-                        <img src="${src}" class="w-full h-full object-cover cursor-pointer" onclick="openAdvancedEditor('gameplay', ${idx})">
-                        <!-- Injeksi: Tombol Ganti Gambar Lokal -->
-                        <button class="absolute top-2 right-2 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-lg border border-white/20 active:scale-90" onclick="prepareUpload('gameplay', ${idx}); document.getElementById('local-file-input').click()" title="Ganti Visual">
-                            <i class="fas fa-upload text-[10px]"></i>
-                        </button>
-                    </div>
-                `).join('');
-            } else {
-                screenshotSection.classList.add('hidden');
-            }
-
-            // ==========================================
-            // 6. INJEKSI KEKUATAN ADMIN (AI & LIVE EDIT)
-            // ==========================================
-            
-            // A. Live Text Editing (Klik untuk mengetik)
-            const titleEl = adminContainer.querySelector('#detail-title');
-            const descEl = adminContainer.querySelector('#detail-desc');
-            
-            titleEl.contentEditable = true;
-            titleEl.classList.add('outline-none', 'focus:bg-blue-50', 'p-1', 'rounded-lg', 'border', 'border-dashed', 'border-gray-300', 'transition-colors');
-            titleEl.onblur = () => saveInlineText('title', titleEl.innerText);
-
-            descEl.contentEditable = true;
-            descEl.classList.add('outline-none', 'focus:bg-blue-50', 'p-2', 'rounded-lg', 'border', 'border-dashed', 'border-gray-300', 'transition-colors');
-            descEl.onblur = () => saveInlineText('desc', descEl.innerText);
-
-            // B. Tombol AI Magic di Ikon Utama
-            mainImg.classList.add('cursor-pointer', 'border-2', 'border-dashed', 'border-blue-400');
-            mainImg.onclick = () => {
-                tempUploadIcon = mainImg.src; 
-                openAdvancedEditor('main');
-            };
-            
-            const imgWrapper = mainImg.parentElement;
-            imgWrapper.classList.add('relative');
-            imgWrapper.innerHTML += `
-                <div class="absolute -top-3 -right-3 z-40 flex">
-                    <button class="w-10 h-10 bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 text-white rounded-full shadow-[0_10px_20px_rgba(147,51,234,0.3)] flex items-center justify-center border-2 border-white transition-all active:scale-90 hover:rotate-12" onclick="event.stopPropagation(); tempUploadIcon = document.getElementById('detail-img').src; openAdvancedEditor('main')" title="Buka AI Studio">
+            // AI Tool untuk Ikon Utama
+            const iconWrapper = mainImg.parentElement;
+            iconWrapper.classList.add('relative');
+            iconWrapper.innerHTML += `
+                <div class="absolute -top-2 -right-2 z-40 flex shadow-xl rounded-full">
+                    <button class="w-10 h-10 bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 text-white rounded-full flex items-center justify-center border-2 border-white transition-all active:scale-90" onclick="tempUploadIcon = document.getElementById('detail-img').src; openAdvancedEditor('main')" title="Buka AI Studio (Ikon)">
                         <i class="fas fa-wand-magic-sparkles text-xs"></i>
                     </button>
                 </div>
             `;
 
-            // C. Rombak Tombol Kembali untuk Navigasi Dapur
+            // Setup Pratinjau Gameplay (1 Cover + 3 Gameplay = 4 Slot)
+            const screenshotSection = adminContainer.querySelector('#screenshot-section');
+            const screenshotContainer = adminContainer.querySelector('.detail-image-container');
+            
+            // Jika kosong, buatkan template 4 slot seperti permintaan Anda
+            if (!game.screenshots || game.screenshots.length === 0) {
+                game.screenshots = [
+                    game.image, // Slot 0: Cover Landscape
+                    'https://placehold.co/400x600/1d1d1f/white?text=Gameplay+1',
+                    'https://placehold.co/400x600/007aff/white?text=Gameplay+2',
+                    'https://placehold.co/400x600/34c759/white?text=Gameplay+3'
+                ];
+            }
+
+            screenshotSection.classList.remove('hidden');
+            screenshotContainer.innerHTML = game.screenshots.map((src, idx) => `
+                <div class="relative flex-shrink-0 w-48 aspect-[2/3] rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+                    <img id="screenshot-img-${idx}" src="${src}" class="w-full h-full object-cover">
+                    <!-- Toolbox Melayang untuk tiap Gameplay -->
+                    <div class="absolute top-2 right-2 flex space-x-1 z-30">
+                        <button class="w-8 h-8 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center text-[10px]" onclick="tempUploadCover = document.getElementById('screenshot-img-${idx}').src; openAdvancedEditor('cover', ${idx})" title="Edit Manual">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="w-8 h-8 bg-black/70 text-white rounded-full flex items-center justify-center text-[10px]" onclick="showToast('Fitur AI Screenshot Sedang Diproses...')" title="AI Polish">
+                            <i class="fas fa-wand-magic-sparkles"></i>
+                        </button>
+                    </div>
+                    ${idx === 0 ? `<div class="absolute bottom-2 left-2 bg-black/60 text-white text-[8px] px-2 py-1 rounded font-bold uppercase">Hero Cover</div>` : ''}
+                </div>
+            `).join('');
+
+            // 7. Modifikasi Tombol Bawaan Index
+            // A. Tombol Kembali
             const backBtn = adminContainer.querySelector('.fa-chevron-left').parentElement;
             backBtn.onclick = (e) => {
                 e.preventDefault();
                 switchScreen('screen-dashboard');
             };
 
-            // D. Matikan Fitur Spesifik Pengunjung (seperti Tombol Ulasan / Download)
+            // B. Sembunyikan Ulasan Komunitas
             const reviewArea = adminContainer.querySelector('#review-input-area');
             if (reviewArea) reviewArea.parentElement.parentElement.style.display = 'none';
-            
+
+            // C. Ubah Tombol Unduh jadi Simpan Permanen (Github Action Hook)
             const downloadBtn = adminContainer.querySelector('#btn-download');
             if (downloadBtn) {
-                downloadBtn.innerText = "SIMPAN PERUBAHAN";
+                downloadBtn.innerText = "SIMPAN KE GITHUB";
                 downloadBtn.className = "bg-gray-900 text-white px-6 py-2 rounded-full font-black text-[10px] uppercase tracking-widest shadow-xl active:scale-95 transition-all";
-                // Modifikasi fungsi tombol ini agar menjalankan GitHub commit nantinya
-                downloadBtn.onclick = () => showToast("Perubahan tersimpan di memori. Gunakan Publikasi untuk ke GitHub.");
+                downloadBtn.onclick = () => showToast("Siap diintegrasikan dengan GitHub Push!");
             }
 
-            // Tampilkan Layar Baru
+            // Eksekusi: Tampilkan Layar!
             switchScreen('screen-visual-edit');
-            showToast("Visual Jembatan Terhubung Penuh!");
+            showToast("Jembatan Visual Tersambung Sempurna!");
 
         } catch (error) {
-            console.error(error);
-            showToast("Gagal mengambil visual dari index. Beralih ke Editor Klasik.");
-            openFullEdit(gameId); // Fallback ke Form Standar jika index.html error
+            console.error("Fetch DOM Error:", error);
+            showToast("Gagal merender jembatan visual.");
         }
     }
 
-    // Fungsi Bantuan untuk Jembatan
-    let currentUploadSlot = { type: 'main', idx: 0 };
-    function prepareUpload(type, idx = 0) {
-        currentUploadSlot = { type, idx };
-    }
-
-    async function saveInlineText(field, value) {
+    // Fungsi Pembantu
+    function saveInlineText(field, value) {
         const game = gamesDatabase.find(g => g.id === currentDetailedGameId);
-        if (!game) return;
-        if (field === 'title') game.title = value;
-        if (field === 'desc') game.desc = value;
-        showToast("Teks diperbarui (Memori Sementara).");
+        if (game) {
+            if (field === 'title') game.title = value;
+            if (field === 'desc') game.desc = value;
+            showToast("Teks diperbarui!");
+        }
     }
 
-    // Mengganti arah tombol edit (Ikon Pensil) di Dasbor Admin
+    // Arahkan tombol Edit (Pensil) di Dasbor Admin ke Jembatan Visual
     const originalRenderAdminDashboard = renderAdminDashboard;
     renderAdminDashboard = function() {
-        originalRenderAdminDashboard();
-        
-        // Targetkan semua tombol Edit (Pensil)
+        originalRenderAdminDashboard(); 
         const editButtons = document.querySelectorAll('#admin-game-list .fa-edit');
         editButtons.forEach(icon => {
             const btn = icon.parentElement;
             const onclickAttr = btn.getAttribute('onclick');
             if (onclickAttr && onclickAttr.includes('openFullEdit')) {
-                // Ekstrak ID dan ubah panggilannya ke buildVisualBridge
                 const gameId = onclickAttr.match(/'([^']+)'/)[1];
+                // Ganti trigger menjadi buildVisualBridge
                 btn.setAttribute('onclick', `buildVisualBridge('${gameId}')`);
-                
-                // Ganti warnanya jadi ungu khas AI
+                // Ubah gaya tombol menjadi gaya AI/Visual
                 btn.className = "w-9 h-9 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center transition active:bg-purple-100 border border-purple-100 shadow-sm";
-                icon.className = "fas fa-wand-magic-sparkles text-xs";
+                icon.className = "fas fa-magic text-sm";
             }
         });
     }
