@@ -1729,6 +1729,11 @@
                 historyIndex[`ss${idx}`] = 0;
             });
         }
+		
+		// Setel QR Dukungan dari database game ini jika tersedia
+        if (game.supportQr) {
+            globalSupportQr = game.supportQr;
+        }
 
         const isAdm = currentUserRole === 'admin';
         document.getElementById('detail-img').src = game.image;
@@ -2553,6 +2558,19 @@
                 showToast("Mengunggah Cover...");
                 finalCoverUrl = await uploadToGitHub(`assets/${gameId}_cover.png`, tempUploadCover, `Upload cover untuk ${title}`);
             }
+			
+			// Upload QR Code (jika admin memasukkan gambar QR baru)
+            let finalQrUrl = tempSupportQr; // Gunakan yang lama jika tidak ada yang baru
+            // Jika ini mode edit dan admin tidak upload QR baru, pertahankan QR yang sudah ada di database
+            if (!tempSupportQr && currentEditingId) {
+                const existingGame = gamesDatabase.find(g => g.id === currentEditingId);
+                if (existingGame && existingGame.supportQr) finalQrUrl = existingGame.supportQr;
+            }
+            // Jika admin upload gambar QR baru, kirim file PNG-nya ke GitHub
+            if (tempSupportQr && tempSupportQr.startsWith('data:image')) {
+                showToast("Mengunggah QR Dukungan...");
+                finalQrUrl = await uploadToGitHub(`assets/${gameId}_qr.png`, tempSupportQr, `Upload QR Dukungan untuk ${title}`);
+            }
 
             const gameData = {
                 id: gameId,
@@ -2567,7 +2585,7 @@
                 desc: desc,
                 isBanner: isBanner,
                 isRecommended: isRecommended,
-                supportQr: tempSupportQr,
+                supportQr: finalQrUrl,
                 gameSource: sourceType,
                 gameUrl: gameUrl
             };
