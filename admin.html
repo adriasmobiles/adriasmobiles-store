@@ -1,0 +1,2831 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Toko AdriasMobiles</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        html, body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f5f7;
+            -webkit-tap-highlight-color: transparent;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100vh;
+            color: #1d1d1f;
+            overflow-x: hidden;
+            /* Hide Scrollbar Global */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE/Edge */
+            -webkit-overflow-scrolling: touch;
+        }
+
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+        }
+
+        /* Animated Ambient iOS 28 Background */
+        .ios-ambient-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            z-index: -1;
+            overflow: hidden;
+        }
+        .ios-ambient-bg::before {
+            content: '';
+            position: absolute;
+            top: -20%; left: -10%;
+            width: 70vw; height: 70vw;
+            background: radial-gradient(circle, rgba(10,132,255,0.08) 0%, rgba(10,132,255,0) 70%);
+            filter: blur(90px);
+            border-radius: 50%;
+            animation: float 20s infinite ease-in-out alternate;
+        }
+        .ios-ambient-bg::after {
+            content: '';
+            position: absolute;
+            bottom: -20%; right: -10%;
+            width: 80vw; height: 80vw;
+            background: radial-gradient(circle, rgba(94,92,230,0.08) 0%, rgba(94,92,230,0) 70%);
+            filter: blur(90px);
+            border-radius: 50%;
+            animation: float 25s infinite ease-in-out alternate-reverse;
+        }
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(5%, 5%) scale(1.05); }
+        }
+
+        /* Horizontal Scroll Mobile Fixes */
+        .scroll-x {
+            display: flex;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-x;
+            -ms-overflow-style: none; 
+            scrollbar-width: none; 
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .scroll-x::-webkit-scrollbar { 
+            display: none; 
+            width: 0; 
+            height: 0; 
+        }
+        /* Mencegah gambar tersangkut saat digeser menggunakan mouse */
+        .scroll-x img, .game-card img, #detail-img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+            pointer-events: auto;
+        }
+
+        .screen {
+            display: none;
+            flex-direction: column;
+            min-height: 100vh;
+            width: 100%;
+            position: absolute;
+            top: 0; left: 0; right: 0;
+        }
+        .screen.active {
+            display: flex;
+            animation: fadeScaleIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+        @keyframes fadeScaleIn {
+            from { opacity: 0; transform: scale(0.98) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(40px) saturate(200%);
+            -webkit-backdrop-filter: blur(40px) saturate(200%);
+            border-top: 0.5px solid rgba(0, 0, 0, 0.08);
+            border-radius: 24px 24px 0 0;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            max-width: none;
+            padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 15px));
+            box-shadow: 0 -5px 25px rgba(0,0,0,0.03);
+            position: fixed;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .tab-item {
+            color: #86868b;
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            border-radius: 16px;
+            padding: 6px 0;
+        }
+        .tab-item.active {
+            color: #007aff;
+            background: rgba(0, 122, 255, 0.06);
+            transform: scale(1.02);
+        }
+
+        .ios-input {
+            appearance: none;
+            background: #ffffff;
+            border-radius: 14px;
+            border: 1px solid rgba(0,0,0,0.06);
+            padding: 10px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            width: 100%;
+            outline: none;
+            transition: all 0.3s ease;
+            color: #1d1d1f;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+        .ios-input:focus {
+            border-color: #007aff;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(0,122,255,0.06);
+        }
+
+        .ios-btn-primary, .ios-btn-secondary, .btn-apple-intel {
+            position: relative;
+            background: white;
+            background-clip: padding-box;
+            border: 1.5px solid transparent;
+            color: #1d1d1f;
+            border-radius: 14px;
+            padding: 11px;
+            font-weight: 800;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+            box-sizing: border-box;
+            transform: translateZ(0);
+        }
+
+        /* Apple Intelligence Glow Outline (Symmetrical Calibration & GPU Locked) */
+        .ios-btn-primary::before, .ios-btn-secondary::before, .btn-apple-intel::before {
+            content: '';
+            position: absolute;
+            top: -1.5px;
+            left: -1.5px;
+            right: -1.5px;
+            bottom: -1.5px;
+            z-index: -1;
+            background: linear-gradient(120deg, #5AC8FA, #5856D6, #FF2D55, #AF52DE, #5AC8FA);
+            background-size: 300% 300%;
+            border-radius: 15.5px;
+            animation: intel-flow 4s ease infinite;
+            padding: 1.5px;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            box-sizing: border-box;
+            will-change: background-position;
+            transform: translateZ(0);
+        }
+
+        @keyframes intel-flow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .ios-btn-primary:active, .ios-btn-secondary:active, .btn-apple-intel:active {
+            transform: scale(0.97);
+            opacity: 0.9;
+        }
+
+        /* Apple Intelligence Card Outline Effect */
+        .intel-card-outline {
+            position: relative;
+            z-index: 1;
+            overflow: visible !important; /* Ensure glow is not clipped */
+        }
+        .intel-card-outline::before {
+            content: '';
+            position: absolute;
+            /* Symmetrical Calibration: Explicit coordinates to prevent sub-pixel thinning on mobile */
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            z-index: -1;
+            background: linear-gradient(120deg, #5AC8FA, #5856D6, #FF2D55, #AF52DE, #5AC8FA);
+            background-size: 300% 300%;
+            border-radius: 20px; /* Default fallback */
+            animation: intel-flow 4s linear infinite;
+            padding: 2px; /* Matches the offset for perfect stroke centering */
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            box-sizing: border-box; /* Critical for symmetrical stroke calculation */
+            will-change: opacity, background-position;
+            transform: translateZ(0);
+        }
+        .intel-card-outline:hover::before {
+            opacity: 1;
+        }
+
+        .game-card {
+            background: #ffffff;
+            border-radius: 18px;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .game-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+        }
+        .game-card:active {
+            transform: scale(0.96);
+        }
+
+        .category-pill {
+            padding: 10px 24px;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
+            color: #1d1d1f;
+            font-weight: 600;
+            font-size: 15px;
+            white-space: nowrap;
+            cursor: pointer;
+            border: 1px solid rgba(0,0,0,0.08);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            transition: all 0.2s ease;
+        }
+        .category-pill.active {
+            background: #ffffff !important;
+            color: #1d1d1f !important;
+            border-color: rgba(0,0,0,0.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+        /* Apple Intelligence Active State & Specific Radius */
+        .intel-card-outline.active::before { opacity: 1; }
+        .category-pill.intel-card-outline::before { border-radius: 32px; overflow: visible; }
+        .game-row-item.intel-card-outline::before { border-radius: 26px; }
+        .game-card.intel-card-outline::before { border-radius: 30px; }
+        .featured-banner.intel-card-outline::before { border-radius: 26px; }
+        .rec-icon.intel-card-outline::before { border-radius: 26px; }
+        .upload-zone.intel-card-outline::before { border-radius: 24px; }
+        .btn-publish.intel-card-outline::before { border-radius: 20px; }
+
+        /* Dynamic Notification Toast */
+        #toast {
+            visibility: hidden;
+            min-width: 120px;
+            background: rgba(20, 20, 22, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            color: #fff;
+            text-align: center;
+            border-radius: 32px;
+            padding: 8px 16px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 30px; /* Top like dynamic island */
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        #toast.show {
+            visibility: visible;
+            animation: slideDown 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) 2.5s forwards;
+        }
+        @keyframes slideDown { from { top: -20px; opacity: 0; } to { top: 30px; opacity: 1; } }
+        @keyframes slideUp { from { top: 30px; opacity: 1; } to { top: -20px; opacity: 0; } }
+
+        /* Preview Modal Styles */
+        #preview-modal { transition: opacity 0.3s ease; }
+        #preview-modal.hidden-modal { opacity: 0; pointer-events: none; }
+        #preview-modal.show-modal { opacity: 1; pointer-events: auto; }
+        #preview-content { transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        #preview-modal.hidden-modal #preview-content { transform: translateY(50px) scale(0.95); }
+        #preview-modal.show-modal #preview-content { transform: translateY(0) scale(1); }
+
+        /* Selection & Zoom Styles */
+        .selection-box {
+            position: absolute;
+            border: 2px dashed #ff3b30;
+            background: rgba(255, 59, 48, 0.2);
+            box-shadow: 0 0 20px rgba(255, 59, 48, 0.4), inset 0 0 10px rgba(255, 59, 48, 0.3);
+            pointer-events: none;
+            z-index: 150;
+            display: none;
+        }
+        .selection-active { cursor: crosshair !important; }
+        
+        #zoom-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 500;
+            background: rgba(0,0,0,0.92);
+            backdrop-filter: blur(20px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            touch-action: none;
+        }
+        #zoom-img {
+            max-width: 95%;
+            max-height: 95%;
+            transition: transform 0.1s ease-out;
+            cursor: grab;
+        }
+        #zoom-img:active { cursor: grabbing; }
+
+        /* Dark Mode Global Overrides */
+        body.dark-theme { background-color: #000; color: #fff; }
+        body.dark-theme .ios-ambient-bg { background: #000; }
+        body.dark-theme .ios-ambient-bg::before { background: radial-gradient(circle, rgba(10,132,255,0.15) 0%, rgba(10,132,255,0) 70%); }
+        body.dark-theme .ios-ambient-bg::after { background: radial-gradient(circle, rgba(94,92,230,0.15) 0%, rgba(94,92,230,0) 70%); }
+        body.dark-theme .bg-white, body.dark-theme .bg-white\/60, body.dark-theme .bg-white\/70, body.dark-theme .bg-white\/40, body.dark-theme .bg-white\/80 { 
+            background-color: rgba(28, 28, 30, 0.7) !important; 
+            backdrop-filter: blur(30px) !important;
+            border-color: rgba(255,255,255,0.1) !important;
+        }
+        body.dark-theme .text-gray-900, body.dark-theme .text-gray-800, body.dark-theme .text-gray-700 { color: #fff !important; }
+        body.dark-theme .text-gray-500, body.dark-theme .text-gray-400 { color: #8e8e93 !important; }
+        body.dark-theme .ios-input { background: #1c1c1e; color: #fff; border-color: #3a3a3c; }
+        body.dark-theme .glass-nav { background: rgba(20, 20, 20, 0.8); border-top-color: rgba(255,255,255,0.1); }
+        body.dark-theme .category-pill { background: #1c1c1e; color: #fff; border-color: #3a3a3c; }
+        body.dark-theme .category-pill.active { background: #1d1d1f; color: #fff; border-color: rgba(255,255,255,0.2); }
+        body.dark-theme .game-card, body.dark-theme .game-row-item { background: #1c1c1e !important; border-color: #3a3a3c !important; }
+        body.dark-theme #screen-list, body.dark-theme #screen-detail, body.dark-theme #screen-profile, body.dark-theme #screen-collection { background-color: #000 !important; }
+        body.dark-theme .bg-gray-50 { background-color: #1c1c1e !important; }
+        body.dark-theme .bg-gray-100 { background-color: #2c2c2e !important; }
+    </style>
+</head>
+<body>
+
+<div class="ios-ambient-bg"></div>
+
+<!-- 1. LOGIN SCREEN -->
+<div id="screen-login" class="screen active flex items-center justify-center p-6">
+    <div class="w-full max-w-md mx-auto z-10 relative">
+        <div class="bg-white/40 backdrop-blur-[60px] rounded-[48px] p-10 shadow-[0_30px_60px_rgba(0,0,0,0.08)] border border-white/60">
+            <div class="text-center mb-10">
+                <div class="w-28 h-28 bg-gradient-to-tr from-blue-600 to-blue-400 rounded-[32px] mx-auto mb-6 flex items-center justify-center shadow-[0_15px_30px_rgba(0,122,255,0.3)] border border-white/30">
+                    <svg class="w-14 h-14 text-white drop-shadow-lg" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9h2v9h-2zm1-11c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/>
+                    </svg>
+                </div>
+                <h1 class="text-3xl font-extrabold tracking-tight text-gray-900">AdriasMobiles</h1>
+                <p class="text-base font-medium text-gray-600 mt-2">Java Games Store</p>
+            </div>
+
+            <form id="login-form" class="space-y-5">
+                <div>
+                    <input type="password" id="password" class="ios-input" placeholder="Sandi Rahasia Admin" required autocomplete="off">
+                </div>
+                <div class="pt-4">
+                    <div class="p-1.5 bg-black/5 rounded-[24px] relative">
+                        <button type="submit" class="intel-card-outline btn-publish active w-full py-4 bg-white rounded-[18px] text-[11px] font-black uppercase tracking-[0.2em] text-gray-900 shadow-sm transition-all active:scale-[0.98]">
+                            Masuk Ke Mode Admin
+                        </button>
+                    </div>
+                </div>
+                <button type="button" class="w-full text-center text-xs font-bold text-gray-400 mt-4" onclick="switchScreen('screen-home')">Kembali ke Beranda</button>
+            </form>
+            
+            <div class="mt-8 text-center text-sm font-medium text-gray-500 bg-black/5 p-4 rounded-2xl">
+                <p>Pengunjung: <b>user / user</b></p>
+                <p class="mt-1">Admin: <b>admin / admin</b></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 2. HOME SCREEN -->
+<div id="screen-home" class="screen pt-4 px-0 pb-28">
+    <div class="max-w-7xl mx-auto w-full">
+        
+        <!-- Header Section -->
+        <div class="px-5 flex justify-between items-end mb-4">
+            <div>
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Selamat Datang</p>
+                <h1 class="text-2xl font-black tracking-tighter text-gray-900">AdriasMobiles</h1>
+            </div>
+            <div class="flex space-x-3">
+                <button class="w-10 h-10 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center transition-transform active:scale-90">
+                    <i class="far fa-bell text-gray-800 text-lg"></i>
+                </button>
+                <button class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center transition-transform active:scale-90 shadow-lg shadow-blue-200">
+                    <i class="fas fa-user text-white text-sm"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Search Bar Modern -->
+        <div class="px-5 mb-6">
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <i class="fas fa-search text-gray-400"></i>
+                </div>
+                <input type="text" id="home-search-input" class="w-full bg-white border border-gray-100 rounded-2xl py-3 pl-11 pr-4 text-gray-900 shadow-sm focus:ring-2 focus:ring-blue-500/10 transition-all outline-none text-sm font-medium" placeholder="Cari game favoritmu..." oninput="handleHomeSearch(this.value)">
+            </div>
+        </div>
+
+        <!-- Section: Featured Banners (Infinite Smooth Slider) -->
+        <div class="mb-8">
+            <div id="featured-game-container" class="relative overflow-hidden w-full py-1">
+                <!-- Injected via JS as Smooth Transform Slider -->
+            </div>
+        </div>
+
+        <!-- Section: Rekomendasi (Horizontal Icons) -->
+        <div class="mb-8">
+            <div class="px-5 flex justify-between items-center mb-4">
+                <h2 class="text-lg font-black text-gray-900 tracking-tight">Rekomendasi</h2>
+                <button class="text-blue-600 text-xs font-bold hover:opacity-70" onclick="switchScreen('screen-list')">Lihat Semua <i class="fas fa-chevron-right ml-1 text-[10px]"></i></button>
+            </div>
+            <div id="recommended-games-container" class="scroll-x px-5 space-x-4 pb-2 pt-1">
+                <!-- Injected via JS as App Icons Style -->
+            </div>
+        </div>
+
+        <!-- Section: Baru Ditambahkan (Grid) -->
+        <div class="px-5">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-black text-gray-900 tracking-tight">Baru Ditambahkan</h2>
+                <button class="text-blue-600 text-xs font-bold hover:opacity-70" onclick="switchScreen('screen-list')">Lihat Semua <i class="fas fa-chevron-right ml-1 text-[10px]"></i></button>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-0.5" id="recent-games-container">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 3. GAME LIST SCREEN -->
+<div id="screen-list" class="screen pt-10 md:pt-16 px-4 md:px-8 lg:px-20 pb-28" style="background-color: #f2f6fa;">
+    <div class="max-w-7xl mx-auto w-full">
+        
+        <div class="flex justify-between items-end mb-6 md:mb-8">
+            <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 leading-tight">Jelajah</h1>
+        </div>
+
+        <!-- Categories Scroll -->
+        <div class="scroll-x space-x-2 mb-6 py-3 -mx-5 px-5 md:mx-0 md:px-0">
+            <div class="category-pill active text-sm" data-filter="Semua" onclick="filterGames('Semua')">Semua</div>
+            <div class="category-pill text-sm" data-filter="Aksi" onclick="filterGames('Aksi')">Aksi</div>
+            <div class="category-pill text-sm" data-filter="Petualangan" onclick="filterGames('Petualangan')">Petualangan</div>
+            <div class="category-pill text-sm" data-filter="Teka-Teki" onclick="filterGames('Teka-Teki')">Teka-Teki</div>
+            <div class="category-pill text-sm" data-filter="Simulasi" onclick="filterGames('Simulasi')">Simulasi</div>
+            <div class="category-pill text-sm" data-filter="Strategi" onclick="filterGames('Strategi')">Strategi</div>
+        </div>
+
+        <!-- Admin Add Game Top Block (Injected via JS if admin) -->
+        <div id="admin-add-list-container" class="mb-5 hidden"></div>
+
+        <!-- List View Container for All Games -->
+        <div class="flex flex-col space-y-3" id="all-games-list">
+            <!-- Injected via JS as Rows -->
+        </div>
+    </div>
+</div>
+
+<!-- 4. GAME DETAIL SCREEN -->
+<div id="screen-detail" class="screen pt-4 px-0 pb-32 bg-white">
+    <div class="max-w-2xl mx-auto w-full">
+        <!-- Top Navigation Bar -->
+        <div class="flex justify-between items-center px-5 mb-6">
+            <button class="text-blue-600 flex items-center space-x-1 active:opacity-50 transition-opacity" onclick="goBack()">
+                <i class="fas fa-chevron-left text-xl"></i>
+                <span class="text-lg">Kembali</span>
+            </button>
+            <button class="text-blue-600 active:opacity-50 transition-opacity">
+                <i class="fas fa-share-square text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Header Section: Icon & Title -->
+        <div class="flex px-5 mb-8">
+            <div class="flex flex-col items-center flex-shrink-0">
+                <div class="relative group w-28 h-28">
+                    <div id="ai-loading" class="hidden absolute inset-0 bg-black/40 backdrop-blur-sm rounded-[24px] flex flex-col items-center justify-center z-30 text-white">
+                        <i class="fas fa-circle-notch fa-spin text-xl text-white/80 mb-2"></i>
+                        <span class="text-[8px] font-black uppercase tracking-widest text-white/80">AI Magic...</span>
+                    </div>
+                    <img id="detail-img" src="" class="w-28 h-28 object-cover rounded-[24px] shadow-lg border border-gray-100 cursor-pointer" alt="Game Icon" onclick="openAdvancedEditor('main')">
+                    <!-- Admin AI Icon Generator -->
+                    <div class="absolute -top-2 -right-2 hidden z-40" id="admin-icon-tools">
+                        <button class="w-10 h-10 bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 text-white rounded-full shadow-xl flex items-center justify-center border-2 border-white transition-all active:scale-90 hover:rotate-12" onclick="runAiMagic('icon-gen')" title="AI Icon Generator">
+                            <i class="fas fa-wand-magic-sparkles text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="ml-5 flex-1 flex flex-col justify-between py-1">
+                <div>
+                    <h1 id="detail-title" class="text-2xl font-bold text-gray-900 leading-tight outline-none focus:bg-gray-100 rounded" onblur="saveInlineEdit('title')">Judul Game</h1>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button id="btn-download" class="bg-[#34C759] text-white px-6 py-1.5 rounded-full font-bold text-sm uppercase tracking-wide shadow-sm active:scale-95 transition-all min-w-[120px]" onclick="downloadGame()">UNDUH</button>
+                    <button class="w-8 h-8 bg-gray-100 text-blue-600 rounded-full flex items-center justify-center">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                </div>
+                <button id="btn-support" class="hidden mt-3 w-full py-2.5 bg-indigo-50 text-indigo-600 rounded-xl font-bold text-[10px] uppercase tracking-widest flex items-center justify-center border border-indigo-100 active:scale-95 transition-all" onclick="showSupportModal()">
+                    <i class="fas fa-heart mr-2 text-indigo-400"></i> Dukung Pengembang
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-4 gap-0 border-y border-gray-100/80 py-2.5 mb-8">
+            <div class="flex flex-col items-center border-r border-gray-100/80">
+                <span class="text-[8px] font-black text-gray-400 uppercase tracking-[0.12em] mb-0.5">Rating</span>
+                <div class="flex items-center text-gray-800 font-bold text-[13px]">
+                    <span id="detail-rating">4.8</span>
+                    <i class="fas fa-star text-[9px] ml-1 text-orange-400"></i>
+                </div>
+            </div>
+            <div class="flex flex-col items-center border-r border-gray-100/80 px-1">
+                <span class="text-[8px] font-black text-gray-400 uppercase tracking-[0.12em] mb-0.5">Genre</span>
+                <span id="detail-category" class="text-gray-800 font-bold text-[13px] truncate w-full text-center">Aksi</span>
+            </div>
+            <div class="flex flex-col items-center border-r border-gray-100/80">
+                <span class="text-[8px] font-black text-gray-400 uppercase tracking-[0.12em] mb-0.5">Resolusi</span>
+                <span id="detail-resolution" class="text-gray-800 font-bold text-[13px]">240x320</span>
+            </div>
+            <div class="flex flex-col items-center">
+                <span class="text-[8px] font-black text-gray-400 uppercase tracking-[0.12em] mb-0.5">Ukuran</span>
+                <span id="detail-size-stat" class="text-gray-800 font-bold text-[13px]">2.4 MB</span>
+            </div>
+        </div>
+
+        <!-- Gameplay Screenshots -->
+        <div class="mb-8" id="screenshot-section">
+            <div class="flex justify-between items-center px-5 mb-3">
+                <h2 class="text-xl font-bold text-gray-900">Pratinjau</h2>
+            </div>
+            <div class="scroll-x px-5 space-x-3 pb-2 detail-image-container">
+                <!-- Screenshots injected via JS -->
+            </div>
+        </div>
+
+        <!-- Description Section -->
+        <div class="px-5 mb-6">
+            <div class="flex items-center mb-2">
+                <h2 class="text-xl font-bold text-gray-900">Detail Game</h2>
+                <i class="fas fa-info-circle text-gray-300 ml-2"></i>
+            </div>
+            <p id="detail-desc" class="text-gray-700 leading-relaxed text-sm outline-none focus:bg-gray-50 p-1 rounded" onblur="saveInlineEdit('desc')">
+                Deskripsi game akan muncul di sini.
+            </p>
+        </div>
+
+        <!-- User Reviews Section -->
+        <div class="px-5 mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-900">User Reviews</h2>
+            </div>
+            <div class="bg-gray-50 rounded-3xl p-5">
+                <!-- Review Input Area -->
+                <div id="review-input-area" class="mb-6 pb-6 border-b border-gray-200">
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Tulis Ulasan Anda</p>
+                    <textarea id="user-review-text" class="ios-input h-24 resize-none mb-3" placeholder="Bagaimana kualitas terjemahan bahasa Indonesia di game ini?"></textarea>
+                    <div class="flex justify-between items-center">
+                        <div class="flex space-x-1" id="user-rating-stars">
+                            <i class="fas fa-star text-gray-300 text-lg cursor-pointer" onclick="setRating(1)"></i>
+                            <i class="fas fa-star text-gray-300 text-lg cursor-pointer" onclick="setRating(2)"></i>
+                            <i class="fas fa-star text-gray-300 text-lg cursor-pointer" onclick="setRating(3)"></i>
+                            <i class="fas fa-star text-gray-300 text-lg cursor-pointer" onclick="setRating(4)"></i>
+                            <i class="fas fa-star text-gray-300 text-lg cursor-pointer" onclick="setRating(5)"></i>
+                        </div>
+                        <button class="bg-blue-600 text-white px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all" onclick="submitReview()">Kirim</button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex flex-col">
+                        <span class="text-4xl font-black text-gray-900" id="detail-avg-rating">4.8</span>
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">dari 5.0</span>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[9px] font-bold text-gray-500 uppercase">Berdasarkan Ulasan Komunitas</p>
+                    </div>
+                </div>
+
+                <div id="detail-review-list" class="space-y-4">
+                    <!-- Reviews injected via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Actions -->
+        <div id="admin-actions-area" class="hidden px-5 space-y-3">
+            <button class="w-full py-3 bg-gray-100 text-blue-600 rounded-xl font-bold text-sm active:scale-95 transition-all" onclick="openFullEdit()">
+                <i class="fas fa-sliders-h mr-2"></i> Kelola Menu Game
+            </button>
+            <button class="w-full py-3 text-red-500 font-bold text-sm" onclick="deleteCurrentGame()">
+                <i class="fas fa-trash-alt mr-2"></i> Hapus Game Permanen
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 5. COLLECTION SCREEN (My Downloads) -->
+<div id="screen-collection" class="screen pt-14 md:pt-20 px-5 md:px-10 lg:px-20 pb-28">
+    <div class="max-w-7xl mx-auto w-full">
+        <h1 class="text-xl font-bold mb-1 tracking-tight text-gray-900">Koleksi Saya</h1>
+        <h2 class="text-[10px] font-black text-gray-400 mb-6 uppercase tracking-[0.2em] ml-0.5">Daftar Unduhan</h2>
+        
+        <!-- Ultra-Slim Row Container -->
+        <div class="flex flex-col space-y-2.5" id="collection-list">
+            <!-- Injected via JS -->
+        </div>
+
+        <!-- Aesthetic Empty State -->
+        <div id="empty-collection" class="hidden flex-col items-center justify-center py-24 text-gray-400 bg-white/30 backdrop-blur-3xl rounded-[48px] border border-white/60 shadow-sm">
+            <div class="w-20 h-20 bg-gray-100/50 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                <i class="fas fa-folder-open text-3xl opacity-20"></i>
+            </div>
+            <p class="font-black text-[10px] uppercase tracking-[0.3em] text-gray-400">Belum ada koleksi</p>
+            <button class="mt-8 px-8 py-3 bg-blue-600 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl shadow-blue-500/20 active:scale-95 transition-all" onclick="switchScreen('screen-list')">Jelajah Game</button>
+        </div>
+    </div>
+</div>
+
+<!-- 6. ADMIN UPLOAD SCREEN -->
+<div id="screen-upload" class="screen pt-10 md:pt-20 px-5 md:px-10 lg:px-20 pb-32">
+    <div class="max-w-2xl mx-auto w-full">
+        <div class="flex items-center mb-8">
+            <button class="mr-4 text-gray-800 bg-white/80 backdrop-blur-xl rounded-full shadow-sm w-10 h-10 flex items-center justify-center border border-white transition-transform active:scale-90" onclick="goBack()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <div>
+                <h1 id="upload-screen-title" class="text-base font-black tracking-tight text-gray-900 uppercase">Studio Game</h1>
+                <p class="text-[8px] font-bold text-gray-400 uppercase tracking-[0.2em]">Aset & Metadata</p>
+            </div>
+        </div>
+
+        <form id="upload-form" class="space-y-6 bg-white/40 backdrop-blur-[60px] p-6 md:p-10 rounded-[48px] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-white/60">
+            
+            <!-- Dual Image Upload Area (Asymmetrical Row) -->
+            <div class="flex flex-row gap-4 md:gap-6">
+                <!-- Icon Upload (Small Square) -->
+                <div class="space-y-2">
+                    <label class="block text-[9px] font-black text-slate-400 ml-1 uppercase tracking-widest">Ikon</label>
+                    <div class="intel-card-outline upload-zone relative w-20 h-20 md:w-24 md:h-24 rounded-[22px] flex flex-col items-center justify-center cursor-pointer overflow-hidden transition-all bg-white/50 border-2 border-dashed border-blue-200/50 hover:bg-blue-50/50 group" onclick="document.getElementById('upload-icon-input').click()">
+                        <div class="absolute inset-0 overflow-hidden rounded-[inherit] border-2 border-white shadow-inner">
+                            <img id="upload-preview-icon" src="" class="absolute inset-0 w-full h-full object-cover hidden">
+                        </div>
+                        <div id="upload-placeholder-icon" class="flex flex-col items-center justify-center z-10 text-center">
+                            <i class="fas fa-plus text-blue-500 mb-1 text-[10px]"></i>
+                            <span class="text-[6px] text-blue-600 font-black uppercase tracking-widest">Ikon</span>
+                        </div>
+                    </div>
+                    <input type="file" id="upload-icon-input" class="hidden" accept="image/*" onchange="handleUploadPreview(event, 'icon')">
+                </div>
+                <!-- Cover Upload (Landscape Hero) -->
+                <div class="space-y-2 flex-1">
+                    <label class="block text-[9px] font-black text-slate-400 ml-1 uppercase tracking-widest">Hero Cover</label>
+                    <div class="intel-card-outline upload-zone relative h-32 md:h-40 rounded-[22px] flex flex-col items-center justify-center cursor-pointer overflow-hidden transition-all bg-white/50 border-2 border-dashed border-blue-200/50 hover:bg-blue-50/50 group" onclick="document.getElementById('upload-cover-input').click()">
+                        <div class="absolute inset-0 overflow-hidden rounded-[inherit] border-2 border-white shadow-inner">
+                            <img id="upload-preview-cover" src="" class="absolute inset-0 w-full h-full object-cover hidden">
+                        </div>
+                        <div id="upload-placeholder-cover" class="flex flex-col items-center justify-center z-10 text-center">
+                            <i class="fas fa-image text-blue-500 mb-1 text-xs"></i>
+                            <span class="text-[7px] text-blue-600 font-black uppercase tracking-widest">Pilih Cover Landscape</span>
+                        </div>
+                    </div>
+                    <input type="file" id="upload-cover-input" class="hidden" accept="image/*" onchange="handleUploadPreview(event, 'cover')">
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 mb-1.5 ml-1 uppercase tracking-widest">Judul Game</label>
+                    <input type="text" id="upload-title" class="ios-input !text-sm !rounded-2xl" placeholder="Nama game lengkap..." required>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 mb-1.5 ml-1 uppercase tracking-widest">Kategori</label>
+                        <select id="upload-category" class="ios-input !text-sm !rounded-2xl" onchange="checkCustom(this, 'custom-category-container')">
+                            <option value="Aksi">Aksi</option>
+                            <option value="Petualangan">Petualangan</option>
+                            <option value="Teka-Teki">Teka-Teki</option>
+                            <option value="Simulasi">Simulasi</option>
+                            <option value="Strategi">Strategi</option>
+                            <option value="Lainnya">Lainnya...</option>
+                        </select>
+                        <div id="custom-category-container" class="hidden mt-2">
+                            <input type="text" id="upload-custom-category" class="ios-input !py-2.5 !text-xs border-blue-200" placeholder="Ketik kategori baru...">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 mb-1.5 ml-1 uppercase tracking-widest">Resolusi</label>
+                        <select id="upload-resolution" class="ios-input !text-sm !rounded-2xl" onchange="checkCustom(this, 'custom-resolution-container')">
+                            <option value="240x320">240x320</option>
+                            <option value="320x240">320x240</option>
+                            <option value="360x640">360x640</option>
+                            <option value="480x800">480x800</option>
+                            <option value="Multiscreen">Multiscreen</option>
+                            <option value="Lainnya">Lainnya...</option>
+                        </select>
+                        <div id="custom-resolution-container" class="hidden mt-2">
+                            <input type="text" id="upload-custom-resolution" class="ios-input !py-2.5 !text-xs border-blue-200" placeholder="Ketik resolusi baru...">
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 mb-1.5 ml-1 uppercase tracking-widest">Ukuran File</label>
+                    <div class="flex space-x-2">
+                        <input type="number" id="upload-size" class="ios-input !text-sm !rounded-2xl flex-1" placeholder="Angka..." required step="any">
+                        <select id="upload-size-unit" class="ios-input !text-sm !rounded-2xl w-24">
+                            <option value="KB">KB</option>
+                            <option value="MB">MB</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Placement Segmented Picker (Exclusive Choice) -->
+                <div class="bg-white/60 backdrop-blur-2xl p-5 rounded-[32px] border border-white shadow-sm">
+                    <label class="block text-[10px] font-black text-gray-400 mb-4 uppercase tracking-widest">Penempatan Beranda (Pilih Satu)</label>
+                    <div class="flex p-1.5 bg-black/5 rounded-[20px] relative">
+                        <button type="button" id="btn-place-none" class="flex-1 py-2.5 text-[8.5px] sm:text-[10px] font-black uppercase tracking-tight sm:tracking-widest rounded-[14px] transition-all z-10 truncate px-1" onclick="setPlacement('none')">Reguler</button>
+                        <button type="button" id="btn-place-banner" class="flex-1 py-2.5 text-[8.5px] sm:text-[10px] font-black uppercase tracking-tight sm:tracking-widest rounded-[14px] transition-all z-10 truncate px-1" onclick="setPlacement('banner')">Banner</button>
+                        <button type="button" id="btn-place-recommended" class="flex-1 py-2.5 text-[8.5px] sm:text-[10px] font-black uppercase tracking-tight sm:tracking-widest rounded-[14px] transition-all z-10 truncate px-1" onclick="setPlacement('recommended')">Rekomendasi</button>
+                        <!-- Sliding Indicator -->
+                        <div id="placement-indicator" class="absolute top-1.5 bottom-1.5 left-1.5 w-[calc(33.33%-4px)] bg-white rounded-[14px] shadow-sm transition-all duration-300 intel-card-outline active"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 mb-1.5 ml-1 uppercase tracking-widest">Deskripsi Game</label>
+                    <textarea id="upload-desc" class="ios-input h-32 resize-none !text-sm !rounded-2xl" placeholder="Tulis detail game di sini..." required></textarea>
+                </div>
+
+                <!-- New: Technical & Support Assets -->
+                <div class="bg-blue-50/50 p-5 rounded-[32px] border border-blue-100/50 space-y-4">
+                    <div>
+                        <label class="block text-[9px] font-black text-blue-400 mb-2 uppercase tracking-widest">Sumber File Game</label>
+                        <div class="flex space-x-2">
+                            <select id="upload-source-type" class="ios-input !text-xs !w-32" onchange="toggleSourceInput()">
+                                <option value="link">Tautan</option>
+                                <option value="file">Upload File</option>
+                            </select>
+                            <input type="text" id="upload-game-url" class="ios-input !text-xs flex-1" placeholder="https://...">
+                            <input type="file" id="upload-game-file" class="hidden" onchange="handleGameFileSelect(event)">
+                            <button type="button" id="btn-upload-file-trigger" class="hidden px-4 bg-white border border-gray-200 rounded-xl text-[10px] font-bold" onclick="document.getElementById('upload-game-file').click()">Pilih File</button>
+                        </div>
+                        <p id="file-selected-name" class="text-[8px] text-blue-500 mt-1 font-bold hidden"></p>
+                    </div>
+
+                    <div>
+                        <label class="block text-[9px] font-black text-blue-400 mb-2 uppercase tracking-widest">QR Dukungan (Donasi)</label>
+                        <div class="flex items-center space-x-4">
+                            <div class="w-16 h-16 bg-white rounded-2xl border-2 border-dashed border-blue-200 flex items-center justify-center cursor-pointer overflow-hidden" onclick="document.getElementById('upload-support-qr').click()">
+                                <img id="preview-support-qr" src="" class="w-full h-full object-cover hidden">
+                                <i id="placeholder-support-qr" class="fas fa-qrcode text-blue-300"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-[8px] text-gray-400 leading-tight">Unggah QR Code (Trakteer/Saweria) agar user bisa mendukung pengembang langsung di aplikasi.</p>
+                                <input type="file" id="upload-support-qr" class="hidden" accept="image/*" onchange="handleSupportQrPreview(event)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-6">
+                <div class="p-1.5 bg-black/5 rounded-[24px] relative">
+                    <button type="submit" class="intel-card-outline btn-publish active w-full py-4 bg-white rounded-[18px] text-[11px] font-black uppercase tracking-[0.2em] text-gray-900 shadow-sm transition-all active:scale-[0.98]">
+                        <i class="fas fa-sparkles mr-2 text-indigo-500"></i> Publikasikan Perubahan
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- PREVIEW MODAL / ADVANCED STUDIO -->
+<div id="preview-modal" class="fixed inset-0 z-[500] hidden-modal flex items-center justify-center p-2 sm:p-4 md:p-10 bg-black/95 backdrop-blur-xl">
+    <div id="preview-content" class="w-full max-w-5xl bg-[#1d1d1f] rounded-[32px] md:rounded-[40px] overflow-hidden shadow-2xl relative flex flex-col h-[92vh] md:h-[90vh]">
+        
+        <!-- Studio Canvas Area -->
+        <div class="relative flex-1 w-full bg-black flex items-center justify-center overflow-hidden">
+            <!-- AI Loading Overlay for Modal (High Priority Z-Index) -->
+            <div id="ai-loading-modal" class="hidden absolute inset-0 bg-black/95 backdrop-blur-3xl flex flex-col items-center justify-center z-[300] text-white">
+                <div class="w-16 h-16 md:w-20 md:h-20 relative mb-6">
+                    <div class="absolute inset-0 border-4 border-white/10 rounded-full"></div>
+                    <div class="absolute inset-0 border-4 border-white/80 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+                <span class="text-[10px] md:text-[12px] font-black tracking-[0.4em] uppercase text-white/80 animate-pulse">AI Sedang Melukis...</span>
+            </div>
+
+            <img id="preview-img" src="" class="max-w-full max-h-full object-contain select-none" alt="Preview Cover" draggable="false">
+            
+            <!-- Interaction Layer for Selection (Admin Only) -->
+            <div id="preview-interaction-layer" class="absolute inset-0 z-10 hidden cursor-default" 
+                 onmousedown="startAreaSelection(event)" 
+                 onmousemove="updateAreaSelection(event)" 
+                 onmouseup="endAreaSelection(event)"></div>
+            <div id="preview-selection-box" class="selection-box" style="z-index: 15; pointer-events: none;"></div>
+            
+            <!-- Advanced Editor Toolbar (Admin Only) -->
+            <div id="preview-admin-tools" class="hidden absolute top-3 right-3 sm:top-4 sm:right-4 md:top-6 md:right-6 flex flex-wrap justify-end items-center gap-1 sm:gap-2 md:gap-3 z-[80] max-w-[85vw]">
+                <div class="flex items-center gap-1 md:gap-2">
+                    <button class="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 bg-white/10 backdrop-blur-2xl rounded-full flex items-center justify-center text-white border border-white/20 active:scale-90 transition-all hover:bg-white/20" onclick="undoImage()" title="Undo">
+                        <i class="fas fa-undo text-[8px] sm:text-[10px] md:text-xs"></i>
+                    </button>
+                    <button class="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 bg-white/10 backdrop-blur-2xl rounded-full flex items-center justify-center text-white border border-white/20 active:scale-90 transition-all hover:bg-white/20" onclick="redoImage()" title="Redo">
+                        <i class="fas fa-redo text-[8px] sm:text-[10px] md:text-xs"></i>
+                    </button>
+                </div>
+                
+                <div class="w-px h-5 md:h-8 bg-white/20 mx-0.5"></div>
+                
+                <div class="flex items-center gap-1 md:gap-2">
+                    <button id="preview-select-btn" class="w-8 h-8 sm:w-9 sm:h-9 md:w-11 md:h-11 bg-white/10 backdrop-blur-2xl rounded-full flex items-center justify-center text-white border border-white/20 hover:bg-blue-600 active:scale-90 transition-all" onclick="toggleSelectionTool()" title="Seleksi Area">
+                        <i class="fas fa-vector-square text-[10px] md:text-sm"></i>
+                    </button>
+                    <button class="w-8 h-8 sm:w-9 sm:h-9 md:w-11 md:h-11 bg-white/10 backdrop-blur-2xl rounded-full flex items-center justify-center text-white border border-white/20 hover:bg-purple-600 active:scale-90 transition-all" onclick="prepareUpload(currentEditingImgType, currentGameplayIdx); document.getElementById('local-file-input').click()" title="Ganti Gambar">
+                        <i class="fas fa-upload text-[10px] md:text-sm"></i>
+                    </button>
+                </div>
+
+                <button class="w-8 h-8 sm:w-9 sm:h-9 md:w-11 md:h-11 bg-white/10 backdrop-blur-2xl rounded-full flex items-center justify-center text-white border border-white/20 hover:bg-green-600 active:scale-90 transition-all" onclick="downloadCurrentImage()" title="Download Gambar">
+                    <i class="fas fa-download text-[10px] md:text-sm"></i>
+                </button>
+
+                <div class="flex items-center bg-white/10 backdrop-blur-2xl rounded-full p-0.5 sm:p-1 border border-white/20 shadow-lg">
+                    <button onclick="navigateModalImage(-1)" class="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 flex items-center justify-center text-white active:scale-75 transition-transform">
+                        <i class="fas fa-chevron-left text-[8px] sm:text-[10px]"></i>
+                    </button>
+                    <div class="w-px h-3 sm:h-4 bg-white/20 mx-0.5 sm:mx-1"></div>
+                    <button onclick="navigateModalImage(1)" class="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 flex items-center justify-center text-white active:scale-75 transition-transform">
+                        <i class="fas fa-chevron-right text-[8px] sm:text-[10px]"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Close Button -->
+            <button class="absolute top-3 left-3 sm:top-4 sm:left-4 md:top-6 md:left-6 w-8 h-8 sm:w-9 sm:h-9 md:w-11 md:h-11 bg-white/10 backdrop-blur-2xl rounded-full flex items-center justify-center text-white border border-white/20 active:scale-90 transition-all z-[80] hover:bg-red-500/50" onclick="closePreview()">
+                <i class="fas fa-times text-[10px] md:text-sm"></i>
+            </button>
+        </div>
+        
+        <!-- AI Prompt Studio (Admin Only) -->
+        <div id="preview-ai-studio" class="hidden px-3 py-2 sm:p-4 md:p-6 bg-white/5 backdrop-blur-3xl border-t border-white/10 flex-shrink-0">
+            <div class="max-w-3xl mx-auto flex space-x-2 sm:space-x-3 items-center">
+                <input type="text" id="preview-ai-prompt" class="flex-1 bg-white/10 border border-white/20 rounded-xl sm:rounded-2xl px-3 py-2 sm:px-4 sm:py-3 md:px-5 md:py-4 text-white text-[11px] sm:text-sm placeholder-white/40 outline-none focus:ring-2 focus:ring-blue-500/50 transition-all" 
+                       placeholder="Ketik instruksi AI..." 
+                       onkeydown="if(event.key === 'Enter') runAiMagic()">
+                <button class="w-9 h-9 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-blue-600 text-white rounded-xl sm:rounded-2xl flex items-center justify-center shadow-xl shadow-blue-900/20 active:scale-90 transition-all flex-shrink-0" onclick="runAiMagic()">
+                    <i class="fas fa-paper-plane text-xs sm:text-base md:text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 7. PROFILE / SETTINGS SCREEN -->
+<div id="screen-profile" class="screen pt-14 md:pt-20 px-5 md:px-10 lg:px-20 pb-28">
+    <div class="max-w-2xl mx-auto w-full">
+        <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 leading-tight mb-8">Profil & Pengaturan</h1>
+        
+        <div class="bg-white/60 backdrop-blur-[40px] rounded-[30px] p-6 shadow-sm border border-white mb-6">
+            <div class="flex items-center space-x-4 mb-6 pb-6 border-b border-gray-200/50">
+                <div class="w-16 h-16 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-2xl font-bold">
+                    <i class="far fa-user"></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-bold text-gray-900" id="profile-name">Pengguna</h2>
+                    <p class="text-sm text-gray-500" id="profile-role">Mode User</p>
+                </div>
+            </div>
+            
+            <div class="space-y-3">
+                <div class="flex justify-between items-center p-3 hover:bg-white/50 rounded-2xl cursor-pointer transition-colors">
+                    <div class="flex items-center space-x-3 text-gray-700">
+                        <i class="fas fa-bell text-blue-500 w-5 text-center"></i>
+                        <span class="font-medium text-sm">Notifikasi</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400 text-sm"></i>
+                </div>
+                <div class="flex justify-between items-center p-3 hover:bg-white/50 rounded-2xl cursor-pointer transition-colors" onclick="toggleDarkMode()">
+                    <div class="flex items-center space-x-3 text-gray-700">
+                        <i class="fas fa-moon text-indigo-500 w-5 text-center"></i>
+                        <span class="font-medium text-sm">Mode Gelap</span>
+                    </div>
+                    <div id="dark-mode-toggle" class="w-10 h-6 bg-gray-200 rounded-full relative transition-colors duration-300">
+                        <div id="dark-mode-knob" class="w-4 h-4 bg-white rounded-full absolute top-1 left-1 shadow-sm transition-transform duration-300"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="profile-action-area"></div>
+    </div>
+</div>
+
+<!-- BOTTOM NAVIGATION DOCK -->
+<nav id="bottom-nav" class="hidden glass-nav flex justify-around items-center">
+    <div class="tab-item active flex flex-col items-center justify-center w-14 h-12 cursor-pointer" onclick="switchScreen('screen-home')" data-target="screen-home">
+        <i class="fas fa-home text-lg mb-1"></i>
+        <span class="text-[9px] font-bold tracking-wide">Beranda</span>
+    </div>
+    <div class="tab-item flex flex-col items-center justify-center w-14 h-12 cursor-pointer" onclick="switchScreen('screen-list')" data-target="screen-list">
+        <i class="far fa-compass text-lg mb-1"></i>
+        <span class="text-[9px] font-bold tracking-wide">Jelajah</span>
+    </div>
+    <div class="tab-item flex flex-col items-center justify-center w-14 h-12 cursor-pointer relative" onclick="switchScreen('screen-collection')" data-target="screen-collection">
+        <i class="fas fa-gamepad text-lg mb-1"></i>
+        <span class="text-[9px] font-bold tracking-wide">Koleksi</span>
+    </div>
+    <div class="tab-item flex flex-col items-center justify-center w-14 h-12 cursor-pointer" onclick="switchScreen('screen-profile')" data-target="screen-profile">
+        <i class="far fa-user text-lg mb-1"></i>
+        <span class="text-[9px] font-bold tracking-wide">Profil</span>
+    </div>
+</nav>
+
+<!-- TOAST NOTIFICATION -->
+<div id="toast">Message here</div>
+
+<!-- CUSTOM EDIT MODAL (iOS Style) -->
+<div id="edit-modal" class="fixed inset-0 z-[300] hidden flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
+    <div class="w-full max-w-md bg-white rounded-[40px] p-8 shadow-2xl transform transition-all scale-95 opacity-0" id="edit-modal-content">
+        <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6"></div>
+        <h3 id="edit-modal-title" class="text-xl font-black text-gray-900 uppercase tracking-tight mb-4 text-center">Edit Data</h3>
+        
+        <div class="space-y-4">
+            <div id="input-container-text">
+                <input type="text" id="edit-modal-input" class="ios-input" placeholder="Masukkan data baru...">
+            </div>
+            <div id="input-container-textarea" class="hidden">
+                <div class="relative">
+                    <textarea id="edit-modal-textarea" class="ios-input h-48 resize-none pb-12" placeholder="Masukkan deskripsi..."></textarea>
+                    <button onclick="researchAiDescription()" class="absolute bottom-3 right-3 bg-purple-600 text-white px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg active:scale-90 transition-all">
+                        <i class="fas fa-wand-magic-sparkles mr-1.5"></i> AI Research
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex space-x-3 mt-8">
+            <button class="flex-1 py-4 bg-gray-100 text-gray-500 rounded-full font-bold text-sm active:scale-95 transition-all" onclick="closeEditModal()">Batal</button>
+            <button class="flex-1 py-4 bg-blue-600 text-white rounded-full font-bold text-sm shadow-lg shadow-blue-200 active:scale-95 transition-all" onclick="confirmEdit()">Simpan</button>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- SUPPORT DEVELOPER MODAL -->
+<div id="support-modal" class="fixed inset-0 z-[600] hidden flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm">
+    <div class="w-full max-w-[280px] bg-white rounded-[40px] p-8 text-center shadow-2xl transform transition-all scale-90 opacity-0" id="support-modal-content">
+        <div class="w-12 h-1.5 bg-gray-100 rounded-full mx-auto mb-6"></div>
+        <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+            <i class="fas fa-heart"></i>
+        </div>
+        <h3 class="text-lg font-black text-gray-900 leading-tight mb-2">Dukung Pengembang</h3>
+        <p class="text-[11px] text-gray-500 mb-6">Scan QR Code di bawah untuk memberikan apresiasi kepada pengembang game ini.</p>
+        
+        <div class="bg-gray-50 rounded-[32px] mb-8 border border-gray-100 overflow-hidden aspect-square flex items-center justify-center">
+            <img id="support-qr-display" src="" class="w-full h-full object-contain shadow-sm" alt="QR Support">
+        </div>
+
+        <button class="w-full py-4 bg-gray-900 text-white rounded-full font-bold text-xs uppercase tracking-widest active:scale-95 transition-all" onclick="closeSupportModal()">Selesai</button>
+    </div>
+</div>
+
+<!-- ZOOM PREVIEW MODAL -->
+<div id="zoom-modal" onclick="closeZoomPreview()">
+    <div class="absolute top-6 right-6 text-white text-2xl cursor-pointer z-[510]">
+        <i class="fas fa-times"></i>
+    </div>
+    <img id="zoom-img" src="" alt="Zoom Preview" onclick="event.stopPropagation()">
+</div>
+
+<!-- LOGOUT CONFIRMATION MODAL (iOS Style) -->
+<div id="logout-modal" class="fixed inset-0 z-[600] hidden flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm">
+    <div class="w-full max-w-[270px] bg-white/80 backdrop-blur-2xl rounded-[14px] overflow-hidden shadow-2xl transform transition-all scale-110 opacity-0" id="logout-modal-content">
+        <div class="p-5 text-center">
+            <h3 class="text-[17px] font-semibold text-gray-900">Keluar dari Akun?</h3>
+            <p class="text-[13px] text-gray-600 mt-1">Anda perlu masuk kembali untuk mengakses fitur admin atau koleksi.</p>
+        </div>
+        <div class="flex border-t border-gray-200/50">
+            <button class="flex-1 py-3 text-[17px] font-medium text-blue-600 border-r border-gray-200/50 active:bg-gray-100/50 transition-colors" onclick="closeLogoutModal()">Batal</button>
+            <button class="flex-1 py-3 text-[17px] font-semibold text-red-500 active:bg-gray-100/50 transition-colors" onclick="confirmLogout()">Keluar</button>
+        </div>
+    </div>
+</div>
+
+<!-- HIDDEN LOCAL FILE INPUT -->
+<input type="file" id="local-file-input" class="hidden" accept="image/*" onchange="handleLocalImageUpload(event)">
+
+<script>
+    // --- SELECTION & ZOOM STATE ---
+    let isSelectionToolActive = false;
+    let isDraggingSelection = false;
+    let wasDragging = false;
+    let selectionStartPos = { x: 0, y: 0 };
+    let activeSelection = null;
+    let currentZoomScale = 1;
+    let isPanning = false;
+    let panPos = { x: 0, y: 0, startX: 0, startY: 0 };
+
+    function toggleSelectionTool() {
+        isSelectionToolActive = !isSelectionToolActive;
+        const layer = document.getElementById('preview-interaction-layer');
+        const btn = document.getElementById('preview-select-btn');
+        const box = document.getElementById('preview-selection-box');
+
+        if (isSelectionToolActive) {
+            if (layer) layer.style.cursor = 'crosshair';
+            if (btn) btn.classList.add('!bg-blue-600');
+            showToast("Mode Seleksi Aktif: Seret pada gambar preview");
+        } else {
+            if (layer) layer.style.cursor = 'default';
+            if (btn) btn.classList.remove('!bg-blue-600');
+            if (box) box.style.display = 'none';
+            activeSelection = null;
+        }
+    }
+
+    function startAreaSelection(e) {
+        if (!isSelectionToolActive) return;
+        e.preventDefault();
+        isDraggingSelection = true;
+        const rect = e.currentTarget.getBoundingClientRect();
+        selectionStartPos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+        
+        const box = document.getElementById('preview-selection-box');
+        if (!box) return;
+        box.style.left = selectionStartPos.x + 'px';
+        box.style.top = selectionStartPos.y + 'px';
+        box.style.width = '0px';
+        box.style.height = '0px';
+        box.style.display = 'block';
+        box.style.opacity = '1';
+    }
+
+    function updateAreaSelection(e) {
+        if (!isDraggingSelection) return;
+        const layer = document.getElementById('preview-interaction-layer');
+        const rect = layer.getBoundingClientRect();
+        const currentX = e.clientX - rect.left;
+        const currentY = e.clientY - rect.top;
+
+        const width = currentX - selectionStartPos.x;
+        const height = currentY - selectionStartPos.y;
+
+        const box = document.getElementById('preview-selection-box');
+        if (!box) return;
+        box.style.width = Math.abs(width) + 'px';
+        box.style.height = Math.abs(height) + 'px';
+        box.style.left = (width > 0 ? selectionStartPos.x : currentX) + 'px';
+        box.style.top = (height > 0 ? selectionStartPos.y : currentY) + 'px';
+    }
+
+    function endAreaSelection(e) {
+        if (!isDraggingSelection) return;
+        isDraggingSelection = false;
+        const box = document.getElementById('preview-selection-box');
+        const layer = document.getElementById('preview-interaction-layer');
+        if (!box || !layer) return;
+        const rect = layer.getBoundingClientRect();
+        
+        activeSelection = {
+            x: (parseFloat(box.style.left) / rect.width * 100).toFixed(1),
+            y: (parseFloat(box.style.top) / rect.height * 100).toFixed(1),
+            w: (parseFloat(box.style.width) / rect.width * 100).toFixed(1),
+            h: (parseFloat(box.style.height) / rect.height * 100).toFixed(1)
+        };
+        showToast(`Area: ${activeSelection.w}% x ${activeSelection.h}%`);
+    }
+
+    function handleImageInteraction(e) {
+        if (wasDragging || isSelectionToolActive) return;
+        openZoomPreview();
+    }
+
+    function openZoomPreview() {
+        const src = document.getElementById('detail-img').src;
+        const modal = document.getElementById('zoom-modal');
+        const img = document.getElementById('zoom-img');
+        
+        img.src = src;
+        currentZoomScale = 1;
+        panPos = { x: 0, y: 0, startX: 0, startY: 0 };
+        updateZoomTransform();
+        modal.style.display = 'flex';
+        
+        modal.onwheel = (e) => {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? -0.2 : 0.2;
+            currentZoomScale = Math.min(Math.max(1, currentZoomScale + delta), 4);
+            if (currentZoomScale <= 1) panPos = { x: 0, y: 0, startX: 0, startY: 0 };
+            updateZoomTransform();
+        };
+
+        img.onmousedown = (e) => {
+            if (currentZoomScale <= 1) return;
+            e.preventDefault();
+            isPanning = true;
+            panPos.startX = e.clientX - panPos.x;
+            panPos.startY = e.clientY - panPos.y;
+            img.style.cursor = 'grabbing';
+        };
+
+        window.onmousemove = (e) => {
+            if (!isPanning) return;
+            panPos.x = e.clientX - panPos.startX;
+            panPos.y = e.clientY - panPos.startY;
+            updateZoomTransform();
+        };
+
+        window.onmouseup = () => {
+            isPanning = false;
+            img.style.cursor = 'grab';
+        };
+    }
+
+    function updateZoomTransform() {
+        const img = document.getElementById('zoom-img');
+        if (img) {
+            img.style.transform = `translate(${panPos.x}px, ${panPos.y}px) scale(${currentZoomScale})`;
+        }
+    }
+
+    function closeZoomPreview() {
+        document.getElementById('zoom-modal').style.display = 'none';
+        isPanning = false;
+    }
+
+    function navigateModalImage(direction) {
+        const game = gamesDatabase.find(g => g.id === currentDetailedGameId);
+        if (!game) return;
+
+        const screenshots = game.screenshots || [];
+        const totalScreenshots = screenshots.length;
+        
+        // Logic: Loop through [Main Icon, SS 0, SS 1, SS 2, SS 3]
+        // We treat 'main' as index -1
+        let currentIndex = currentEditingImgType === 'main' ? -1 : currentGameplayIdx;
+        let nextIndex = currentIndex + direction;
+
+        // Circular Logic
+        if (nextIndex < -1) nextIndex = totalScreenshots - 1;
+        if (nextIndex >= totalScreenshots) nextIndex = -1;
+
+        const previewImg = document.getElementById('preview-img');
+        
+        previewImg.style.opacity = '0.3';
+        
+        setTimeout(() => {
+            if (nextIndex === -1) {
+                currentEditingImgType = 'main';
+                currentGameplayIdx = 0;
+                previewImg.src = game.image;
+                // Ikon utama (detail-img) tetap statis, tidak diubah di sini
+            } else {
+                currentEditingImgType = 'gameplay';
+                currentGameplayIdx = nextIndex;
+                const newSrc = screenshots[nextIndex];
+                previewImg.src = newSrc;
+
+                // Sync thumbnail scroll in background
+                const container = document.querySelector('.detail-image-container');
+                const thumbs = container.querySelectorAll('img');
+                if (thumbs[nextIndex]) {
+                    thumbs[nextIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                }
+            }
+            previewImg.style.opacity = '1';
+            showToast(currentEditingImgType === 'main' ? "Melihat Ikon Utama" : `Melihat Pratinjau ${currentGameplayIdx + 1}`);
+        }, 50);
+    }
+    // --- APP STATE ---
+    let currentUserRole = null; // 'user' or 'admin'
+    let globalSupportQr = null; // Global Support QR for all games
+    let navigationHistory = [];
+    let currentDetailedGameId = null;
+    let currentFilter = 'Semua';
+    let currentPreviewIdx = 0;
+    let myCollection = []; // IDs of downloaded games
+    let editingGameId = null;
+
+    // --- DATABASE DARI GITHUB ---
+    let gamesDatabase = [];
+    let githubToken = ""; // Untuk menyimpan token admin nanti
+
+    // GANTI DUA BARIS INI SESUAI MILIKMU:
+    const usernameGithub = "adriasmobiles"; 
+    const namaRepo = "adriasmobiles-store"; 
+
+    const databaseUrl = `https://raw.githubusercontent.com/${usernameGithub}/${namaRepo}/main/database.json`;
+
+    async function loadDatabase() {
+    try {
+        const response = await fetch(databaseUrl);
+        if (response.ok) {
+            gamesDatabase = await response.json();
+            console.log("Database berhasil dimuat dari GitHub!");
+        }
+    } catch (error) {
+        console.error("Gagal memuat database:", error);
+    } finally {
+        // Panggil inisialisasi tampilan di sini, BUKAN pakai setTimeout
+        checkAutoLogin(); 
+    }
+}
+
+    // Panggil fungsi ini otomatis saat web pertama kali dibuka
+    loadDatabase();
+
+    // --- AUTHENTICATION & AUTO-LOGIN (VERSI AMAN) ---
+    function checkAutoLogin() {
+        // Hanya memeriksa memori perangkat lokal, tidak ada token di dalam kode
+        const savedToken = localStorage.getItem('adrias_admin_token');
+        if (savedToken && savedToken.startsWith("ghp_")) {
+            githubToken = savedToken;
+            login('admin'); // Masuk otomatis jika token ditemukan di perangkat ini
+        } else {
+            login('user'); // Masuk sebagai pengunjung biasa
+        }
+    }
+
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const pass = document.getElementById('password').value.trim();
+
+        // Admin wajib memasukkan token asli satu kali
+        if (pass.startsWith("ghp_")) {
+            githubToken = pass;
+            localStorage.setItem('adrias_admin_token', githubToken); // Simpan aman di peramban Admin
+            login('admin');
+        } else {
+            showToast('Token Admin tidak valid!');
+        }
+    });
+
+    function login(role) {
+        currentUserRole = role;
+        document.getElementById('profile-name').innerText = role === 'admin' ? "Administrator" : "Pengguna Tamu";
+        document.getElementById('profile-role').innerText = role === 'admin' ? "Akses Penuh" : "Akses Terbatas";
+
+        // Ganti tombol di Profil secara otomatis
+        const profileActionArea = document.getElementById('profile-action-area');
+        if (profileActionArea) {
+            if (role === 'admin') {
+                profileActionArea.innerHTML = `<button class="w-full py-4 bg-red-50 text-red-600 rounded-[20px] font-bold text-sm border border-red-100 hover:bg-red-100 transition-colors" onclick="logout()"><i class="fas fa-sign-out-alt mr-2"></i> Keluar dari Mode Admin</button>`;
+            } else {
+                profileActionArea.innerHTML = `<button class="w-full py-4 bg-blue-50 text-blue-600 rounded-[20px] font-bold text-sm border border-blue-100 hover:bg-blue-100 transition-colors" onclick="switchScreen('screen-login')"><i class="fas fa-shield-alt mr-2"></i> Masuk sebagai Admin</button>`;
+            }
+        }
+
+        if (role === 'admin') showToast('Berhasil masuk sebagai Admin');
+        
+        document.getElementById('bottom-nav').classList.remove('hidden');
+        document.getElementById('bottom-nav').classList.add('flex');
+        
+        renderGames();
+        switchScreen('screen-home', true);
+        
+        // Cek apakah elemen login-form sedang aktif sebelum meresetnya
+        const loginForm = document.getElementById('login-form');
+        if(loginForm) loginForm.reset();
+    }
+
+    function toggleDarkMode() {
+        const body = document.body;
+        const toggle = document.getElementById('dark-mode-toggle');
+        const knob = document.getElementById('dark-mode-knob');
+        body.classList.toggle('dark-theme');
+        const isDark = body.classList.contains('dark-theme');
+        if (isDark) {
+            toggle.classList.replace('bg-gray-200', 'bg-green-500');
+            knob.style.transform = 'translateX(16px)';
+            localStorage.setItem('theme', 'dark');
+        } else {
+            toggle.classList.replace('bg-green-500', 'bg-gray-200');
+            knob.style.transform = 'translateX(0)';
+            localStorage.setItem('theme', 'light');
+        }
+    }
+
+    if (localStorage.getItem('theme') === 'dark') {
+        setTimeout(toggleDarkMode, 100);
+    }
+
+    function logout() {
+        const modal = document.getElementById('logout-modal');
+        const content = document.getElementById('logout-modal-content');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            content.classList.remove('scale-110', 'opacity-0');
+            content.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
+
+    function closeLogoutModal() {
+        const modal = document.getElementById('logout-modal');
+        const content = document.getElementById('logout-modal-content');
+        content.classList.replace('scale-100', 'opacity-100', 'scale-110', 'opacity-0');
+        setTimeout(() => modal.classList.add('hidden'), 200);
+    }
+
+    function confirmLogout() {
+        closeLogoutModal();
+        currentUserRole = null;
+        githubToken = "";
+        localStorage.removeItem('adrias_admin_token'); // Hapus token dari ingatan perangkat
+        showToast("Berhasil keluar dari Mode Admin");
+        login('user'); // Ubah status kembali menjadi pengunjung biasa
+    }
+    
+    // --- NAVIGATION ---
+    function switchScreen(screenId, clearHistory = false) {
+        document.querySelectorAll('.screen').forEach(s => {
+            s.classList.remove('active');
+            s.style.display = 'none';
+        });
+        
+        const targetScreen = document.getElementById(screenId);
+        targetScreen.classList.add('active');
+        targetScreen.style.display = 'flex';
+        
+        const bottomNav = document.getElementById('bottom-nav');
+        if (screenId === 'screen-login' || screenId === 'screen-detail' || screenId === 'screen-upload') {
+             bottomNav.classList.add('hidden');
+             bottomNav.classList.remove('flex');
+        } else if (currentUserRole !== null) {
+             bottomNav.classList.remove('hidden');
+             bottomNav.classList.add('flex');
+        }
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        if (clearHistory) {
+            navigationHistory = [screenId];
+        } else if (navigationHistory.length === 0 || navigationHistory[navigationHistory.length - 1] !== screenId) {
+            navigationHistory.push(screenId);
+        }
+
+        updateBottomNav(screenId);
+        
+        if (screenId === 'screen-collection') {
+            renderCollection();
+        } else if (screenId === 'screen-list') {
+            filterGames(currentFilter);
+        }
+    }
+
+    async function goBack() {
+        // --- FITUR AUTO-SAVE AI (LAZY SAVING) ---
+        // Cek apakah kita sedang di layar Detail Game dan apakah ada game yang sedang dibuka
+        if (document.getElementById('screen-detail').classList.contains('active') && currentDetailedGameId) {
+            const game = gamesDatabase.find(g => g.id === currentDetailedGameId);
+            
+            if (game) {
+                let needsSave = false;
+                
+                // 1. Cek apakah ada Ikon mentah hasil AI yang belum tersimpan
+                if (game.image && game.image.startsWith('data:image')) {
+                    showToast("Menyimpan Ikon AI ke GitHub...");
+                    game.image = await uploadToGitHub(`assets/${game.id}_icon.png`, game.image, `Auto-save AI icon untuk ${game.title}`);
+                    needsSave = true;
+                }
+                
+                // 2. Cek apakah ada Cover mentah hasil AI yang belum tersimpan
+                if (game.screenshots && game.screenshots[0] && game.screenshots[0].startsWith('data:image')) {
+                    showToast("Menyimpan Cover AI ke GitHub...");
+                    game.screenshots[0] = await uploadToGitHub(`assets/${game.id}_cover.png`, game.screenshots[0], `Auto-save AI cover untuk ${game.title}`);
+                    needsSave = true;
+                }
+                
+                // 3. Jika ada gambar yang diunggah, perbarui database.json
+                if (needsSave) {
+                    showToast("Memperbarui database...");
+                    const jsonString = JSON.stringify(gamesDatabase, null, 2);
+                    const jsonBase64 = btoa(unescape(encodeURIComponent(jsonString))); 
+                    await uploadToGitHub('database.json', jsonBase64, `Auto-save database update dari layar Detail`);
+                    showToast("Tersimpan Otomatis!");
+                }
+            }
+        }
+
+        // --- LOGIKA NAVIGASI ASLI ---
+        if (navigationHistory.length > 1) {
+            navigationHistory.pop();
+            const prevScreen = navigationHistory[navigationHistory.length - 1];
+            switchScreen(prevScreen, false);
+        } else {
+            if (currentUserRole) switchScreen('screen-home');
+            else switchScreen('screen-login');
+        }
+    }
+
+    function updateBottomNav(screenId) {
+        document.querySelectorAll('.tab-item[data-target]').forEach(item => {
+            if (item.dataset.target === screenId) item.classList.add('active');
+            else item.classList.remove('active');
+        });
+    }
+
+    // --- RENDERING DATA ---
+    let featuredInterval = null;
+
+    function renderGames() {
+        const featuredContainer = document.getElementById('featured-game-container');
+        const recommendedContainer = document.getElementById('recommended-games-container');
+        const recentContainer = document.getElementById('recent-games-container');
+        if (!featuredContainer || !recentContainer || !recommendedContainer) return;
+        
+        const bannerGames = gamesDatabase.filter(g => g.isBanner === true);
+        const bannerIds = bannerGames.map(g => g.id);
+
+        const recommendedGames = gamesDatabase.filter(g => g.isRecommended === true && !bannerIds.includes(g.id));
+        const recommendedIds = recommendedGames.map(g => g.id);
+
+        const recentGames = gamesDatabase.filter(g => !bannerIds.includes(g.id) && !recommendedIds.includes(g.id));
+
+        if (bannerGames.length > 0) {
+            const displayGames = [...bannerGames, bannerGames[0]];
+            featuredContainer.innerHTML = `
+                <div id="featured-slider-track" class="flex w-full" style="will-change: transform; transition: transform 1s cubic-bezier(0.45, 0.05, 0.55, 0.95);">
+                    ${displayGames.map(game => {
+                        const bannerImg = (game.screenshots && game.screenshots[0]) ? game.screenshots[0] : game.image;
+                        return `
+                        <div class="flex-shrink-0 w-full px-5" onclick="openGameDetail('${game.id}')">
+                            <div class="intel-card-outline featured-banner relative rounded-[24px] shadow-lg aspect-[16/9] bg-gray-200">
+                                <div class="absolute inset-0 rounded-[24px] overflow-hidden border-2 border-white">
+                                    <img src="${bannerImg}" class="w-full h-full object-cover" alt="${game.title}" loading="lazy" style="image-rendering: auto; transform: translateZ(0); backface-visibility: hidden; -webkit-backface-visibility: hidden;">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                                </div>
+                                <div class="absolute bottom-4 left-5">
+                                    <p class="text-[9px] font-black text-blue-400 uppercase tracking-widest mb-1">${game.category}</p>
+                                    <h3 class="text-lg font-black text-white tracking-tight">${game.title}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    `}).join('')}
+                </div>
+            `;
+            startFeaturedSlider(bannerGames.length);
+        } else {
+            featuredContainer.innerHTML = '<p class="text-center text-gray-400 text-xs py-10">Belum ada banner utama.</p>';
+        }
+
+        if (recommendedGames.length > 0) {
+            recommendedContainer.innerHTML = recommendedGames.map(game => {
+                const recImg = game.image;
+                return `
+                <div class="flex-shrink-0 w-28" onclick="openGameDetail('${game.id}')">
+                    <div class="intel-card-outline rec-icon w-28 h-28 rounded-[24px] shadow-sm border border-gray-100 mb-2">
+                        <div class="w-full h-full rounded-[24px] overflow-hidden border-2 border-white">
+                            <img src="${recImg}" class="w-full h-full object-cover" alt="${game.title}" loading="lazy" style="image-rendering: auto; transform: translateZ(0); backface-visibility: hidden; -webkit-backface-visibility: hidden;">
+                        </div>
+                    </div>
+                    <h3 class="text-[11px] font-bold text-gray-900 leading-[1.2] mb-0.5">${game.title}</h3>
+                    <p class="text-[9px] font-medium text-gray-400">${game.category}</p>
+                    <div class="flex items-center mt-1">
+                        <i class="fas fa-star text-orange-400 text-[8px] mr-1"></i>
+                        <span class="text-[9px] font-bold text-gray-700">${game.rating}</span>
+                    </div>
+                </div>
+            `}).join('');
+        } else {
+            recommendedContainer.innerHTML = '<p class="text-gray-400 text-[10px] py-4">Tidak ada rekomendasi.</p>';
+        }
+
+        let recentHTML = '';
+        if (currentUserRole === 'admin') {
+            recentHTML += `
+                <div class="game-card intel-card-outline flex flex-col items-center justify-center aspect-square bg-white/60 backdrop-blur-xl border border-gray-200/50 rounded-[28px] cursor-pointer group transition-all active:scale-95 p-1" onclick="openUploadScreen()">
+                    <div class="w-11 h-11 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center text-blue-600 mb-2 group-hover:rotate-90 transition-transform duration-300">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Tambah Game</span>
+                </div>
+            `;
+        }
+
+        recentHTML += recentGames.slice(0, 12).map(game => {
+            const displayImg = (game.screenshots && game.screenshots[0]) ? game.screenshots[0] : game.image;
+            return `
+            <div class="game-card intel-card-outline bg-white rounded-[28px] shadow-[0_8px_20px_rgba(0,0,0,0.02)] border border-gray-100/80 transition-all active:scale-[0.96] group flex flex-col p-1" onclick="openGameDetail('${game.id}')">
+                <div class="relative aspect-square w-full rounded-[22px] overflow-hidden shadow-sm border border-gray-50" style="isolation: isolate;">
+                    <img src="${displayImg}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="${game.title}" loading="lazy" style="image-rendering: smooth; transform: scale(1.05) translateZ(0); backface-visibility: hidden; -webkit-backface-visibility: hidden; will-change: transform;">
+                </div>
+                <div class="pt-3 pb-4 px-3">
+                    <h3 class="font-bold text-[12px] text-gray-900 leading-[1.3] tracking-tight">${game.title}</h3>
+                    <p class="text-[9px] font-black text-blue-600/70 uppercase tracking-[0.08em] mt-1.5">${game.category}</p>
+                    <div class="flex items-center mt-1">
+                        <i class="fas fa-star text-orange-400 text-[8px] mr-1"></i>
+                        <span class="text-[9px] font-bold text-gray-500">${game.rating}</span>
+                    </div>
+                </div>
+            </div>
+        `}).join('');
+
+        recentContainer.innerHTML = recentHTML;
+        filterGames(currentFilter);
+    }
+
+    function startFeaturedSlider(count) {
+        if (featuredInterval) clearInterval(featuredInterval);
+        const track = document.getElementById('featured-slider-track');
+        if (!track) return;
+
+        let index = 0;
+        featuredInterval = setInterval(() => {
+            index++;
+            track.style.transition = 'transform 1s cubic-bezier(0.45, 0.05, 0.55, 0.95)';
+            track.style.transform = `translateX(-${index * 100}%)`;
+
+            if (index === count) {
+                setTimeout(() => {
+                    track.style.transition = 'none';
+                    index = 0;
+                    track.style.transform = 'translateX(0)';
+                }, 1000); 
+            }
+        }, 5000);
+    }
+
+    function handleHomeSearch(query) {
+        const container = document.getElementById('recent-games-container');
+        const sectionHeader = container.previousElementSibling;
+        const titleHeader = sectionHeader.querySelector('h2');
+        const q = query.toLowerCase().trim();
+
+        if (q === "") {
+            titleHeader.innerText = "Baru Ditambahkan";
+            renderGames();
+            return;
+        }
+
+        titleHeader.innerText = "Hasil Pencarian";
+        const filtered = gamesDatabase.filter(g => 
+            g.title.toLowerCase().includes(q) || 
+            g.category.toLowerCase().includes(q)
+        );
+
+        if (filtered.length === 0) {
+            container.innerHTML = `
+                <div class="col-span-full text-center py-16 bg-white/40 backdrop-blur-xl rounded-[32px] border border-white/60 shadow-sm">
+                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-search text-gray-300 text-xl"></i>
+                    </div>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Tidak ada hasil untuk "${query}"</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = filtered.map(game => {
+            const displayImg = (game.screenshots && game.screenshots[0]) ? game.screenshots[0] : game.image;
+            return `
+            <div class="game-card intel-card-outline bg-white rounded-[28px] shadow-[0_8px_20px_rgba(0,0,0,0.02)] border border-gray-100/80 transition-all active:scale-[0.96] group flex flex-col p-1" onclick="openGameDetail('${game.id}')">
+                <div class="relative aspect-square w-full rounded-[22px] overflow-hidden shadow-sm border border-gray-50" style="isolation: isolate;">
+                    <img src="${displayImg}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="${game.title}" loading="lazy" style="image-rendering: smooth; transform: scale(1.05) translateZ(0); backface-visibility: hidden; -webkit-backface-visibility: hidden; will-change: transform;">
+                </div>
+                <div class="pt-3 pb-4 px-3">
+                    <h3 class="font-bold text-[12px] text-gray-900 leading-[1.3] tracking-tight">${game.title}</h3>
+                    <p class="text-[9px] font-black text-blue-600/70 uppercase tracking-[0.08em] mt-1.5">${game.category}</p>
+                    <div class="flex items-center mt-1">
+                        <i class="fas fa-star text-orange-400 text-[8px] mr-1"></i>
+                        <span class="text-[9px] font-bold text-gray-500">${game.rating}</span>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function filterGames(category) {
+        if (wasDragging) return;
+        currentFilter = category;
+        const listContainer = document.getElementById('all-games-list');
+        const adminAddContainer = document.getElementById('admin-add-list-container');
+        listContainer.innerHTML = '';
+        
+        document.querySelectorAll('.category-pill').forEach(pill => {
+            if(pill.dataset.filter === category) {
+                pill.classList.add('active', 'intel-card-outline');
+            } else {
+                pill.classList.remove('active', 'intel-card-outline');
+            }
+        });
+
+        const filteredGames = category === 'Semua' ? gamesDatabase : gamesDatabase.filter(g => g.category === category);
+
+        if (currentUserRole === 'admin') {
+            adminAddContainer.classList.remove('hidden');
+            const addText = category === 'Semua' ? 'Tambah game baru' : `Tambah game ${category.toLowerCase()}`;
+            adminAddContainer.innerHTML = `
+                <div class="game-card intel-card-outline flex p-3.5 cursor-pointer items-center bg-white/40 backdrop-blur-2xl border border-white/60 transition-all active:scale-[0.98] group rounded-[22px] mb-2" onclick="openUploadScreen('${category}')">
+                    <div class="w-9 h-9 rounded-xl bg-white/80 text-blue-600 shadow-sm flex items-center justify-center mr-3.5 transform group-hover:scale-105 transition-transform">
+                        <i class="fas fa-plus text-sm"></i>
+                    </div>
+                    <span class="text-[13px] font-semibold text-gray-800 tracking-tight">${addText}</span>
+                </div>
+            `;
+        } else {
+            adminAddContainer.classList.add('hidden');
+        }
+
+        if (filteredGames.length === 0) {
+             listContainer.innerHTML = `<div class="col-span-full text-center py-12 text-gray-500 text-sm font-medium bg-white/50 rounded-[30px] border border-white">Tidak ada game di kategori ini.</div>`;
+             return;
+        }
+
+        let listHTML = '';
+        filteredGames.forEach(game => {
+            const isDownloaded = myCollection.includes(game.id);
+            const btnText = isDownloaded ? 'BUKA' : 'UNDUH';
+            const btnClass = isDownloaded ? 'bg-blue-600 text-white' : 'bg-blue-100/80 text-blue-700';
+
+            listHTML += `
+                <div class="bg-white/80 backdrop-blur-md p-2.5 rounded-[24px] flex items-center border border-white/60 active:scale-[0.97] transition-all group cursor-pointer shadow-sm intel-card-outline game-row-item" onclick="openGameDetail('${game.id}')">
+                    <div class="relative w-14 h-14 rounded-[18px] overflow-hidden flex-shrink-0 shadow-sm bg-gray-200" style="isolation: isolate; box-shadow: inset 0 0 0.5px rgba(0,0,0,0.1);">
+                        <img src="${game.image}" class="absolute inset-0 w-full h-full object-cover" alt="${game.title}" loading="lazy" style="image-rendering: auto; transform: translateZ(0); backface-visibility: hidden; -webkit-backface-visibility: hidden; will-change: transform; border-radius: inherit;">
+                    </div>
+                    <div class="ml-3.5 flex-1 min-w-0">
+                        <h3 class="font-bold text-[14px] text-gray-900 leading-tight tracking-tight">${game.title}</h3>
+                        <p class="text-[10px] font-semibold text-gray-500 mt-0.5">${game.category} • ${game.size || '2.4MB'}</p>
+                    </div>
+                    <button class="${btnClass} ml-2 px-5 py-1.5 rounded-full text-[10px] font-black tracking-tight transition-all active:scale-90 shadow-sm" onclick="event.stopPropagation(); downloadGameFromList('${game.id}', this)">
+                        ${btnText}
+                    </button>
+                </div>
+            `;
+        });
+
+        listContainer.innerHTML = listHTML;
+    }
+
+    function renderCollection() {
+        const container = document.getElementById('collection-list');
+        const emptyState = document.getElementById('empty-collection');
+        if (!container || !emptyState) return;
+
+        container.innerHTML = '';
+        if (myCollection.length === 0) {
+            container.classList.add('hidden');
+            emptyState.classList.remove('hidden');
+            emptyState.classList.add('flex');
+            return;
+        } else {
+            container.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+            emptyState.classList.remove('flex');
+        }
+
+        myCollection.forEach(gameId => {
+            const game = gamesDatabase.find(g => g.id === gameId);
+            if(game) {
+                container.innerHTML += `
+                    <div class="bg-white/70 backdrop-blur-3xl p-2.5 rounded-[22px] flex items-center shadow-sm border border-white/80 active:scale-[0.98] transition-all intel-card-outline group">
+                        <div class="relative w-12 h-12 rounded-[16px] overflow-hidden flex-shrink-0 shadow-sm cursor-pointer" onclick="openGameDetail('${game.id}')" style="isolation: isolate; box-shadow: inset 0 0 0.5px rgba(0,0,0,0.1);">
+                            <img src="${game.image}" class="absolute inset-0 w-full h-full object-cover" alt="${game.title}" loading="lazy" style="image-rendering: auto; transform: translateZ(0); backface-visibility: hidden; -webkit-backface-visibility: hidden; will-change: transform; border-radius: inherit;">
+                        </div>
+                        <div class="ml-3.5 flex-1 min-w-0 cursor-pointer" onclick="openGameDetail('${game.id}')">
+                            <div class="flex items-center">
+                                <span class="mr-2 w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)] flex-shrink-0"></span>
+                                <h3 class="font-bold text-[13px] text-gray-900 tracking-tight">${game.title}</h3>
+                            </div>
+                            <p class="text-[9px] text-gray-400 font-medium mt-0.5">${game.category}</p>
+                        </div>
+                        <div class="flex items-center space-x-2 ml-2">
+                             <button class="px-4 py-1.5 bg-blue-50 text-blue-600 border border-blue-100 rounded-full text-[10px] font-black uppercase tracking-tight active:scale-90 transition-all" onclick="openInEmulator('${game.id}')">Main</button>
+                             <button class="w-8 h-8 bg-red-50 text-red-400 rounded-full flex items-center justify-center text-[10px] border border-red-100 active:scale-90 transition-all hover:bg-red-500 hover:text-white" onclick="removeFromCollection('${game.id}')">
+                                <i class="fas fa-trash-alt"></i>
+                             </button>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+    }
+
+    // --- INTERACTIONS ---
+    let activeEditField = null;
+
+    function scrollToImage(index) {
+        const container = document.querySelector('.detail-image-container');
+        if (!container) return;
+        const width = container.offsetWidth;
+        container.scrollTo({ left: index * width, behavior: 'smooth' });
+        updateDots(index);
+    }
+
+    function updateDots(activeIndex) {
+        const dots = document.querySelectorAll('#detail-dots button');
+        dots.forEach((dot, i) => {
+            if (i === activeIndex) {
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-blue-600 transition-all';
+            } else {
+                dot.className = 'w-2 h-2 rounded-full bg-gray-300 transition-all';
+            }
+        });
+    }
+
+    let selectedReferenceUrl = null;
+    let currentUploadContext = { type: 'main', idx: 0 };
+    let imageHistory = { main: [], ss0: [], ss1: [], ss2: [], ss3: [] };
+    let historyIndex = { main: -1, ss0: -1, ss1: -1, ss2: -1, ss3: -1 };
+    let currentEditingImgType = 'main'; 
+    let currentGameplayIdx = 0;
+
+    function prepareUpload(type, idx = 0) {
+        currentUploadContext = { type, idx };
+    }
+
+    function openGameDetail(gameId) {
+        currentDetailedGameId = gameId;
+        currentPreviewIdx = 0;
+        const game = gamesDatabase.find(g => g.id === gameId);
+        if (!game) return;
+
+        imageHistory = { main: [game.image], ss0: [], ss1: [], ss2: [], ss3: [] };
+        historyIndex = { main: 0, ss0: -1, ss1: -1, ss2: -1, ss3: -1 };
+        
+        if (game.screenshots) {
+            game.screenshots.forEach((src, idx) => {
+                imageHistory[`ss${idx}`] = [src];
+                historyIndex[`ss${idx}`] = 0;
+            });
+        }
+		
+		// Setel QR Dukungan dari database game ini jika tersedia
+        if (game.supportQr) {
+            globalSupportQr = game.supportQr;
+        }
+
+        const isAdm = currentUserRole === 'admin';
+        document.getElementById('detail-img').src = game.image;
+        document.getElementById('detail-title').innerText = game.title;
+        document.getElementById('detail-title').contentEditable = isAdm;
+        document.getElementById('detail-category').innerText = game.category;
+        document.getElementById('detail-rating').innerText = game.rating;
+        document.getElementById('detail-resolution').innerText = game.resolution || '240x320';
+        document.getElementById('detail-size-stat').innerText = game.size || '2.4 MB';
+        document.getElementById('detail-desc').innerText = game.desc;
+        document.getElementById('detail-desc').contentEditable = isAdm;
+
+        if (!game.screenshots) {
+            game.screenshots = [
+                game.image, 
+                `https://placehold.co/400x600/1d1d1f/white?text=Gameplay+1`,
+                `https://placehold.co/400x600/007aff/white?text=Gameplay+2`,
+                `https://placehold.co/400x600/34c759/white?text=Gameplay+3`
+            ];
+        }
+
+        const displayScreenshots = isAdm ? game.screenshots : game.screenshots.filter(src => !src.includes('text=Gameplay'));
+        const screenshotSection = document.getElementById('screenshot-section');
+        const screenshotContainer = document.querySelector('.detail-image-container');
+        
+        if (displayScreenshots.length > 0) {
+            screenshotSection.classList.remove('hidden');
+            screenshotContainer.innerHTML = displayScreenshots.map((src, idx) => `
+                <div class="relative flex-shrink-0 w-48 aspect-[2/3] rounded-2xl overflow-hidden border border-gray-100 shadow-sm group/item">
+                    <div id="ai-loading-screenshot-${idx}" class="hidden absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-20 text-white">
+                        <i class="fas fa-circle-notch fa-spin text-xl text-white/80 mb-2"></i>
+                        <span class="text-[8px] font-black uppercase tracking-widest text-white/80">AI Melukis...</span>
+                    </div>
+                    <img id="screenshot-img-${idx}" src="${src}" class="w-full h-full object-cover cursor-pointer" onclick="openAdvancedEditor('gameplay', ${idx})">
+                    ${isAdm ? `
+                        <div class="absolute top-2 right-2 flex space-x-1">
+                            <button class="w-7 h-7 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center text-[10px] pointer-events-auto" 
+                                    onclick="event.stopPropagation(); prepareUpload('gameplay', ${idx}); document.getElementById('local-file-input').click()">
+                                <i class="fas fa-upload"></i>
+                            </button>
+                            <button class="w-7 h-7 bg-black/50 text-white rounded-full flex items-center justify-center text-[10px] pointer-events-auto" 
+                                    onclick="event.stopPropagation(); runAiMagic('improve', ${idx})">
+                                <i class="fas fa-wand-magic-sparkles"></i>
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        } else {
+            screenshotSection.classList.add('hidden');
+        }
+
+        renderReviews();
+
+        const supportBtn = document.getElementById('btn-support');
+        supportBtn.classList.remove('hidden');
+
+        const btn = document.getElementById('btn-download');
+        if (myCollection.includes(gameId)) {
+            btn.innerText = "BUKA";
+            btn.style.backgroundColor = '#007aff';
+        } else {
+            btn.innerText = "UNDUH";
+            btn.style.backgroundColor = '#34C759';
+        }
+
+        const adminTools = document.getElementById('admin-icon-tools');
+        if (isAdm) {
+            adminTools.classList.remove('hidden');
+            adminTools.classList.add('flex');
+        } else {
+            adminTools.classList.add('hidden');
+            adminTools.classList.remove('flex');
+        }
+        document.getElementById('admin-actions-area').classList.toggle('hidden', !isAdm);
+
+        switchScreen('screen-detail');
+    }
+
+    function openAdvancedEditor(type, idx = 0) {
+        if (wasDragging) return;
+        currentEditingImgType = type;
+        currentGameplayIdx = idx;
+        
+        const isAdm = currentUserRole === 'admin';
+        const modal = document.getElementById('preview-modal');
+        const img = document.getElementById('preview-img');
+        const game = gamesDatabase.find(g => g.id === currentDetailedGameId);
+        
+        if (!game) return;
+
+        if (type === 'main') {
+            img.src = game.image;
+        } else {
+            img.src = game.screenshots && game.screenshots[idx] ? game.screenshots[idx] : game.image;
+        }
+
+        document.getElementById('preview-admin-tools').classList.toggle('hidden', !isAdm);
+        document.getElementById('preview-ai-studio').classList.toggle('hidden', !isAdm);
+        document.getElementById('preview-interaction-layer').classList.toggle('hidden', !isAdm);
+
+        modal.classList.remove('hidden-modal');
+        modal.classList.add('show-modal');
+    }
+
+    function closePreview() {
+        const modal = document.getElementById('preview-modal');
+        modal.classList.remove('show-modal');
+        modal.classList.add('hidden-modal');
+        if (isSelectionToolActive) toggleSelectionTool();
+    }
+
+    async function runAiMagic(mode = 'general', screenshotIdx = null) {
+        if (!currentDetailedGameId || currentUserRole !== 'admin') return;
+        const game = gamesDatabase.find(g => g.id === currentDetailedGameId);
+        if (!game) return;
+
+        const modal = document.getElementById('preview-modal');
+        const isAdvanced = modal.classList.contains('show-modal');
+        const promptInput = document.getElementById('preview-ai-prompt');
+        const userPrompt = (isAdvanced && promptInput) ? promptInput.value.trim() : "";
+        
+        const loadingOverlay = document.getElementById('ai-loading');
+        const modalLoadingOverlay = document.getElementById('ai-loading-modal');
+        const targetIdx = screenshotIdx !== null ? screenshotIdx : (isAdvanced ? currentGameplayIdx : 0);
+        const screenshotLoading = document.getElementById(`ai-loading-screenshot-${targetIdx}`);
+
+        if (isAdvanced && modalLoadingOverlay) {
+            modalLoadingOverlay.classList.remove('hidden');
+        } else if (mode === 'icon-gen') {
+            if (loadingOverlay) loadingOverlay.classList.remove('hidden');
+        } else if (screenshotLoading || targetIdx !== null) {
+            const targetLoader = document.getElementById(`ai-loading-screenshot-${targetIdx}`);
+            if (targetLoader) targetLoader.classList.remove('hidden');
+        }
+
+        let inputImage = "";
+        const isIconContext = (mode === 'icon-gen') || (isAdvanced && currentEditingImgType === 'main');
+
+        if (isIconContext) {
+            inputImage = (game.screenshots && game.screenshots[0]) ? game.screenshots[0] : game.image;
+        } else if (isAdvanced) {
+            inputImage = document.getElementById('preview-img').src;
+        } else {
+            inputImage = game.screenshots[targetIdx];
+        }
+
+        let systemPrompt = "";
+
+        if (isIconContext) {
+            systemPrompt = `ACT AS: Professional Visual DNA Extractor. \nTASK: Create a 1:1 square game icon by identifying and REPLICATING the most symbolic element from the provided Title Cover reference. \nMANDATE: \n- SUBJECT: Do NOT create generic characters. Instead, look for a symbolic object, logo, or unique icon within the reference (e.g., a biohazard symbol, a specific weapon, a vehicle, or a distinct emblem). \n- STYLE CLONING: Mirror the EXACT art style, color palette, and texture of the reference image. If the reference is grainy, the icon must be grainy. If it uses a specific painting style, duplicate it perfectly. \n- COMPOSITION: Extract the identified symbol and center it. Ensure it represents the game's identity instantly. \nSTRICT NEGATIVE: NO generic 'heroic' character poses. NO modern Android/iOS flat/vector aesthetics. NO high-definition digital painting styles that deviate from the reference. NO text or UI elements. \nGOAL: The icon must look like an authentic asset extracted directly from the game's original files, maintaining 100% visual consistency with the Title Cover.`;
+            showToast("AI sedang mengekstrak identitas visual...");
+        } else {
+            const isTitleCover = targetIdx === 0;
+            systemPrompt = `ACT AS: Professional Image Upscaler & Visual Enhancer. \nTASK: Improve the quality of the provided game screenshot. \nMANDATE: Increase sharpness, clarify textures, and enhance color vibrancy. \nSTRICT RULE: DO NOT change the subject or art style. Maintain the original J2ME game look but make it look 'remastered'. ${isTitleCover ? '\nSPECIAL MANDATE: Create a LANDSCAPE 16:9 cinematic composition. Ensure the artwork is wide and suitable for a top-page banner. Subject should be clear and centered for wide view.' : ''}`;
+            showToast(isTitleCover ? "AI sedang melukis Banner Landscape..." : "AI sedang memoles visual...");
+        }
+
+        let parts = [{ text: systemPrompt + (userPrompt ? " Additional Instruction: " + userPrompt : "") }];
+        if (inputImage && inputImage.startsWith('data:image')) {
+            parts.push({ inlineData: { mimeType: "image/jpeg", data: inputImage.split(',')[1] } });
+        }
+
+        try {
+            const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent', {
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ role: "user", parts: parts }],
+                    generationConfig: { responseModalities: ["IMAGE"] }
+                })
+            });
+
+            const data = await response.json();
+            const imagePart = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+            if (!imagePart) throw new Error("AI Error");
+
+            const newImgBase64 = `data:image/jpeg;base64,${imagePart.inlineData.data}`;
+            
+            const slotKey = isAdvanced ? (currentEditingImgType === 'main' ? 'main' : `ss${currentGameplayIdx}`) : (mode === 'icon-gen' ? 'main' : `ss${targetIdx}`);
+            addToHistory(newImgBase64, slotKey);
+
+            if (isAdvanced) {
+                if (currentEditingImgType === 'main') {
+                    game.image = newImgBase64;
+                    document.getElementById('detail-img').src = newImgBase64;
+                } else {
+                    game.screenshots[currentGameplayIdx] = newImgBase64;
+                    const imgEl = document.getElementById(`screenshot-img-${currentGameplayIdx}`);
+                    if (imgEl) imgEl.src = newImgBase64;
+                }
+                document.getElementById('preview-img').src = newImgBase64;
+            } else if (mode === 'icon-gen') {
+                game.image = newImgBase64;
+                document.getElementById('detail-img').src = newImgBase64;
+            } else {
+                game.screenshots[targetIdx] = newImgBase64;
+                const imgEl = document.getElementById(`screenshot-img-${targetIdx}`);
+                if (imgEl) imgEl.src = newImgBase64;
+            }
+
+            if (activeSelection) {
+                activeSelection = null;
+                const box = document.getElementById('preview-selection-box');
+                if (box) box.style.display = 'none';
+            }
+            showToast("AI Magic: Perubahan berhasil diterapkan!");
+            renderGames();
+        } catch (err) {
+            console.error("AI Error:", err);
+            showToast("Gagal memproses AI. Silakan coba lagi.");
+        } finally {
+            if (loadingOverlay) loadingOverlay.classList.add('hidden');
+            if (modalLoadingOverlay) modalLoadingOverlay.classList.add('hidden');
+            const targetLoader = document.getElementById(`ai-loading-screenshot-${targetIdx}`);
+            if (targetLoader) targetLoader.classList.add('hidden');
+        }
+    }
+
+    function saveInlineEdit(field) {
+        if (!currentDetailedGameId || currentUserRole !== 'admin') return;
+        const game = gamesDatabase.find(g => g.id === currentDetailedGameId);
+        if (!game) return;
+
+        const el = document.getElementById(`detail-${field}`);
+        const newValue = el.innerText.trim();
+
+        if (newValue !== "") {
+            if (field === 'title') game.title = newValue;
+            if (field === 'desc') game.desc = newValue;
+            showToast("Perubahan disimpan otomatis");
+            renderGames();
+        } else {
+            el.innerText = field === 'title' ? game.title : game.desc;
+        }
+    }
+
+    async function researchAiDescription() {
+        const game = gamesDatabase.find(g => g.id === currentDetailedGameId);
+        if (!game) return;
+        
+        const btn = event.currentTarget;
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>';
+        btn.disabled = true;
+
+        let cleanTitle = game.title.replace(/\s*(\(.*\)|Bahasa Indonesia|Terjemahan|Full Version|RIP|Rip|Mod|Hacked|Java|Game|Mobile|Nokia|Sony|3D|2D|HD).*/gi, '').trim();
+
+        const prompt = `Tugas: Riset Sejarah Game Java J2ME. Judul: "${cleanTitle}". \nCari: Developer asli, Tahun rilis, dan Genre. \nOutput: Plain Text (Tanpa simbol *, #, -, atau bold). \nFormat: "Judul: [Nama], Tahun: [Tahun], Developer: [Nama]. [1 kalimat sejarah singkat]."`;
+
+        try {
+            const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=YOUR_API_KEY', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            });
+            const data = await response.json();
+            let resultText = data.candidates?.[0]?.content?.parts?.[0]?.text || "Data tidak ditemukan.";
+            
+            resultText = resultText.replace(/[#*\-]/g, '').replace(/\s+/g, ' ').trim();
+            
+            document.getElementById('edit-modal-textarea').value = resultText;
+            showToast("Riset Data Berhasil!");
+        } catch (err) {
+            showToast("Koneksi AI terputus.");
+        } finally {
+            btn.innerHTML = originalHtml;
+            btn.disabled = false;
+        }
+    }
+
+    let sliderStartX, sliderStartY;
+    function handleSliderDown(e) {
+        sliderStartX = e.type.includes('mouse') ? e.pageX : e.touches[0].clientX;
+        sliderStartY = e.type.includes('mouse') ? e.pageY : e.touches[0].clientY;
+    }
+
+    function handleSliderUp(e, gameId) {
+        const endX = e.type.includes('mouse') ? e.pageX : e.changedTouches[0].clientX;
+        const endY = e.type.includes('mouse') ? e.pageY : e.changedTouches[0].clientY;
+        const distance = Math.sqrt(Math.pow(endX - sliderStartX, 2) + Math.pow(endY - sliderStartY, 2));
+        
+        if (distance < 10) {
+            openGameDetail(gameId);
+        }
+    }
+
+    function addToHistory(img, slotKey) {
+        if (!imageHistory[slotKey]) imageHistory[slotKey] = [];
+        if (historyIndex[slotKey] < imageHistory[slotKey].length - 1) {
+            imageHistory[slotKey] = imageHistory[slotKey].slice(0, historyIndex[slotKey] + 1);
+        }
+        imageHistory[slotKey].push(img);
+        historyIndex[slotKey]++;
+    }
+
+    function undoImage() {
+        const slotKey = currentEditingImgType === 'main' ? 'main' : `ss${currentGameplayIdx}`;
+        if (historyIndex[slotKey] > 0) {
+            historyIndex[slotKey]--;
+            applyHistoryImage(slotKey);
+        } else {
+            showToast("Sudah di versi awal");
+        }
+    }
+
+    function redoImage() {
+        const slotKey = currentEditingImgType === 'main' ? 'main' : `ss${currentGameplayIdx}`;
+        if (historyIndex[slotKey] < imageHistory[slotKey].length - 1) {
+            historyIndex[slotKey]++;
+            applyHistoryImage(slotKey);
+        } else {
+            showToast("Sudah di versi terbaru");
+        }
+    }
+
+    function applyHistoryImage(slotKey) {
+        const img = imageHistory[slotKey][historyIndex[slotKey]];
+        const game = gamesDatabase.find(g => g.id === currentDetailedGameId);
+        if (!game) return;
+
+        if (slotKey === 'main') {
+            game.image = img;
+            document.getElementById('detail-img').src = img;
+        } else {
+            const idx = parseInt(slotKey.replace('ss', ''));
+            game.screenshots[idx] = img;
+            const imgEl = document.getElementById(`screenshot-img-${idx}`);
+            if (imgEl) imgEl.src = img;
+        }
+
+        const previewImg = document.getElementById('preview-img');
+        if (previewImg) previewImg.src = img;
+        
+        showToast(`Riwayat ${slotKey.toUpperCase()}: ${historyIndex[slotKey] + 1}/${imageHistory[slotKey].length}`);
+        renderGames();
+    }
+
+    function downloadCurrentImage() {
+        const img = document.getElementById('detail-img').src;
+        const link = document.createElement('a');
+        link.href = img;
+        link.download = `AdriasMobiles_${currentDetailedGameId}_${Date.now()}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast("Gambar berhasil diunduh");
+    }
+
+    function handleLocalImageUpload(event) {
+        const file = event.target.files[0];
+        if (!file || !currentDetailedGameId) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const base64Image = e.target.result;
+            const game = gamesDatabase.find(g => g.id === currentDetailedGameId);
+            if (game) {
+                game.originalReference = base64Image;
+
+                if (currentUploadContext.type === 'main') {
+                    game.image = base64Image;
+                    document.getElementById('detail-img').src = base64Image;
+                    showToast("Ikon diperbarui!");
+                } else {
+                    if (!game.screenshots) game.screenshots = [];
+                    game.screenshots[currentUploadContext.idx] = base64Image;
+                    const imgEl = document.getElementById(`screenshot-img-${currentUploadContext.idx}`);
+                    if (imgEl) imgEl.src = base64Image;
+                    showToast(`Gambar pratinjau ${currentUploadContext.idx + 1} diperbarui!`);
+                }
+                
+                const previewImg = document.getElementById('preview-img');
+                if (previewImg) previewImg.src = base64Image;
+
+                const slotKey = currentUploadContext.type === 'main' ? 'main' : `ss${currentUploadContext.idx}`;
+                addToHistory(base64Image, slotKey);
+                renderGames();
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function downloadGameFromList(gameId, buttonElement) {
+        if (!myCollection.includes(gameId)) {
+            myCollection.push(gameId);
+            showToast("Game ditambahkan ke Koleksi");
+            if (buttonElement) {
+                buttonElement.innerText = 'BUKA';
+                buttonElement.className = 'bg-blue-600 text-white ml-2 px-5 py-1.5 rounded-full text-[10px] font-black tracking-tight transition-all active:scale-90 shadow-sm';
+            }
+        } else {
+            openInEmulator(gameId);
+        }
+    }
+
+    let tempSupportQr = null;
+    let tempGameFile = null;
+
+    function toggleSourceInput() {
+        const type = document.getElementById('upload-source-type').value;
+        const urlInput = document.getElementById('upload-game-url');
+        const fileBtn = document.getElementById('btn-upload-file-trigger');
+        if (type === 'file') {
+            urlInput.classList.add('hidden');
+            fileBtn.classList.remove('hidden');
+        } else {
+            urlInput.classList.remove('hidden');
+            fileBtn.classList.add('hidden');
+        }
+    }
+
+    function handleGameFileSelect(event) {
+        const file = event.target.files[0];
+        if (file) {
+            tempGameFile = file.name;
+            const label = document.getElementById('file-selected-name');
+            label.innerText = "Terpilih: " + file.name;
+            label.classList.remove('hidden');
+        }
+    }
+
+    function handleSupportQrPreview(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const base64 = e.target.result;
+            tempSupportQr = base64;
+            globalSupportQr = base64; 
+            document.getElementById('preview-support-qr').src = base64;
+            document.getElementById('preview-support-qr').classList.remove('hidden');
+            document.getElementById('placeholder-support-qr').classList.add('hidden');
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function showSupportModal() {
+        if (!globalSupportQr) return showToast("Pengembang belum menyediakan QR dukungan.");
+        
+        document.getElementById('support-qr-display').src = globalSupportQr;
+        const modal = document.getElementById('support-modal');
+        const content = document.getElementById('support-modal-content');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            content.classList.remove('scale-90', 'opacity-0');
+            content.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
+
+    function closeSupportModal() {
+        const modal = document.getElementById('support-modal');
+        const content = document.getElementById('support-modal-content');
+        content.classList.add('scale-90', 'opacity-0');
+        content.classList.remove('scale-100', 'opacity-100');
+        setTimeout(() => modal.classList.add('hidden'), 200);
+    }
+
+    function openInEmulator(gameId) {
+        const game = gamesDatabase.find(g => g.id === gameId);
+        if (!game) return;
+
+        const gameUrl = game.gameUrl || "";
+        if (!gameUrl || gameUrl === "internal_storage") {
+            showToast("File game (.jar) belum tersedia untuk game ini.");
+            return;
+        }
+
+        const intentUrl = `intent:${gameUrl}#Intent;action=android.intent.action.VIEW;type=application/java-archive;package=ru.playsoftware.j2meloader;end`;
+        showToast("Menghubungkan ke J2ME Loader...");
+        window.location.href = intentUrl;
+
+        setTimeout(() => {
+            if (document.hasFocus()) {
+                if (confirm("Gagal membuka emulator. Pastikan J2ME Loader sudah terpasang. Ingin unduh dari Play Store?")) {
+                    window.open("https://play.google.com/store/apps/details?id=ru.playsoftware.j2meloader", "_blank");
+                }
+            }
+        }, 2500);
+    }
+
+    function downloadGame() {
+        if (!currentDetailedGameId) return;
+        const btn = document.getElementById('btn-download');
+        
+        if (myCollection.includes(currentDetailedGameId)) {
+            openInEmulator(currentDetailedGameId);
+            return;
+        }
+
+        let progress = 0;
+        btn.disabled = true;
+        btn.classList.add('opacity-70');
+        
+        const interval = setInterval(() => {
+            progress += Math.floor(Math.random() * 15) + 5;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+                myCollection.push(currentDetailedGameId);
+                btn.disabled = false;
+                btn.classList.remove('opacity-70');
+                btn.innerText = "BUKA";
+                btn.style.backgroundColor = '#007aff';
+                showToast("Unduhan selesai secara internal!");
+                renderCollection();
+            }
+            btn.innerText = `UNDUH (${progress}%)`;
+        }, 250);
+    }
+
+    function removeFromCollection(gameId) {
+        myCollection = myCollection.filter(id => id !== gameId);
+        renderCollection();
+        showToast("Game telah dihapus dari koleksi");
+    }
+
+    function showEditModal(field, value) {
+        activeEditField = field;
+        const modal = document.getElementById('edit-modal');
+        const content = document.getElementById('edit-modal-content');
+        const title = document.getElementById('edit-modal-title');
+        const input = document.getElementById('edit-modal-input');
+        const textarea = document.getElementById('edit-modal-textarea');
+
+        if (field === 'image') {
+            title.innerText = "Revisi Visual AI";
+            input.placeholder = "Contoh: Tambahkan naga di latar belakang...";
+        } else {
+            title.innerText = `Edit ${field.charAt(0).toUpperCase() + field.slice(1)}`;
+            input.placeholder = "Masukkan data baru...";
+        }
+        
+        if (field === 'desc') {
+            document.getElementById('input-container-text').classList.add('hidden');
+            document.getElementById('input-container-textarea').classList.remove('hidden');
+            textarea.value = value;
+        } else {
+            document.getElementById('input-container-text').classList.remove('hidden');
+            document.getElementById('input-container-textarea').classList.add('hidden');
+            input.value = value;
+        }
+
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            content.classList.remove('scale-95', 'opacity-0');
+            content.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
+
+    function closeEditModal() {
+        const modal = document.getElementById('edit-modal');
+        const content = document.getElementById('edit-modal-content');
+        content.classList.add('scale-95', 'opacity-0');
+        content.classList.remove('scale-100', 'opacity-100');
+        setTimeout(() => modal.classList.add('hidden'), 200);
+    }
+
+    function confirmEdit() {
+        if (!currentDetailedGameId) return;
+        const game = gamesDatabase.find(g => g.id === currentDetailedGameId);
+        if (!game) return;
+
+        const newValue = activeEditField === 'desc' 
+            ? document.getElementById('edit-modal-textarea').value 
+            : document.getElementById('edit-modal-input').value;
+
+        if (newValue !== null && newValue.trim() !== '') {
+            if (activeEditField === 'image') {
+                closeEditModal();
+                runAiMagic(newValue.trim());
+                return;
+            } else if (activeEditField === 'title') {
+                game.title = newValue.trim();
+                document.getElementById('detail-title').innerText = game.title;
+            } else if (activeEditField === 'desc') {
+                game.desc = newValue.trim();
+                document.getElementById('detail-desc').innerText = game.desc;
+            }
+            showToast("Data berhasil disimpan!");
+            renderGames();
+        }
+        closeEditModal();
+    }
+
+    let tempUploadIcon = null;
+    let tempUploadCover = null;
+
+    function handleUploadPreview(event, type) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const base64 = e.target.result;
+            if (type === 'icon') {
+                tempUploadIcon = base64;
+                const preview = document.getElementById('upload-preview-icon');
+                preview.src = base64;
+                preview.classList.remove('hidden');
+                document.getElementById('upload-placeholder-icon').classList.add('hidden');
+            } else {
+                tempUploadCover = base64;
+                const preview = document.getElementById('upload-preview-cover');
+                preview.src = base64;
+                preview.classList.remove('hidden');
+                document.getElementById('upload-placeholder-cover').classList.add('hidden');
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function checkCustom(select, containerId) {
+        const container = document.getElementById(containerId);
+        if (select.value === 'Lainnya') {
+            container.classList.remove('hidden');
+        } else {
+            container.classList.add('hidden');
+        }
+    }
+
+    let selectedPlacement = 'none'; 
+
+    function setPlacement(val) {
+        selectedPlacement = val;
+        const indicator = document.getElementById('placement-indicator');
+        const btns = {
+            'none': document.getElementById('btn-place-none'),
+            'banner': document.getElementById('btn-place-banner'),
+            'recommended': document.getElementById('btn-place-recommended')
+        };
+
+        Object.values(btns).forEach(btn => btn.classList.remove('text-blue-600'));
+        btns[val].classList.add('text-blue-600');
+
+        if (val === 'none') indicator.style.transform = 'translateX(0)';
+        else if (val === 'banner') indicator.style.transform = 'translateX(100%)';
+        else if (val === 'recommended') indicator.style.transform = 'translateX(200%)';
+    }
+
+    function openUploadScreen(categoryId = 'Semua') {
+        editingGameId = null;
+        tempUploadIcon = null;
+        tempUploadCover = null;
+        document.getElementById('upload-form').reset();
+        document.getElementById('upload-screen-title').innerText = "Unggah Game Baru";
+        
+        ['icon', 'cover'].forEach(type => {
+            const preview = document.getElementById(`upload-preview-${type}`);
+            preview.src = '';
+            preview.classList.add('hidden');
+            document.getElementById(`upload-placeholder-${type}`).classList.remove('hidden');
+        });
+
+        document.getElementById('custom-category-container').classList.add('hidden');
+        document.getElementById('custom-resolution-container').classList.add('hidden');
+        setPlacement('none');
+
+        if (globalSupportQr) {
+            const supportPrev = document.getElementById('preview-support-qr');
+            supportPrev.src = globalSupportQr;
+            supportPrev.classList.remove('hidden');
+            document.getElementById('placeholder-support-qr').classList.add('hidden');
+        }
+
+        if (categoryId !== 'Semua') document.getElementById('upload-category').value = categoryId;
+        switchScreen('screen-upload');
+    }
+
+    function openFullEdit() {
+        if (!currentDetailedGameId) return;
+        const game = gamesDatabase.find(g => g.id === currentDetailedGameId);
+        if (!game) return;
+
+        editingGameId = game.id;
+        tempUploadIcon = game.image;
+        tempUploadCover = (game.screenshots && game.screenshots[0]) ? game.screenshots[0] : game.image;
+        
+        document.getElementById('upload-screen-title').innerText = "Studio Game";
+        document.getElementById('upload-title').value = game.title;
+        
+        const iconPrev = document.getElementById('upload-preview-icon');
+        iconPrev.src = tempUploadIcon;
+        iconPrev.classList.remove('hidden');
+        document.getElementById('upload-placeholder-icon').classList.add('hidden');
+
+        const coverPrev = document.getElementById('upload-preview-cover');
+        coverPrev.src = tempUploadCover;
+        coverPrev.classList.remove('hidden');
+        document.getElementById('upload-placeholder-cover').classList.add('hidden');
+
+        const catSelect = document.getElementById('upload-category');
+        const catOptions = Array.from(catSelect.options).map(opt => opt.value);
+        if (catOptions.includes(game.category)) {
+            catSelect.value = game.category;
+            document.getElementById('custom-category-container').classList.add('hidden');
+        } else {
+            catSelect.value = 'Lainnya';
+            document.getElementById('custom-category-container').classList.remove('hidden');
+            document.getElementById('upload-custom-category').value = game.category;
+        }
+
+        const resSelect = document.getElementById('upload-resolution');
+        const resOptions = Array.from(resSelect.options).map(opt => opt.value);
+        if (resOptions.includes(game.resolution)) {
+            resSelect.value = game.resolution;
+            document.getElementById('custom-resolution-container').classList.add('hidden');
+        } else {
+            resSelect.value = 'Lainnya';
+            document.getElementById('custom-resolution-container').classList.remove('hidden');
+            document.getElementById('upload-custom-resolution').value = game.resolution;
+        }
+
+        const sizeStr = game.size || "0 KB";
+        const sizeMatch = sizeStr.match(/^([\d.]+)\s*(KB|MB)$/i);
+        if (sizeMatch) {
+            document.getElementById('upload-size').value = sizeMatch[1];
+            document.getElementById('upload-size-unit').value = sizeMatch[2].toUpperCase();
+        } else {
+            document.getElementById('upload-size').value = sizeStr.replace(/[^\d.]/g, '');
+            document.getElementById('upload-size-unit').value = sizeStr.includes('MB') ? 'MB' : 'KB';
+        }
+        document.getElementById('upload-desc').value = game.desc;
+        
+        if (game.isBanner) setPlacement('banner');
+        else if (game.isRecommended) setPlacement('recommended');
+        else setPlacement('none');
+
+        if (globalSupportQr) {
+            const supportPrev = document.getElementById('preview-support-qr');
+            supportPrev.src = globalSupportQr;
+            supportPrev.classList.remove('hidden');
+            document.getElementById('placeholder-support-qr').classList.add('hidden');
+        }
+        
+        switchScreen('screen-upload');
+    }
+
+    // --- MESIN PENGUNGGAH KE GITHUB ---
+    async function uploadToGitHub(filePath, base64Data, commitMessage) {
+        const url = `https://api.github.com/repos/${usernameGithub}/${namaRepo}/contents/${filePath}`;
+        
+        let cleanBase64 = base64Data;
+        if (base64Data.includes(',')) {
+            cleanBase64 = base64Data.split(',')[1];
+        }
+
+        let sha = "";
+        try {
+            const checkRes = await fetch(url, { headers: { 'Authorization': `Bearer ${githubToken}` } });
+            if (checkRes.ok) {
+                const fileData = await checkRes.json();
+                sha = fileData.sha;
+            }
+        } catch (e) {
+            console.log("Membuat file baru...");
+        }
+
+        const bodyData = {
+            message: commitMessage,
+            content: cleanBase64,
+            branch: "main" 
+        };
+        if (sha) bodyData.sha = sha;
+
+        const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${githubToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(bodyData)
+        });
+
+        if (!response.ok) throw new Error("Gagal mengunggah ke GitHub");
+        
+        const responseData = await response.json();
+        return responseData.content.download_url; 
+    }
+
+    // --- TOMBOL PUBLIKASIKAN PERUBAHAN ---
+    document.getElementById('upload-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        if (!githubToken) {
+            showToast("Error: Token Admin tidak ditemukan!");
+            return;
+        }
+
+        const btnSubmit = e.target.querySelector('button[type="submit"]');
+        const originalBtnText = btnSubmit.innerHTML;
+        btnSubmit.innerHTML = `<i class="fas fa-circle-notch fa-spin mr-2"></i> Mengunggah ke GitHub...`;
+        btnSubmit.disabled = true;
+
+        try {
+            const currentEditingId = editingGameId;
+            editingGameId = null; 
+
+            const title = document.getElementById('upload-title').value.trim();
+            const category = document.getElementById('upload-category').value === 'Lainnya' ? document.getElementById('upload-custom-category').value.trim() : document.getElementById('upload-category').value;
+            const resolution = document.getElementById('upload-resolution').value === 'Lainnya' ? document.getElementById('upload-custom-resolution').value.trim() : document.getElementById('upload-resolution').value;
+            const sizeVal = document.getElementById('upload-size').value.trim();
+            const sizeUnit = document.getElementById('upload-size-unit').value;
+            const size = sizeVal + ' ' + sizeUnit;
+            const desc = document.getElementById('upload-desc').value.trim();
+            
+            const isBanner = selectedPlacement === 'banner';
+            const isRecommended = selectedPlacement === 'recommended';
+            const sourceType = document.getElementById('upload-source-type').value;
+            const gameUrl = sourceType === 'link' ? document.getElementById('upload-game-url').value : (tempGameFile || "internal_storage");
+            
+            let gameId = currentEditingId || 'g' + Date.now();
+            
+            let finalIconUrl = tempUploadIcon || `https://placehold.co/300x300/3b82f6/white?text=Icon`;
+            if (tempUploadIcon && tempUploadIcon.startsWith('data:image')) {
+                showToast("Mengunggah Ikon...");
+                finalIconUrl = await uploadToGitHub(`assets/${gameId}_icon.png`, tempUploadIcon, `Upload ikon untuk ${title}`);
+            }
+
+            let finalCoverUrl = tempUploadCover || `https://placehold.co/800x450/1d1d1f/white?text=Cover`;
+            if (tempUploadCover && tempUploadCover.startsWith('data:image')) {
+                showToast("Mengunggah Cover...");
+                finalCoverUrl = await uploadToGitHub(`assets/${gameId}_cover.png`, tempUploadCover, `Upload cover untuk ${title}`);
+            }
+			
+			// Upload QR Code (jika admin memasukkan gambar QR baru)
+            let finalQrUrl = tempSupportQr; // Gunakan yang lama jika tidak ada yang baru
+            // Jika ini mode edit dan admin tidak upload QR baru, pertahankan QR yang sudah ada di database
+            if (!tempSupportQr && currentEditingId) {
+                const existingGame = gamesDatabase.find(g => g.id === currentEditingId);
+                if (existingGame && existingGame.supportQr) finalQrUrl = existingGame.supportQr;
+            }
+            // Jika admin upload gambar QR baru, kirim file PNG-nya ke GitHub
+            if (tempSupportQr && tempSupportQr.startsWith('data:image')) {
+                showToast("Mengunggah QR Dukungan...");
+                finalQrUrl = await uploadToGitHub(`assets/${gameId}_qr.png`, tempSupportQr, `Upload QR Dukungan untuk ${title}`);
+            }
+
+            const gameData = {
+                id: gameId,
+                title: title,
+                category: category,
+                resolution: resolution,
+                rating: (Math.random() * (5 - 4) + 4).toFixed(1),
+                size: size,
+                downloads: '0',
+                image: finalIconUrl,
+                screenshots: [finalCoverUrl],
+                desc: desc,
+                isBanner: isBanner,
+                isRecommended: isRecommended,
+                supportQr: finalQrUrl,
+                gameSource: sourceType,
+                gameUrl: gameUrl
+            };
+
+            if (currentEditingId) {
+                const index = gamesDatabase.findIndex(g => g.id === currentEditingId);
+                if (index !== -1) gamesDatabase[index] = { ...gamesDatabase[index], ...gameData };
+            } else {
+                gamesDatabase.unshift(gameData);
+            }
+
+            showToast("Menyimpan ke Database...");
+            const jsonString = JSON.stringify(gamesDatabase, null, 2);
+            const jsonBase64 = btoa(unescape(encodeURIComponent(jsonString))); 
+            
+            await uploadToGitHub('database.json', jsonBase64, `Update database.json dari Mode Admin`);
+
+            showToast("Sukses Publikasi ke GitHub!");
+            
+            renderGames();
+            switchScreen('screen-home', true);
+
+        } catch (error) {
+            console.error(error);
+            showToast("Terjadi kesalahan saat mengunggah!");
+        } finally {
+            btnSubmit.innerHTML = originalBtnText;
+            btnSubmit.disabled = false;
+        }
+    });
+
+    function deleteCurrentGame() {
+        if (!currentDetailedGameId || currentUserRole !== 'admin') return;
+        if(confirm("Hapus game ini secara permanen dari database?")) {
+            gamesDatabase = gamesDatabase.filter(g => g.id !== currentDetailedGameId);
+            myCollection = myCollection.filter(id => id !== currentDetailedGameId);
+            renderGames();
+            showToast("Game telah dihapus");
+            goBack();
+        }
+    }
+
+    let selectedUserRating = 0;
+
+    function setRating(stars) {
+        selectedUserRating = stars;
+        const starContainer = document.getElementById('user-rating-stars');
+        const starIcons = starContainer.querySelectorAll('i');
+        starIcons.forEach((star, index) => {
+            if (index < stars) {
+                star.classList.replace('text-gray-300', 'text-orange-400');
+            } else {
+                star.classList.replace('text-orange-400', 'text-gray-300');
+            }
+        });
+    }
+
+    function submitReview() {
+        const text = document.getElementById('user-review-text').value.trim();
+        if (selectedUserRating === 0) return showToast("Pilih rating bintang terlebih dahulu!");
+        if (text === "") return showToast("Tuliskan komentar Anda!");
+
+        const game = gamesDatabase.find(g => g.id === currentDetailedGameId);
+        if (!game) return;
+
+        if (!game.userReviews) game.userReviews = [];
+        
+        const newReview = {
+            user: currentUserRole === 'admin' ? "Administrator" : "User_" + Math.floor(Math.random() * 1000),
+            rating: selectedUserRating,
+            comment: text,
+            date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })
+        };
+
+        game.userReviews.unshift(newReview);
+        
+        const totalRating = game.userReviews.reduce((acc, rev) => acc + rev.rating, 0);
+        game.rating = (totalRating / game.userReviews.length).toFixed(1);
+
+        document.getElementById('user-review-text').value = "";
+        setRating(0);
+        
+        renderReviews();
+        document.getElementById('detail-rating').innerText = game.rating;
+        showToast("Ulasan berhasil dikirim!");
+        renderGames();
+    }
+
+    function renderReviews() {
+        const game = gamesDatabase.find(g => g.id === currentDetailedGameId);
+        const listContainer = document.getElementById('detail-review-list');
+        const avgDisplay = document.getElementById('detail-avg-rating');
+        
+        if (!game || !listContainer) return;
+        
+        avgDisplay.innerText = game.rating || "4.0";
+        
+        if (!game.userReviews || game.userReviews.length === 0) {
+            listContainer.innerHTML = `<p class="text-center py-4 text-gray-400 text-[10px] font-bold uppercase tracking-widest">Belum ada ulasan</p>`;
+            return;
+        }
+
+        listContainer.innerHTML = game.userReviews.map(rev => `
+            <div class="border-t border-gray-200 pt-4">
+                <div class="flex justify-between items-center mb-1">
+                    <div class="flex items-center">
+                        <span class="text-xs font-bold text-gray-900 mr-2">${rev.user}</span>
+                        <div class="flex text-orange-400 text-[8px]">
+                            ${Array(rev.rating).fill('<i class="fas fa-star"></i>').join('')}
+                        </div>
+                    </div>
+                    <span class="text-[10px] text-gray-400">${rev.date}</span>
+                </div>
+                <p class="text-xs text-gray-600 leading-relaxed">${rev.comment}</p>
+            </div>
+        `).join('');
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById("toast");
+        toast.innerText = message;
+        toast.className = "show";
+        setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+    }
+
+    function initDragScroll() {
+        const sliders = document.querySelectorAll('.scroll-x');
+        sliders.forEach(slider => {
+            let isDown = false;
+            let startX, scrollLeft, startMouseX;
+
+            slider.addEventListener('mousedown', (e) => {
+                isDown = true;
+                wasDragging = false;
+                slider.style.cursor = 'grabbing';
+                startX = e.pageX - slider.offsetLeft;
+                startMouseX = e.pageX;
+                scrollLeft = slider.scrollLeft;
+            });
+
+            const endDrag = () => {
+                isDown = false;
+                slider.style.cursor = 'grab';
+            };
+
+            slider.addEventListener('mouseleave', endDrag);
+            slider.addEventListener('mouseup', endDrag);
+
+            slider.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                const x = e.pageX - slider.offsetLeft;
+                const walk = (x - startX) * 2;
+                
+                if (Math.abs(e.pageX - startMouseX) > 3) {
+                    wasDragging = true;
+                    e.preventDefault(); 
+                    slider.scrollLeft = scrollLeft - walk;
+                }
+            });
+            slider.style.cursor = 'grab';
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', initDragScroll);
+	
+	// --- KEAMANAN ANTI-MENGINTIP TINGKAT DASAR ---
+    // Memblokir Klik Kanan
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+    });
+
+    // Memblokir tombol pintasan keyboard (F12, Ctrl+Shift+I, Ctrl+U)
+    document.onkeydown = function(e) {
+        // Blokir F12
+        if (e.keyCode === 123) {
+            return false;
+        }
+        // Blokir Ctrl+Shift+I (Inspect)
+        if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+            return false;
+        }
+        // Blokir Ctrl+Shift+J (Console)
+        if (e.ctrlKey && e.shiftKey && e.keyCode === 74) {
+            return false;
+        }
+        // Blokir Ctrl+U (View Page Source)
+        if (e.ctrlKey && e.keyCode === 85) {
+            return false;
+        }
+    };
+</script>
+</body>
+</html>
