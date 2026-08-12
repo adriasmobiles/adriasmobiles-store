@@ -2732,6 +2732,32 @@
     }
 
     document.addEventListener('DOMContentLoaded', initDragScroll);
+	
+	// --- KEAMANAN ANTI-MENGINTIP TINGKAT DASAR ---
+    // Memblokir Klik Kanan
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+    });
+
+    // Memblokir tombol pintasan keyboard (F12, Ctrl+Shift+I, Ctrl+U)
+    document.onkeydown = function(e) {
+        // Blokir F12
+        if (e.keyCode === 123) {
+            return false;
+        }
+        // Blokir Ctrl+Shift+I (Inspect)
+        if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+            return false;
+        }
+        // Blokir Ctrl+Shift+J (Console)
+        if (e.ctrlKey && e.shiftKey && e.keyCode === 74) {
+            return false;
+        }
+        // Blokir Ctrl+U (View Page Source)
+        if (e.ctrlKey && e.keyCode === 85) {
+            return false;
+        }
+    };
 </script>
 </body>
 </html>
