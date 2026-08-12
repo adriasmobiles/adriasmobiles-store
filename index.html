@@ -2566,69 +2566,111 @@
         
         switchScreen('screen-upload');
     }
+	
+	// --- MESIN PENGUNGGAH KE GITHUB ---
+    async function uploadToGitHub(filePath, base64Data, commitMessage) {
+        const url = `https://api.github.com/repos/${usernameGithub}/${namaRepo}/contents/${filePath}`;
+        
+        // Bersihkan teks Base64 dari embel-embel "data:image/png;base64,"
+        let cleanBase64 = base64Data;
+        if (base64Data.includes(',')) {
+            cleanBase64 = base64Data.split(',')[1];
+        }
 
-    document.getElementById('upload-form').addEventListener('submit', function(e) {
+        // Cek apakah file sudah ada di GitHub (butuh SHA untuk menimpa file lama)
+        let sha = "";
+        try {
+            const checkRes = await fetch(url, { headers: { 'Authorization': `Bearer ${githubToken}` } });
+            if (checkRes.ok) {
+                const fileData = await checkRes.json();
+                sha = fileData.sha;
+            }
+        } catch (e) {
+            console.log("Membuat file baru...");
+        }
+
+        const bodyData = {
+            message: commitMessage,
+            content: cleanBase64,
+            branch: "main" // Ganti jadi "master" jika reponya pakai master
+        };
+        if (sha) bodyData.sha = sha;
+
+        // Kirim ke GitHub!
+        const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${githubToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(bodyData)
+        });
+
+        if (!response.ok) throw new Error("Gagal mengunggah ke GitHub");
+        
+        const responseData = await response.json();
+        return responseData.content.download_url; // Mengembalikan URL langsung ke file tersebut
+    }
+
+    // --- TOMBOL PUBLIKASIKAN PERUBAHAN ---
+    document.getElementById('upload-form').addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        // Lock State & Reset Segera untuk mencegah submit ganda
-        const currentEditingId = editingGameId;
-        editingGameId = null; 
+        if (!githubToken) {
+            showToast("Error: Token Admin tidak ditemukan!");
+            return;
+        }
 
-        const title = document.getElementById('upload-title').value.trim();
-        const category = document.getElementById('upload-category').value === 'Lainnya' 
-            ? document.getElementById('upload-custom-category').value.trim() 
-            : document.getElementById('upload-category').value;
-        const resolution = document.getElementById('upload-resolution').value === 'Lainnya' 
-            ? document.getElementById('upload-custom-resolution').value.trim() 
-            : document.getElementById('upload-resolution').value;
-        const sizeVal = document.getElementById('upload-size').value.trim();
-        const sizeUnit = document.getElementById('upload-size-unit').value;
-        const size = sizeVal + ' ' + sizeUnit;
-        const desc = document.getElementById('upload-desc').value.trim();
-        
-        // Flag Penempatan Eksklusif (Boolean Strict)
-                const isBanner = selectedPlacement === 'banner';
-        const isRecommended = selectedPlacement === 'recommended';
-        const sourceType = document.getElementById('upload-source-type').value;
-        const gameUrl = sourceType === 'link' ? document.getElementById('upload-game-url').value : (tempGameFile || "internal_storage");
-        
-        if (currentEditingId) {
-            const index = gamesDatabase.findIndex(g => g.id === currentEditingId);
-            if (index !== -1) {
-                const game = gamesDatabase[index];
-                game.title = title;
-                game.category = category;
-                game.resolution = resolution;
-                game.size = size;
-                game.desc = desc;
-                game.isBanner = isBanner;
-                game.isRecommended = isRecommended;
-                game.supportQr = tempSupportQr || game.supportQr;
-                game.gameSource = sourceType;
-                game.gameUrl = gameUrl;
-                
-                if (tempUploadIcon) game.image = tempUploadIcon;
-                if (tempUploadCover) {
-                    if (!game.screenshots) game.screenshots = [];
-                    game.screenshots[0] = tempUploadCover;
-                }
-                
-                if (currentDetailedGameId === currentEditingId) {
-                    openGameDetail(game.id);
-                }
-                showToast("Data game diperbarui!");
+        // Ubah teks tombol jadi loading
+        const btnSubmit = e.target.querySelector('button[type="submit"]');
+        const originalBtnText = btnSubmit.innerHTML;
+        btnSubmit.innerHTML = `<i class="fas fa-circle-notch fa-spin mr-2"></i> Mengunggah ke GitHub...`;
+        btnSubmit.disabled = true;
+
+        try {
+            const currentEditingId = editingGameId;
+            editingGameId = null; 
+
+            const title = document.getElementById('upload-title').value.trim();
+            const category = document.getElementById('upload-category').value === 'Lainnya' ? document.getElementById('upload-custom-category').value.trim() : document.getElementById('upload-category').value;
+            const resolution = document.getElementById('upload-resolution').value === 'Lainnya' ? document.getElementById('upload-custom-resolution').value.trim() : document.getElementById('upload-resolution').value;
+            const sizeVal = document.getElementById('upload-size').value.trim();
+            const sizeUnit = document.getElementById('upload-size-unit').value;
+            const size = sizeVal + ' ' + sizeUnit;
+            const desc = document.getElementById('upload-desc').value.trim();
+            
+            const isBanner = selectedPlacement === 'banner';
+            const isRecommended = selectedPlacement === 'recommended';
+            const sourceType = document.getElementById('upload-source-type').value;
+            const gameUrl = sourceType === 'link' ? document.getElementById('upload-game-url').value : (tempGameFile || "internal_storage");
+            
+            let gameId = currentEditingId || 'g' + Date.now();
+            
+            // 1. Upload Ikon (jika ada yang baru)
+            let finalIconUrl = tempUploadIcon || `https://placehold.co/300x300/3b82f6/white?text=Icon`;
+            if (tempUploadIcon && tempUploadIcon.startsWith('data:image')) {
+                showToast("Mengunggah Ikon...");
+                finalIconUrl = await uploadToGitHub(`assets/${gameId}_icon.png`, tempUploadIcon, `Upload ikon untuk ${title}`);
             }
-        } else {
-            const newGame = {
-                id: 'g' + Date.now(),
+
+            // 2. Upload Cover (jika ada yang baru)
+            let finalCoverUrl = tempUploadCover || `https://placehold.co/800x450/1d1d1f/white?text=Cover`;
+            if (tempUploadCover && tempUploadCover.startsWith('data:image')) {
+                showToast("Mengunggah Cover...");
+                finalCoverUrl = await uploadToGitHub(`assets/${gameId}_cover.png`, tempUploadCover, `Upload cover untuk ${title}`);
+            }
+
+            // 3. Susun data game
+            const gameData = {
+                id: gameId,
                 title: title,
                 category: category,
                 resolution: resolution,
-                rating: (Math.random() * (5 - 4) + 4).toFixed(1), 
+                rating: (Math.random() * (5 - 4) + 4).toFixed(1),
                 size: size,
                 downloads: '0',
-                image: tempUploadIcon || `https://placehold.co/300x300/3b82f6/white?text=Icon`,
-                screenshots: [tempUploadCover || `https://placehold.co/800x450/1d1d1f/white?text=Cover`],
+                image: finalIconUrl,
+                screenshots: [finalCoverUrl],
                 desc: desc,
                 isBanner: isBanner,
                 isRecommended: isRecommended,
@@ -2636,15 +2678,38 @@
                 gameSource: sourceType,
                 gameUrl: gameUrl
             };
-            gamesDatabase.unshift(newGame);
-            showToast("Game baru dipublikasikan!");
-        }
 
-        // Refresh UI Beranda
-        renderGames();
-        
-        // FORCE NAVIGATION: Menggunakan switchScreen untuk memastikan layar berpindah ke Beranda
-        switchScreen('screen-home', true);
+            // 4. Update array gamesDatabase
+            if (currentEditingId) {
+                const index = gamesDatabase.findIndex(g => g.id === currentEditingId);
+                if (index !== -1) gamesDatabase[index] = { ...gamesDatabase[index], ...gameData };
+            } else {
+                gamesDatabase.unshift(gameData);
+            }
+
+            // 5. Upload database.json yang baru ke GitHub
+            showToast("Menyimpan ke Database...");
+            // Konversi array JSON ke bentuk tulisan, lalu jadikan Base64 (Syarat GitHub)
+            const jsonString = JSON.stringify(gamesDatabase, null, 2);
+            // btoa() butuh encodeURIComponent agar karakter khusus bahasa Indonesia tidak error
+            const jsonBase64 = btoa(unescape(encodeURIComponent(jsonString))); 
+            
+            await uploadToGitHub('database.json', jsonBase64, `Update database.json dari Mode Admin`);
+
+            showToast("Sukses Publikasi ke GitHub!");
+            
+            // Refresh layar dan kembali ke Beranda
+            renderGames();
+            switchScreen('screen-home', true);
+
+        } catch (error) {
+            console.error(error);
+            showToast("Terjadi kesalahan saat mengunggah!");
+        } finally {
+            // Kembalikan tombol seperti semula
+            btnSubmit.innerHTML = originalBtnText;
+            btnSubmit.disabled = false;
+        }
     });
 
     function deleteCurrentGame() {
