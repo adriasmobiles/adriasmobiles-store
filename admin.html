@@ -398,6 +398,30 @@
                         Deskripsi game...
                     </div>
                 </div>
+				
+				<!-- User Reviews Section (Admin Stats) -->
+                <div class="px-5 mb-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-bold text-gray-900">Statistik Ulasan</h2>
+                        <span class="text-[9px] font-bold bg-purple-50 text-purple-600 px-2 py-1 rounded-full border border-purple-100 uppercase tracking-widest"><i class="fas fa-chart-bar mr-1"></i> Live Data</span>
+                    </div>
+                    <div class="bg-gray-50 rounded-[24px] p-5 border border-gray-100 shadow-inner">
+                        <!-- Ringkasan Bintang -->
+                        <div class="flex items-center justify-between mb-5">
+                            <div class="flex flex-col">
+                                <span class="text-4xl font-black text-gray-900" id="edit-review-avg">0.0</span>
+                                <span class="text-[9px] font-bold text-gray-400 uppercase tracking-wider mt-1">Total: <span id="edit-review-total">0</span> Ulasan</span>
+                            </div>
+                            <div class="flex flex-col space-y-1.5 text-[10px] font-bold text-gray-500 text-right" id="edit-review-bars">
+                                <!-- Progress Bar Bintang Diinjeksi via JS -->
+                            </div>
+                        </div>
+                        <!-- Daftar Komentar Terbaru -->
+                        <div id="edit-review-list" class="space-y-3 max-h-48 overflow-y-auto custom-scrollbar pr-1 border-t border-gray-200/60 pt-4">
+                            <!-- Komentar Diinjeksi via JS -->
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Admin Action Area -->
                 <div class="px-5 space-y-3 pb-8">
@@ -1156,19 +1180,18 @@
                 }
 
                 await syncGameToGitHub(game.id);
-
                 showToast("Sukses Publikasi ke GitHub!");
-                switchScreen('screen-dashboard'); // Langsung kembali ke dasbor
 
-            } catch (error) {
-                console.error(error); 
-                showToast("Terjadi kesalahan saat mengunggah!");
-            } finally {
-                btnSubmit.innerHTML = originalBtnText; 
-                btnSubmit.disabled = false;
+                // PERBAIKAN: Cek apakah Admin datang dari Ruangan Khusus atau Dashboard
+                if (typeof returnToVisualEditorId !== 'undefined' && returnToVisualEditorId) {
+                    const id = returnToVisualEditorId;
+                    returnToVisualEditorId = null; // Reset jejak
+                    openVisualEditor(id); // Kembali ke Ruangan Khusus
+                } else {
+                    switchScreen('screen-dashboard'); // Kembali ke Daftar Game
+                }
+
             }
-        });
-    }
 
     // =========================================================
     // FUNGSI LAINNYA (NAVIGASI MODAL, LOKAL, DLL - DISIAPKAN UNTUK RUANGAN BARU)
@@ -1212,6 +1235,7 @@
     // =========================================================
 
     let isVisualDragScrolling = false;
+    let returnToVisualEditorId = null; // Variabel baru untuk melacak tombol kembali
 
     // Modifikasi renderAdminDashboard agar tombol Edit membuka Ruangan Khusus
     const originalRenderAdminDashboard = renderAdminDashboard;
@@ -1223,13 +1247,11 @@
             const onclickAttr = btn.getAttribute('onclick');
             if (onclickAttr && onclickAttr.includes('openFullEdit')) {
                 const gameId = onclickAttr.match(/'([^']+)'/)[1];
-                btn.setAttribute('onclick', `openVisualEditor('${gameId}')`); // Ubah target ke Visual Editor
+                btn.setAttribute('onclick', `openVisualEditor('${gameId}')`);
                 btn.className = "w-9 h-9 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center transition active:bg-purple-100 border border-purple-100 shadow-sm";
                 icon.className = "fas fa-magic text-sm";
             }
         });
-        
-        // Pastikan drag scroll dipasang ulang setiap masuk dashboard
         initNativeDragScroll();
     }
 
@@ -1246,35 +1268,20 @@
         document.getElementById('edit-detail-resolution').innerText = game.resolution || '240x320';
         document.getElementById('edit-detail-size-stat').innerText = game.size || '0 MB';
 
-        // 2. Setup Icon
+        // 2. Setup Icon & Screenshots
         document.getElementById('edit-detail-img').src = game.image;
-
-        // 3. Setup 4 Slot Screenshot
         if (!game.screenshots) game.screenshots = [game.image];
-        const placeholders = [
-            'https://placehold.co/400x600/1d1d1f/white?text=Gameplay+1',
-            'https://placehold.co/400x600/007aff/white?text=Gameplay+2',
-            'https://placehold.co/400x600/34c759/white?text=Gameplay+3'
-        ];
-        
-        while (game.screenshots.length < 4) { 
-            game.screenshots.push(placeholders[game.screenshots.length - 1]); 
-        }
+        const placeholders = ['https://placehold.co/400x600/1d1d1f/white?text=Gameplay+1','https://placehold.co/400x600/007aff/white?text=Gameplay+2','https://placehold.co/400x600/34c759/white?text=Gameplay+3'];
+        while (game.screenshots.length < 4) { game.screenshots.push(placeholders[game.screenshots.length - 1]); }
 
-        // Reset History AI
         imageHistory = { main: [game.image], ss0: [], ss1: [], ss2: [], ss3: [] };
         historyIndex = { main: 0, ss0: -1, ss1: -1, ss2: -1, ss3: -1 };
-        game.screenshots.forEach((src, idx) => { 
-            imageHistory[`ss${idx}`] = [src]; 
-            historyIndex[`ss${idx}`] = 0; 
-        });
+        game.screenshots.forEach((src, idx) => { imageHistory[`ss${idx}`] = [src]; historyIndex[`ss${idx}`] = 0; });
 
         const screenshotContainer = document.getElementById('edit-screenshot-container');
         screenshotContainer.innerHTML = game.screenshots.map((src, idx) => `
             <div class="relative flex-shrink-0 w-48 aspect-[2/3] rounded-2xl overflow-hidden border border-gray-100 shadow-sm group">
-                <div id="native-ai-loading-${idx}" class="hidden absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-20 text-white">
-                    <i class="fas fa-circle-notch fa-spin text-xl text-white/80 mb-2"></i>
-                </div>
+                <div id="native-ai-loading-${idx}" class="hidden absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-20 text-white"><i class="fas fa-circle-notch fa-spin text-xl text-white/80 mb-2"></i></div>
                 <img id="edit-screenshot-img-${idx}" src="${src}" class="w-full h-full object-cover cursor-pointer" onclick="if(!isVisualDragScrolling) openAdvancedEditor('gameplay', ${idx})">
                 <div class="absolute top-2 right-2 flex space-x-1">
                     <button type="button" onclick="prepareUpload('gameplay', ${idx}); document.getElementById('local-file-input').click()" class="w-7 h-7 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center text-[10px]" title="Ganti Local"><i class="fas fa-upload"></i></button>
@@ -1283,10 +1290,60 @@
             </div>
         `).join('');
 
+        // 3. Setup STATISTIK ULASAN REAL-TIME
+        const avgDisplay = document.getElementById('edit-review-avg');
+        const totalDisplay = document.getElementById('edit-review-total');
+        const barsDisplay = document.getElementById('edit-review-bars');
+        const listContainer = document.getElementById('edit-review-list');
+
+        if (!game.userReviews || game.userReviews.length === 0) {
+            avgDisplay.innerText = game.rating || "0.0";
+            totalDisplay.innerText = "0";
+            barsDisplay.innerHTML = `<span class="text-gray-400 font-medium">Belum ada data distribusi</span>`;
+            listContainer.innerHTML = `<p class="text-center py-4 text-gray-400 text-[10px] font-bold uppercase tracking-widest">Belum ada ulasan pengguna</p>`;
+        } else {
+            const total = game.userReviews.length;
+            let sum = 0;
+            let counts = {1:0, 2:0, 3:0, 4:0, 5:0};
+            
+            game.userReviews.forEach(rev => {
+                sum += rev.rating;
+                if(counts[rev.rating] !== undefined) counts[rev.rating]++;
+            });
+            
+            avgDisplay.innerText = (sum / total).toFixed(1);
+            totalDisplay.innerText = total;
+
+            let barsHTML = '';
+            for(let i=5; i>=1; i--) {
+                const pct = Math.round((counts[i] / total) * 100);
+                barsHTML += `
+                    <div class="flex items-center justify-end w-full">
+                        <span class="mr-1.5 w-2 text-right">${i}</span> <i class="fas fa-star text-orange-400 text-[8px] mr-2"></i>
+                        <div class="w-24 h-1.5 bg-gray-200 rounded-full overflow-hidden flex-shrink-0">
+                            <div class="h-full bg-orange-400 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                `;
+            }
+            barsDisplay.innerHTML = barsHTML;
+
+            listContainer.innerHTML = game.userReviews.map(rev => `
+                <div class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span class="text-[11px] font-bold text-gray-900">${rev.user}</span>
+                        <div class="flex text-orange-400 text-[9px] space-x-0.5">
+                            ${Array(rev.rating).fill('<i class="fas fa-star"></i>').join('')}
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-gray-600 leading-relaxed font-medium">${rev.comment}</p>
+                </div>
+            `).join('');
+        }
+
         // 4. Live Edit Listeners
         const titleEl = document.getElementById('edit-detail-title');
         titleEl.onblur = () => { game.title = titleEl.innerText.trim(); };
-        
         const descEl = document.getElementById('edit-detail-desc');
         descEl.onblur = () => { game.desc = descEl.innerText.trim(); };
 
@@ -1300,8 +1357,7 @@
         const backBtn = document.getElementById('btn-back-visual');
         const originalContent = backBtn.innerHTML;
         
-        const hasNewImage = (game.image && game.image.startsWith('data:image')) || 
-                            (game.screenshots && game.screenshots.some(src => src && src.startsWith('data:image')));
+        const hasNewImage = (game.image && game.image.startsWith('data:image')) || (game.screenshots && game.screenshots.some(src => src && src.startsWith('data:image')));
         
         if (hasNewImage) {
             backBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin text-blue-600 text-xl"></i><span class="text-lg text-blue-600">Menyimpan...</span>';
@@ -1316,10 +1372,27 @@
         switchScreen('screen-dashboard'); 
     }
 
+    // FUNGSI NAVIGASI: Menyimpan jejak sebelum ke Form Metadata
     function openFormEditorFromVisual() {
         const gameId = currentDetailedGameId;
-        currentDetailedGameId = null; // Lepas status visual
-        openFullEdit(gameId); // Buka form asli
+        returnToVisualEditorId = gameId; // Simpan ID game
+        currentDetailedGameId = null; 
+        openFullEdit(gameId); 
+    }
+
+    // PERBAIKAN BUG NAVIGASI: Tombol "Kembali" di Form Metadata
+    const uploadScreenBackBtn = document.querySelector('#screen-upload .fa-chevron-left').parentElement;
+    if (uploadScreenBackBtn) {
+        uploadScreenBackBtn.onclick = (e) => {
+            e.preventDefault();
+            if (returnToVisualEditorId) {
+                const id = returnToVisualEditorId;
+                returnToVisualEditorId = null; 
+                openVisualEditor(id); // Kembali ke Detail Game
+            } else {
+                switchScreen('screen-dashboard'); // Kembali ke Daftar Game
+            }
+        };
     }
 
     async function deleteFromVisualEditor() {
@@ -1327,15 +1400,12 @@
         if(confirm("Hapus game ini secara permanen dari database GitHub?")) {
             currentDetailedGameId = null;
             await deleteCurrentGame(gameId);
-            // deleteCurrentGame sudah memanggil switchScreen('screen-dashboard') dan renderAdminDashboard
         }
     }
 
-    // Horizontal Scroll Handler untuk Mouse (PC)
     function initNativeDragScroll() {
         const slider = document.getElementById('edit-screenshot-container');
         if (!slider) return;
-        
         let isDown = false;
         let startX, scrollLeft, startMouseX;
 
