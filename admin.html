@@ -1173,76 +1173,81 @@
     // FIX BUG 3: MENGHANCURKAN EVENT LISTENER LAMA & SMART PUBLISH
     // =========================================================
     const oldForm = document.getElementById('upload-form');
-    const newForm = oldForm.cloneNode(true);
-    oldForm.parentNode.replaceChild(newForm, oldForm);
+    if (oldForm) {
+        const newForm = oldForm.cloneNode(true);
+        oldForm.parentNode.replaceChild(newForm, oldForm);
 
-    newForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        if (!githubToken) return showToast("Error: Token Admin tidak ditemukan!");
+        newForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (!githubToken) return showToast("Error: Token Admin tidak ditemukan!");
 
-        const btnSubmit = e.target.querySelector('button[type="submit"]');
-        const originalBtnText = btnSubmit.innerHTML;
-        
-        // Deteksi cerdas: Apakah ada gambar baru?
-        const isUploadingImage = (tempUploadIcon && tempUploadIcon.startsWith('data:image')) || 
-                                 (tempUploadCover && tempUploadCover.startsWith('data:image')) ||
-                                 (tempSupportQr && tempSupportQr.startsWith('data:image'));
-                                 
-        // Ubah teks berdasarkan konteks
-        btnSubmit.innerHTML = isUploadingImage 
-            ? `<i class="fas fa-circle-notch fa-spin mr-2"></i> MENGUNGGAH VISUAL...` 
-            : `<i class="fas fa-circle-notch fa-spin mr-2"></i> MENYIMPAN TEKS...`;
-        btnSubmit.disabled = true;
-
-        try {
-            const currentEditingId = editingGameId;
-            let gameId = currentEditingId || 'g' + Date.now();
-            let game = gamesDatabase.find(g => g.id === gameId);
-            let isNew = false;
+            const btnSubmit = e.target.querySelector('button[type="submit"]');
+            const originalBtnText = btnSubmit.innerHTML;
             
-            if (!game) { game = { id: gameId, screenshots: [] }; isNew = true; }
+            // Deteksi cerdas: Apakah ada gambar baru?
+            const isUploadingImage = (typeof tempUploadIcon !== 'undefined' && tempUploadIcon && tempUploadIcon.startsWith('data:image')) || 
+                                     (typeof tempUploadCover !== 'undefined' && tempUploadCover && tempUploadCover.startsWith('data:image')) ||
+                                     (typeof tempSupportQr !== 'undefined' && tempSupportQr && tempSupportQr.startsWith('data:image'));
+                                     
+            // Ubah teks berdasarkan konteks
+            btnSubmit.innerHTML = isUploadingImage 
+                ? `<i class="fas fa-circle-notch fa-spin mr-2"></i> MENGUNGGAH VISUAL...` 
+                : `<i class="fas fa-circle-notch fa-spin mr-2"></i> MENYIMPAN TEKS...`;
+            btnSubmit.disabled = true;
 
-            game.title = document.getElementById('upload-title').value.trim();
-            game.category = document.getElementById('upload-category').value === 'Lainnya' ? document.getElementById('upload-custom-category').value.trim() : document.getElementById('upload-category').value;
-            game.resolution = document.getElementById('upload-resolution').value === 'Lainnya' ? document.getElementById('upload-custom-resolution').value.trim() : document.getElementById('upload-resolution').value;
-            game.size = document.getElementById('upload-size').value.trim() + ' ' + document.getElementById('upload-size-unit').value;
-            game.desc = document.getElementById('upload-desc').value.trim();
-            game.gameUrl = document.getElementById('upload-game-url').value.trim();
-            
-            game.isBanner = selectedPlacement === 'banner';
-            game.isRecommended = selectedPlacement === 'recommended';
+            try {
+                const currentEditingId = editingGameId;
+                let gameId = currentEditingId || 'g' + Date.now();
+                let game = gamesDatabase.find(g => g.id === gameId);
+                let isNew = false;
+                
+                if (!game) { game = { id: gameId, screenshots: [] }; isNew = true; }
 
-            if (tempUploadIcon) game.image = tempUploadIcon;
-            if (tempUploadCover) {
-                if (!game.screenshots) game.screenshots = [];
-                // JANGAN HAPUS slot gameplay 1-3, hanya timpa cover landscape di index 0
-                game.screenshots[0] = tempUploadCover; 
+                game.title = document.getElementById('upload-title').value.trim();
+                game.category = document.getElementById('upload-category').value === 'Lainnya' ? document.getElementById('upload-custom-category').value.trim() : document.getElementById('upload-category').value;
+                game.resolution = document.getElementById('upload-resolution').value === 'Lainnya' ? document.getElementById('upload-custom-resolution').value.trim() : document.getElementById('upload-resolution').value;
+                game.size = document.getElementById('upload-size').value.trim() + ' ' + document.getElementById('upload-size-unit').value;
+                game.desc = document.getElementById('upload-desc').value.trim();
+                game.gameUrl = document.getElementById('upload-game-url').value.trim();
+                
+                game.isBanner = (typeof selectedPlacement !== 'undefined') ? (selectedPlacement === 'banner') : false;
+                game.isRecommended = (typeof selectedPlacement !== 'undefined') ? (selectedPlacement === 'recommended') : false;
+
+                if (typeof tempUploadIcon !== 'undefined' && tempUploadIcon) game.image = tempUploadIcon;
+                if (typeof tempUploadCover !== 'undefined' && tempUploadCover) {
+                    if (!game.screenshots) game.screenshots = [];
+                    // JANGAN HAPUS slot gameplay 1-3, hanya timpa cover landscape di index 0
+                    game.screenshots[0] = tempUploadCover; 
+                }
+                if (typeof tempSupportQr !== 'undefined' && tempSupportQr) game.supportQr = tempSupportQr;
+
+                if (isNew) {
+                    game.rating = (Math.random() * (5 - 4) + 4).toFixed(1);
+                    game.downloads = '0';
+                    gamesDatabase.unshift(game);
+                }
+
+                // Gunakan Fungsi Cerdas untuk mengunggah
+                await syncGameToGitHub(game.id);
+
+                showToast("Sukses Publikasi ke GitHub!");
+                
+                if (typeof currentDetailedGameId !== 'undefined' && currentDetailedGameId) {
+                    await buildVisualBridge(currentDetailedGameId);
+                } else {
+                    switchScreen('screen-dashboard');
+                }
+
+            } catch (error) {
+                console.error(error); 
+                showToast("Terjadi kesalahan saat mengunggah!");
+            } finally {
+                // Pastikan blok ini selalu dieksekusi agar tombol kembali normal
+                btnSubmit.innerHTML = originalBtnText; 
+                btnSubmit.disabled = false;
             }
-            if (tempSupportQr) game.supportQr = tempSupportQr;
-
-            if (isNew) {
-                game.rating = (Math.random() * (5 - 4) + 4).toFixed(1);
-                game.downloads = '0';
-                gamesDatabase.unshift(game);
-            }
-
-            // Gunakan Fungsi Cerdas untuk mengunggah
-            await syncGameToGitHub(game.id);
-
-            showToast("Sukses Publikasi ke GitHub!");
-            
-            if (currentDetailedGameId) {
-                await buildVisualBridge(currentDetailedGameId);
-            } else {
-                switchScreen('screen-dashboard');
-            }
-
-        } catch (error) {
-            console.error(error); showToast("Terjadi kesalahan saat mengunggah!");
-        } finally {
-            btnSubmit.innerHTML = originalBtnText; btnSubmit.disabled = false;
-        }
-    });
+        });
+    }
 
     // =========================================================
     // FUNGSI LAINNYA (TETAP SAMA)
