@@ -1238,112 +1238,60 @@
     let currentDetailedGameId = null;
     let currentFilter = 'Semua';
     let currentPreviewIdx = 0;
-
-    // --- MOCK DATA ---
-    let gamesDatabase = [
-        {
-            id: 'g1',
-            title: 'Bounce Classic (Terjemahan)',
-            category: 'Aksi',
-            resolution: '240x320',
-            rating: 4.8,
-            size: '1.2MB',
-            downloads: '50K',
-            image: 'https://placehold.co/800x600/1e3a8a/white?text=Bounce',
-            desc: 'Nostalgia game Bounce klasik dari HP jadul, sekarang diterjemahkan penuh ke dalam Bahasa Indonesia. Pandu bola merah melewati rintangan cincin, hindari duri, dan selesaikan semua level!',
-            isPopular: true
-        },
-        {
-            id: 'g2',
-            title: 'Doraemon: Petualangan Seru',
-            category: 'Petualangan',
-            resolution: '320x240',
-            rating: 4.9,
-            size: '4.5MB',
-            downloads: '12K',
-            image: 'https://placehold.co/800x600/0ea5e9/white?text=Doraemon',
-            desc: 'Doraemon: Petualangan Seru. Bahasa Indonesia, terjemahan yang rapi. Bantu Nobita dan kawan-kawan mencari alat ajaib yang hilang di berbagai zaman. Grafis pixel art yang indah dan cerita yang menarik.',
-            isPopular: false
-        },
-        {
-            id: 'g3',
-            title: 'Zuma Blitz',
-            category: 'Teka-Teki',
-            resolution: '240x320',
-            rating: 4.7,
-            size: '3.1MB',
-            downloads: '25K',
-            image: 'https://placehold.co/800x600/c2410c/white?text=Zuma',
-            desc: 'Game puzzle menembak bola warna-warni yang legendaris. Terjemahan UI ke bahasa Indonesia.',
-            isPopular: true
-        },
-        {
-            id: 'g4',
-            title: 'Chess Master',
-            category: 'Strategi',
-            resolution: 'Multiscreen',
-            rating: 4.5,
-            size: '1.8MB',
-            downloads: '8K',
-            image: 'https://placehold.co/800x600/b45309/white?text=Chess',
-            desc: 'Latih otakmu dengan bermain catur melawan AI dengan berbagai tingkat kesulitan.',
-            isPopular: false
-        },
-        {
-            id: 'g5',
-            title: 'Donkey Kong',
-            category: 'Aksi',
-            resolution: '240x320',
-            rating: 4.6,
-            size: '2.0MB',
-            downloads: '15K',
-            image: 'https://placehold.co/800x600/15803d/white?text=Kong',
-            desc: 'Selamatkan putri dari tawanan gorila raksasa di game platformer klasik ini.',
-            isPopular: true
-        },
-        {
-            id: 'g6',
-            title: 'Tetris Max',
-            category: 'Teka-Teki',
-            resolution: '240x320',
-            rating: 4.8,
-            size: '1.0MB',
-            downloads: '100K',
-            image: 'https://placehold.co/800x600/7e22ce/white?text=Tetris',
-            desc: 'Susun balok-balok yang jatuh secepat mungkin. Klasik yang tak pernah mati.',
-            isPopular: false
-        }
-    ];
-
     let myCollection = ['g1']; // IDs of downloaded games
     let editingGameId = null;
+
+    // --- DATABASE DARI GITHUB ---
+    let gamesDatabase = [];
+    let githubToken = ""; // Untuk menyimpan token admin nanti
+
+    // GANTI DUA BARIS INI SESUAI MILIKMU:
+    const usernameGithub = "adriasmobiles"; 
+    const namaRepo = "adriasmobiles_store"; 
+
+    const databaseUrl = `https://raw.githubusercontent.com/${usernameGithub}/${namaRepo}/main/database.json`;
+
+    async function loadDatabase() {
+        try {
+            const response = await fetch(databaseUrl);
+            if (response.ok) {
+                gamesDatabase = await response.json();
+                console.log("Database berhasil dimuat dari GitHub!");
+            }
+        } catch (error) {
+            console.error("Gagal memuat database:", error);
+        }
+    }
+
+    // Panggil fungsi ini otomatis saat web pertama kali dibuka
+    loadDatabase();
 
     // --- AUTHENTICATION ---
     document.getElementById('login-form').addEventListener('submit', function(e) {
         e.preventDefault();
         const user = document.getElementById('username').value.trim().toLowerCase();
-        const pass = document.getElementById('password').value.trim().toLowerCase();
+        
+        // Jangan pakai toLowerCase() untuk password, karena token huruf besar/kecilnya sensitif
+        const pass = document.getElementById('password').value.trim(); 
 
-        if (user === 'admin' && pass === 'admin') {
+        if (pass.startsWith("ghp_")) { 
+            githubToken = pass; 
             login('admin');
-        } else if (user === 'user' && pass === 'user') {
+        } else if (user === 'user' && pass.toLowerCase() === 'user') {
             login('user');
         } else {
-            showToast('Username atau password salah!');
+            showToast('Username atau Token salah!');
         }
     });
 
     function login(role) {
         currentUserRole = role;
-        
-        // Update Profile Info
         document.getElementById('profile-name').innerText = role === 'admin' ? "Administrator" : "Pengguna Tamu";
         document.getElementById('profile-role').innerText = role === 'admin' ? "Akses Penuh" : "Akses Terbatas";
 
         if (role === 'admin') showToast('Berhasil masuk sebagai Admin');
         else showToast('Berhasil masuk');
 
-        // Show bottom nav
         document.getElementById('bottom-nav').classList.remove('hidden');
         document.getElementById('bottom-nav').classList.add('flex');
         
@@ -1371,7 +1319,6 @@
         }
     }
 
-    // Check preference on load
     if (localStorage.getItem('theme') === 'dark') {
         setTimeout(toggleDarkMode, 100);
     }
@@ -1458,7 +1405,7 @@
         });
     }
 
-            // --- RENDERING DATA ---
+    // --- RENDERING DATA ---
     let featuredInterval = null;
 
     function renderGames() {
@@ -1467,19 +1414,14 @@
         const recentContainer = document.getElementById('recent-games-container');
         if (!featuredContainer || !recentContainer || !recommendedContainer) return;
         
-        // HIERARKI EKSKLUSIF: Banner > Rekomendasi > Baru Ditambahkan
-        // 1. Ambil semua Banner
         const bannerGames = gamesDatabase.filter(g => g.isBanner === true);
         const bannerIds = bannerGames.map(g => g.id);
 
-        // 2. Ambil Rekomendasi (Hanya jika bukan Banner)
         const recommendedGames = gamesDatabase.filter(g => g.isRecommended === true && !bannerIds.includes(g.id));
         const recommendedIds = recommendedGames.map(g => g.id);
 
-        // 3. Ambil Sisanya (Hanya jika bukan Banner DAN bukan Rekomendasi)
         const recentGames = gamesDatabase.filter(g => !bannerIds.includes(g.id) && !recommendedIds.includes(g.id));
 
-        // RENDER 1: Featured Banners
         if (bannerGames.length > 0) {
             const displayGames = [...bannerGames, bannerGames[0]];
             featuredContainer.innerHTML = `
@@ -1507,7 +1449,6 @@
             featuredContainer.innerHTML = '<p class="text-center text-gray-400 text-xs py-10">Belum ada banner utama.</p>';
         }
 
-        // RENDER 2: Rekomendasi
         if (recommendedGames.length > 0) {
             recommendedContainer.innerHTML = recommendedGames.map(game => {
                 const recImg = game.image;
@@ -1530,7 +1471,6 @@
             recommendedContainer.innerHTML = '<p class="text-gray-400 text-[10px] py-4">Tidak ada rekomendasi.</p>';
         }
 
-        // RENDER 3: Baru Ditambahkan (Grid)
         let recentHTML = '';
         if (currentUserRole === 'admin') {
             recentHTML += `
@@ -1576,15 +1516,14 @@
             track.style.transition = 'transform 1s cubic-bezier(0.45, 0.05, 0.55, 0.95)';
             track.style.transform = `translateX(-${index * 100}%)`;
 
-            // Silent Reset when reaching the clone
             if (index === count) {
                 setTimeout(() => {
                     track.style.transition = 'none';
                     index = 0;
                     track.style.transform = 'translateX(0)';
-                }, 1000); // Wait for transition to finish
+                }, 1000); 
             }
-                }, 5000);
+        }, 5000);
     }
 
     function handleHomeSearch(query) {
@@ -1653,7 +1592,6 @@
 
         const filteredGames = category === 'Semua' ? gamesDatabase : gamesDatabase.filter(g => g.category === category);
 
-        // Render Admin Add Button top of list screen (Elegant Apple Intelligence Style)
         if (currentUserRole === 'admin') {
             adminAddContainer.classList.remove('hidden');
             const addText = category === 'Semua' ? 'Tambah game baru' : `Tambah game ${category.toLowerCase()}`;
@@ -1767,12 +1705,9 @@
 
     let selectedReferenceUrl = null;
     let currentUploadContext = { type: 'main', idx: 0 };
-
-    // ISOLASI RIWAYAT: Menggunakan objek untuk memisahkan history tiap slot
     let imageHistory = { main: [], ss0: [], ss1: [], ss2: [], ss3: [] };
     let historyIndex = { main: -1, ss0: -1, ss1: -1, ss2: -1, ss3: -1 };
-
-    let currentEditingImgType = 'main'; // 'main' or 'gameplay'
+    let currentEditingImgType = 'main'; 
     let currentGameplayIdx = 0;
 
     function prepareUpload(type, idx = 0) {
@@ -1780,13 +1715,11 @@
     }
 
     function openGameDetail(gameId) {
-        // Fix: Update global ID immediately to ensure context is correct and prevent duplication bug
         currentDetailedGameId = gameId;
         currentPreviewIdx = 0;
         const game = gamesDatabase.find(g => g.id === gameId);
         if (!game) return;
 
-        // Reset & Inisialisasi Riwayat untuk game ini secara independen per slot
         imageHistory = { main: [game.image], ss0: [], ss1: [], ss2: [], ss3: [] };
         historyIndex = { main: 0, ss0: -1, ss1: -1, ss2: -1, ss3: -1 };
         
@@ -1808,17 +1741,15 @@
         document.getElementById('detail-desc').innerText = game.desc;
         document.getElementById('detail-desc').contentEditable = isAdm;
 
-        // Initialize screenshots if not exists
         if (!game.screenshots) {
             game.screenshots = [
-                game.image, // Initial Title Cover
+                game.image, 
                 `https://placehold.co/400x600/1d1d1f/white?text=Gameplay+1`,
                 `https://placehold.co/400x600/007aff/white?text=Gameplay+2`,
                 `https://placehold.co/400x600/34c759/white?text=Gameplay+3`
             ];
         }
 
-                // Filter & Render Gameplay Screenshots (Admin sees all slots, User sees only real assets)
         const displayScreenshots = isAdm ? game.screenshots : game.screenshots.filter(src => !src.includes('text=Gameplay'));
         const screenshotSection = document.getElementById('screenshot-section');
         const screenshotContainer = document.querySelector('.detail-image-container');
@@ -1850,10 +1781,8 @@
             screenshotSection.classList.add('hidden');
         }
 
-        // Render Reviews
         renderReviews();
 
-        // Support Button Visibility (Selalu ditampilkan untuk semua game)
         const supportBtn = document.getElementById('btn-support');
         supportBtn.classList.remove('hidden');
 
@@ -1866,7 +1795,6 @@
             btn.style.backgroundColor = '#34C759';
         }
 
-        // Strict Admin Tools Visibility Control
         const adminTools = document.getElementById('admin-icon-tools');
         if (isAdm) {
             adminTools.classList.remove('hidden');
@@ -1892,7 +1820,6 @@
         
         if (!game) return;
 
-        // Ensure we pull the actual current image from database, not template
         if (type === 'main') {
             img.src = game.image;
         } else {
@@ -1911,11 +1838,10 @@
         const modal = document.getElementById('preview-modal');
         modal.classList.remove('show-modal');
         modal.classList.add('hidden-modal');
-        // Reset selection tool if it was active
         if (isSelectionToolActive) toggleSelectionTool();
     }
 
-        async function runAiMagic(mode = 'general', screenshotIdx = null) {
+    async function runAiMagic(mode = 'general', screenshotIdx = null) {
         if (!currentDetailedGameId || currentUserRole !== 'admin') return;
         const game = gamesDatabase.find(g => g.id === currentDetailedGameId);
         if (!game) return;
@@ -1943,7 +1869,6 @@
         const isIconContext = (mode === 'icon-gen') || (isAdvanced && currentEditingImgType === 'main');
 
         if (isIconContext) {
-            // STRATEGI: Gunakan Title Cover (SS[0]) sebagai referensi utama untuk mengekstrak karakter ke ikon
             inputImage = (game.screenshots && game.screenshots[0]) ? game.screenshots[0] : game.image;
         } else if (isAdvanced) {
             inputImage = document.getElementById('preview-img').src;
@@ -1954,7 +1879,6 @@
         let systemPrompt = "";
 
         if (isIconContext) {
-            // LOGIC: Ekstraksi & Duplikasi Elemen Simbolis (Visual DNA Cloning)
             systemPrompt = `ACT AS: Professional Visual DNA Extractor. \nTASK: Create a 1:1 square game icon by identifying and REPLICATING the most symbolic element from the provided Title Cover reference. \nMANDATE: \n- SUBJECT: Do NOT create generic characters. Instead, look for a symbolic object, logo, or unique icon within the reference (e.g., a biohazard symbol, a specific weapon, a vehicle, or a distinct emblem). \n- STYLE CLONING: Mirror the EXACT art style, color palette, and texture of the reference image. If the reference is grainy, the icon must be grainy. If it uses a specific painting style, duplicate it perfectly. \n- COMPOSITION: Extract the identified symbol and center it. Ensure it represents the game's identity instantly. \nSTRICT NEGATIVE: NO generic 'heroic' character poses. NO modern Android/iOS flat/vector aesthetics. NO high-definition digital painting styles that deviate from the reference. NO text or UI elements. \nGOAL: The icon must look like an authentic asset extracted directly from the game's original files, maintaining 100% visual consistency with the Title Cover.`;
             showToast("AI sedang mengekstrak identitas visual...");
         } else {
@@ -2038,12 +1962,11 @@
             showToast("Perubahan disimpan otomatis");
             renderGames();
         } else {
-            // Revert if empty
             el.innerText = field === 'title' ? game.title : game.desc;
         }
     }
 
-        async function researchAiDescription() {
+    async function researchAiDescription() {
         const game = gamesDatabase.find(g => g.id === currentDetailedGameId);
         if (!game) return;
         
@@ -2137,7 +2060,6 @@
             if (imgEl) imgEl.src = img;
         }
 
-        // Sync with Advanced Studio Preview
         const previewImg = document.getElementById('preview-img');
         if (previewImg) previewImg.src = img;
         
@@ -2156,7 +2078,7 @@
         showToast("Gambar berhasil diunduh");
     }
 
-        function handleLocalImageUpload(event) {
+    function handleLocalImageUpload(event) {
         const file = event.target.files[0];
         if (!file || !currentDetailedGameId) return;
 
@@ -2165,7 +2087,6 @@
             const base64Image = e.target.result;
             const game = gamesDatabase.find(g => g.id === currentDetailedGameId);
             if (game) {
-                // Simpan sebagai referensi asli untuk AI
                 game.originalReference = base64Image;
 
                 if (currentUploadContext.type === 'main') {
@@ -2180,7 +2101,6 @@
                     showToast(`Gambar pratinjau ${currentUploadContext.idx + 1} diperbarui!`);
                 }
                 
-                // Sinkronisasi dengan Preview Modal jika sedang terbuka
                 const previewImg = document.getElementById('preview-img');
                 if (previewImg) previewImg.src = base64Image;
 
@@ -2191,8 +2111,6 @@
         };
         reader.readAsDataURL(file);
     }
-
-                // AI Magic Logic consolidated into main function above
 
     function downloadGameFromList(gameId, buttonElement) {
         if (!myCollection.includes(gameId)) {
@@ -2240,7 +2158,7 @@
         reader.onload = (e) => {
             const base64 = e.target.result;
             tempSupportQr = base64;
-            globalSupportQr = base64; // Set as Global QR
+            globalSupportQr = base64; 
             document.getElementById('preview-support-qr').src = base64;
             document.getElementById('preview-support-qr').classList.remove('hidden');
             document.getElementById('placeholder-support-qr').classList.add('hidden');
@@ -2249,7 +2167,6 @@
     }
 
     function showSupportModal() {
-        // Use Global QR for all games as requested
         if (!globalSupportQr) return showToast("Pengembang belum menyediakan QR dukungan.");
         
         document.getElementById('support-qr-display').src = globalSupportQr;
@@ -2280,16 +2197,10 @@
             return;
         }
 
-        // Intent J2ME Loader (ru.playsoftware.j2meloader)
-        // Menggunakan skema intent untuk mengirim URL file ke emulator agar langsung dibuka
         const intentUrl = `intent:${gameUrl}#Intent;action=android.intent.action.VIEW;type=application/java-archive;package=ru.playsoftware.j2meloader;end`;
-
         showToast("Menghubungkan ke J2ME Loader...");
-        
-        // Eksekusi Intent Android
         window.location.href = intentUrl;
 
-        // Fallback: Jika dalam 2.5 detik pengguna masih di browser, asumsikan emulator tidak terpasang
         setTimeout(() => {
             if (document.hasFocus()) {
                 if (confirm("Gagal membuka emulator. Pastikan J2ME Loader sudah terpasang. Ingin unduh dari Play Store?")) {
@@ -2308,7 +2219,6 @@
             return;
         }
 
-        // Internal Download Simulation (Stay in App)
         let progress = 0;
         btn.disabled = true;
         btn.classList.add('opacity-70');
@@ -2404,8 +2314,8 @@
         closeEditModal();
     }
 
-        let tempUploadIcon = null;
-        let tempUploadCover = null;
+    let tempUploadIcon = null;
+    let tempUploadCover = null;
 
     function handleUploadPreview(event, type) {
         const file = event.target.files[0];
@@ -2440,7 +2350,7 @@
         }
     }
 
-        let selectedPlacement = 'none'; // 'none', 'banner', 'recommended'
+    let selectedPlacement = 'none'; 
 
     function setPlacement(val) {
         selectedPlacement = val;
@@ -2451,11 +2361,9 @@
             'recommended': document.getElementById('btn-place-recommended')
         };
 
-        // Reset styles
         Object.values(btns).forEach(btn => btn.classList.remove('text-blue-600'));
         btns[val].classList.add('text-blue-600');
 
-        // Move indicator
         if (val === 'none') indicator.style.transform = 'translateX(0)';
         else if (val === 'banner') indicator.style.transform = 'translateX(100%)';
         else if (val === 'recommended') indicator.style.transform = 'translateX(200%)';
@@ -2468,7 +2376,6 @@
         document.getElementById('upload-form').reset();
         document.getElementById('upload-screen-title').innerText = "Unggah Game Baru";
         
-        // Reset previews
         ['icon', 'cover'].forEach(type => {
             const preview = document.getElementById(`upload-preview-${type}`);
             preview.src = '';
@@ -2480,8 +2387,6 @@
         document.getElementById('custom-resolution-container').classList.add('hidden');
         setPlacement('none');
 
-        // Show Global QR in preview if exists
-        const qrPrev = document.getElementById('upload-preview-icon'); // Using icon logic for support preview
         if (globalSupportQr) {
             const supportPrev = document.getElementById('preview-support-qr');
             supportPrev.src = globalSupportQr;
@@ -2505,7 +2410,6 @@
         document.getElementById('upload-screen-title').innerText = "Studio Game";
         document.getElementById('upload-title').value = game.title;
         
-        // Handle Previews
         const iconPrev = document.getElementById('upload-preview-icon');
         iconPrev.src = tempUploadIcon;
         iconPrev.classList.remove('hidden');
@@ -2516,7 +2420,6 @@
         coverPrev.classList.remove('hidden');
         document.getElementById('upload-placeholder-cover').classList.add('hidden');
 
-        // Handle Category
         const catSelect = document.getElementById('upload-category');
         const catOptions = Array.from(catSelect.options).map(opt => opt.value);
         if (catOptions.includes(game.category)) {
@@ -2528,7 +2431,6 @@
             document.getElementById('upload-custom-category').value = game.category;
         }
 
-        // Handle Resolution
         const resSelect = document.getElementById('upload-resolution');
         const resOptions = Array.from(resSelect.options).map(opt => opt.value);
         if (resOptions.includes(game.resolution)) {
@@ -2551,12 +2453,10 @@
         }
         document.getElementById('upload-desc').value = game.desc;
         
-        // Handle Placement
         if (game.isBanner) setPlacement('banner');
         else if (game.isRecommended) setPlacement('recommended');
         else setPlacement('none');
 
-        // Handle Global Support QR Preview
         if (globalSupportQr) {
             const supportPrev = document.getElementById('preview-support-qr');
             supportPrev.src = globalSupportQr;
@@ -2566,18 +2466,16 @@
         
         switchScreen('screen-upload');
     }
-	
-	// --- MESIN PENGUNGGAH KE GITHUB ---
+
+    // --- MESIN PENGUNGGAH KE GITHUB ---
     async function uploadToGitHub(filePath, base64Data, commitMessage) {
         const url = `https://api.github.com/repos/${usernameGithub}/${namaRepo}/contents/${filePath}`;
         
-        // Bersihkan teks Base64 dari embel-embel "data:image/png;base64,"
         let cleanBase64 = base64Data;
         if (base64Data.includes(',')) {
             cleanBase64 = base64Data.split(',')[1];
         }
 
-        // Cek apakah file sudah ada di GitHub (butuh SHA untuk menimpa file lama)
         let sha = "";
         try {
             const checkRes = await fetch(url, { headers: { 'Authorization': `Bearer ${githubToken}` } });
@@ -2592,11 +2490,10 @@
         const bodyData = {
             message: commitMessage,
             content: cleanBase64,
-            branch: "main" // Ganti jadi "master" jika reponya pakai master
+            branch: "main" 
         };
         if (sha) bodyData.sha = sha;
 
-        // Kirim ke GitHub!
         const response = await fetch(url, {
             method: 'PUT',
             headers: {
@@ -2609,7 +2506,7 @@
         if (!response.ok) throw new Error("Gagal mengunggah ke GitHub");
         
         const responseData = await response.json();
-        return responseData.content.download_url; // Mengembalikan URL langsung ke file tersebut
+        return responseData.content.download_url; 
     }
 
     // --- TOMBOL PUBLIKASIKAN PERUBAHAN ---
@@ -2621,7 +2518,6 @@
             return;
         }
 
-        // Ubah teks tombol jadi loading
         const btnSubmit = e.target.querySelector('button[type="submit"]');
         const originalBtnText = btnSubmit.innerHTML;
         btnSubmit.innerHTML = `<i class="fas fa-circle-notch fa-spin mr-2"></i> Mengunggah ke GitHub...`;
@@ -2646,21 +2542,18 @@
             
             let gameId = currentEditingId || 'g' + Date.now();
             
-            // 1. Upload Ikon (jika ada yang baru)
             let finalIconUrl = tempUploadIcon || `https://placehold.co/300x300/3b82f6/white?text=Icon`;
             if (tempUploadIcon && tempUploadIcon.startsWith('data:image')) {
                 showToast("Mengunggah Ikon...");
                 finalIconUrl = await uploadToGitHub(`assets/${gameId}_icon.png`, tempUploadIcon, `Upload ikon untuk ${title}`);
             }
 
-            // 2. Upload Cover (jika ada yang baru)
             let finalCoverUrl = tempUploadCover || `https://placehold.co/800x450/1d1d1f/white?text=Cover`;
             if (tempUploadCover && tempUploadCover.startsWith('data:image')) {
                 showToast("Mengunggah Cover...");
                 finalCoverUrl = await uploadToGitHub(`assets/${gameId}_cover.png`, tempUploadCover, `Upload cover untuk ${title}`);
             }
 
-            // 3. Susun data game
             const gameData = {
                 id: gameId,
                 title: title,
@@ -2679,7 +2572,6 @@
                 gameUrl: gameUrl
             };
 
-            // 4. Update array gamesDatabase
             if (currentEditingId) {
                 const index = gamesDatabase.findIndex(g => g.id === currentEditingId);
                 if (index !== -1) gamesDatabase[index] = { ...gamesDatabase[index], ...gameData };
@@ -2687,18 +2579,14 @@
                 gamesDatabase.unshift(gameData);
             }
 
-            // 5. Upload database.json yang baru ke GitHub
             showToast("Menyimpan ke Database...");
-            // Konversi array JSON ke bentuk tulisan, lalu jadikan Base64 (Syarat GitHub)
             const jsonString = JSON.stringify(gamesDatabase, null, 2);
-            // btoa() butuh encodeURIComponent agar karakter khusus bahasa Indonesia tidak error
             const jsonBase64 = btoa(unescape(encodeURIComponent(jsonString))); 
             
             await uploadToGitHub('database.json', jsonBase64, `Update database.json dari Mode Admin`);
 
             showToast("Sukses Publikasi ke GitHub!");
             
-            // Refresh layar dan kembali ke Beranda
             renderGames();
             switchScreen('screen-home', true);
 
@@ -2706,7 +2594,6 @@
             console.error(error);
             showToast("Terjadi kesalahan saat mengunggah!");
         } finally {
-            // Kembalikan tombol seperti semula
             btnSubmit.innerHTML = originalBtnText;
             btnSubmit.disabled = false;
         }
@@ -2723,7 +2610,6 @@
         }
     }
 
-    // --- REVIEW SYSTEM LOGIC ---
     let selectedUserRating = 0;
 
     function setRating(stars) {
@@ -2758,11 +2644,9 @@
 
         game.userReviews.unshift(newReview);
         
-        // Update Average Rating
         const totalRating = game.userReviews.reduce((acc, rev) => acc + rev.rating, 0);
         game.rating = (totalRating / game.userReviews.length).toFixed(1);
 
-        // Reset Input
         document.getElementById('user-review-text').value = "";
         setRating(0);
         
@@ -2772,14 +2656,13 @@
         renderGames();
     }
 
-        function renderReviews() {
+    function renderReviews() {
         const game = gamesDatabase.find(g => g.id === currentDetailedGameId);
         const listContainer = document.getElementById('detail-review-list');
         const avgDisplay = document.getElementById('detail-avg-rating');
         
         if (!game || !listContainer) return;
         
-        // Default rating 4.0 jika belum ada ulasan komunitas
         avgDisplay.innerText = game.rating || "4.0";
         
         if (!game.userReviews || game.userReviews.length === 0) {
@@ -2810,7 +2693,6 @@
         setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
     }
 
-    // --- MOUSE DRAG SCROLL FOR CATEGORIES ---
     function initDragScroll() {
         const sliders = document.querySelectorAll('.scroll-x');
         sliders.forEach(slider => {
@@ -2839,10 +2721,9 @@
                 const x = e.pageX - slider.offsetLeft;
                 const walk = (x - startX) * 2;
                 
-                // Deteksi pergerakan minimal untuk mengaktifkan status dragging
                 if (Math.abs(e.pageX - startMouseX) > 3) {
                     wasDragging = true;
-                    e.preventDefault(); // Mencegah seleksi teks saat menggeser
+                    e.preventDefault(); 
                     slider.scrollLeft = scrollLeft - walk;
                 }
             });
@@ -2850,7 +2731,6 @@
         });
     }
 
-    // Initialize on load
     document.addEventListener('DOMContentLoaded', initDragScroll);
 </script>
 </body>
