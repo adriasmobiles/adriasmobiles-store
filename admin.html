@@ -962,17 +962,16 @@
         setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
     }
 	
-	// =========================================================
-    // STATE MANAGEMENT: STUDIO AI & JEMBATAN VISUAL
+	
+    // =========================================================
+    // STATE MANAGEMENT: STUDIO AI & JEMBATAN VISUAL (V4)
     // =========================================================
     let currentDetailedGameId = null;
     let currentGameplayIdx = 0;
     let currentUploadContext = { type: 'main', idx: 0 };
     
-    // HAPUS kata 'let' di bawah ini untuk menimpa variabel lama dari atas script
+    // Menimpa memori lama untuk memastikan slot tidak tertukar
     currentEditingImgType = 'main'; 
-    
-    // History independen untuk 1 Ikon + 4 Gameplay Slot (Timpa bawaan lama)
     imageHistory = { main: [], ss0: [], ss1: [], ss2: [], ss3: [] };
     historyIndex = { main: -1, ss0: -1, ss1: -1, ss2: -1, ss3: -1 };
 
@@ -981,7 +980,7 @@
     }
 
     // =========================================================
-    // DOM FETCHER (SANG JEMBATAN) - UPDATE V3
+    // DOM FETCHER (SANG JEMBATAN) - FINAL FIX
     // =========================================================
     async function buildVisualBridge(gameId) {
         try {
@@ -994,14 +993,14 @@
             const doc = parser.parseFromString(text, 'text/html');
             const detailScreen = doc.getElementById('screen-detail');
 
-            // CSS Penambal
+            // FIX BUG 3 (MOUSE DRAG): Tambahkan penolak drag bawaan browser
             if (!document.getElementById('bridge-css')) {
                 const style = document.createElement('style');
                 style.id = 'bridge-css';
                 style.innerHTML = `
                     .scroll-x { display: flex; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; touch-action: pan-x;}
                     .scroll-x::-webkit-scrollbar { display: none; }
-                    .scroll-x img { pointer-events: auto; }
+                    .scroll-x img { pointer-events: auto; -webkit-user-drag: none; user-drag: none; }
                     #screen-visual-edit { background-color: #ffffff !important; min-height: 100vh; z-index: 50; }
                 `;
                 document.head.appendChild(style);
@@ -1021,39 +1020,22 @@
             const game = gamesDatabase.find(g => g.id === gameId);
             currentDetailedGameId = gameId;
 
-            // ==========================================
-            // FIX 1: PAKSA 4 SLOT SCREENSHOT UNTUK ADMIN
-            // ==========================================
+            // Inisialisasi Slot & History
             if (!game.screenshots) game.screenshots = [game.image];
-            
-            const placeholders = [
-                'https://placehold.co/400x600/1d1d1f/white?text=Gameplay+1',
-                'https://placehold.co/400x600/007aff/white?text=Gameplay+2',
-                'https://placehold.co/400x600/34c759/white?text=Gameplay+3'
-            ];
-            
-            // Jika slot kurang dari 4, suntikkan placeholder agar Admin bisa mengisi
-            while (game.screenshots.length < 4) {
-                game.screenshots.push(placeholders[game.screenshots.length - 1]);
-            }
+            const placeholders = ['https://placehold.co/400x600/1d1d1f/white?text=Gameplay+1','https://placehold.co/400x600/007aff/white?text=Gameplay+2','https://placehold.co/400x600/34c759/white?text=Gameplay+3'];
+            while (game.screenshots.length < 4) { game.screenshots.push(placeholders[game.screenshots.length - 1]); }
 
-            // Inisialisasi History Slot untuk Game Ini
             imageHistory = { main: [game.image], ss0: [], ss1: [], ss2: [], ss3: [] };
             historyIndex = { main: 0, ss0: -1, ss1: -1, ss2: -1, ss3: -1 };
-            game.screenshots.forEach((src, idx) => {
-                imageHistory[`ss${idx}`] = [src];
-                historyIndex[`ss${idx}`] = 0;
-            });
+            game.screenshots.forEach((src, idx) => { imageHistory[`ss${idx}`] = [src]; historyIndex[`ss${idx}`] = 0; });
 
             // Teks Live Edit
             const titleEl = adminContainer.querySelector('#detail-title');
-            titleEl.innerText = game.title;
-            titleEl.contentEditable = true;
+            titleEl.innerText = game.title; titleEl.contentEditable = true;
             titleEl.onblur = () => { game.title = titleEl.innerText; showToast("Teks tersimpan di memori"); };
 
             const descEl = adminContainer.querySelector('#detail-desc');
-            descEl.innerText = game.desc;
-            descEl.contentEditable = true;
+            descEl.innerText = game.desc; descEl.contentEditable = true;
             descEl.onblur = () => { game.desc = descEl.innerText; showToast("Teks tersimpan di memori"); };
 
             adminContainer.querySelector('#detail-category').innerText = game.category;
@@ -1061,137 +1043,245 @@
             adminContainer.querySelector('#detail-resolution').innerText = game.resolution || '240x320';
             adminContainer.querySelector('#detail-size-stat').innerText = game.size || '0 MB';
 
-            // IKON UTAMA & TRIGGER STUDIO
+            // FIX BUG 1 (AI NGACAK): Ganti fungsi dengan nama "runAdminAiMagic" untuk menghindari bentrok fungsi lama
             const mainImg = adminContainer.querySelector('#detail-img');
             mainImg.src = game.image;
-            
             const iconWrapper = mainImg.parentElement;
             iconWrapper.innerHTML = `
+                <div id="ai-loading-icon" class="hidden absolute inset-0 bg-black/60 backdrop-blur-sm rounded-[24px] flex flex-col items-center justify-center z-30 text-white">
+                    <i class="fas fa-circle-notch fa-spin text-xl text-white/80 mb-2"></i>
+                </div>
                 <img id="detail-img" src="${game.image}" class="w-28 h-28 object-cover rounded-[24px] shadow-lg border-2 border-blue-400 cursor-pointer" onclick="openAdvancedEditor('main')">
                 <div class="absolute -top-2 -right-2 z-40 flex shadow-xl rounded-full">
-                    <button class="w-10 h-10 bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 text-white rounded-full flex items-center justify-center border-2 border-white transition-all active:scale-90" onclick="openAdvancedEditor('main')" title="Buka AI Studio">
+                    <button type="button" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); runAdminAiMagic('icon-gen')" class="w-10 h-10 bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 text-white rounded-full flex items-center justify-center border-2 border-white transition-all active:scale-90" title="AI Icon Generator">
                         <i class="fas fa-wand-magic-sparkles text-xs"></i>
                     </button>
                 </div>
             `;
 
-            // SLOT GAMEPLAY (Kini merender 4 Slot Mutlak)
             const screenshotSection = adminContainer.querySelector('#screenshot-section');
             const screenshotContainer = adminContainer.querySelector('.detail-image-container');
-            
             screenshotSection.classList.remove('hidden');
             screenshotContainer.innerHTML = game.screenshots.map((src, idx) => `
                 <div class="relative flex-shrink-0 w-48 aspect-[2/3] rounded-2xl overflow-hidden border border-gray-100 shadow-sm group">
+                    <div id="ai-loading-screenshot-${idx}" class="hidden absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-20 text-white">
+                        <i class="fas fa-circle-notch fa-spin text-xl text-white/80 mb-2"></i>
+                    </div>
                     <img id="screenshot-img-${idx}" src="${src}" class="w-full h-full object-cover cursor-pointer" onclick="openAdvancedEditor('gameplay', ${idx})">
                     <div class="absolute top-2 right-2 flex space-x-1">
-                        <button class="w-7 h-7 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center text-[10px]" onclick="event.stopPropagation(); prepareUpload('gameplay', ${idx}); document.getElementById('local-file-input').click()" title="Ganti Local">
+                        <button type="button" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); prepareUpload('gameplay', ${idx}); document.getElementById('local-file-input').click()" class="w-7 h-7 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center text-[10px]" title="Ganti Local">
                             <i class="fas fa-upload"></i>
                         </button>
-                        <button class="w-7 h-7 bg-black/70 text-white rounded-full flex items-center justify-center text-[10px]" onclick="event.stopPropagation(); openAdvancedEditor('gameplay', ${idx})" title="Edit di AI Studio">
+                        <button type="button" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); runAdminAiMagic('improve', ${idx})" class="w-7 h-7 bg-black/70 text-white rounded-full flex items-center justify-center text-[10px]" title="AI Polish">
                             <i class="fas fa-wand-magic-sparkles"></i>
                         </button>
                     </div>
+                    ${idx === 0 ? `<div class="absolute bottom-2 left-2 bg-black/60 text-white text-[8px] px-2 py-1 rounded font-bold uppercase">Hero Cover</div>` : ''}
                 </div>
             `).join('');
 
-            // Modifikasi Navigasi
-            const backBtn = adminContainer.querySelector('.fa-chevron-left').parentElement;
-            backBtn.onclick = (e) => { e.preventDefault(); switchScreen('screen-dashboard'); };
+            // Paksa Ganti Event Handler Upload dengan fungsi Admin khusus
+            const fileInput = document.getElementById('local-file-input');
+            if (fileInput) fileInput.onchange = handleAdminLocalImageUpload;
 
+            // Modifikasi Navigasi Modal & Alat
+            const undoBtn = document.querySelector('#preview-admin-tools button[title="Undo"]');
+            if (undoBtn) undoBtn.onclick = adminUndoImage;
+            
+            const redoBtn = document.querySelector('#preview-admin-tools button[title="Redo"]');
+            if (redoBtn) redoBtn.onclick = adminRedoImage;
+            
+            const aiSubmitBtn = document.querySelector('#preview-ai-studio button');
+            if (aiSubmitBtn) aiSubmitBtn.onclick = () => runAdminAiMagic('general');
+            
+            const aiInput = document.getElementById('preview-ai-prompt');
+            if (aiInput) aiInput.onkeydown = (e) => { if(e.key === 'Enter') runAdminAiMagic('general'); };
+
+            // Menghapus elemen yang tidak perlu
+            adminContainer.querySelector('.fa-chevron-left').parentElement.onclick = (e) => { e.preventDefault(); switchScreen('screen-dashboard'); };
             const reviewArea = adminContainer.querySelector('#review-input-area');
             if (reviewArea) reviewArea.parentElement.parentElement.style.display = 'none';
 
-            const downloadBtn = adminContainer.querySelector('#btn-download');
-            if (downloadBtn) {
-                downloadBtn.innerText = "SIMPAN KE GITHUB";
-                downloadBtn.className = "bg-gray-900 text-white px-6 py-2 rounded-full font-black text-[10px] uppercase tracking-widest shadow-xl active:scale-95 transition-all";
-                downloadBtn.onclick = () => showToast("Gunakan 'Kelola Menu Game' di bawah untuk Finalisasi Data!");
-            }
-
-            // ==========================================
-            // FIX 2: INJEKSI TOMBOL KELOLA MENU (ADMIN ONLY)
-            // ==========================================
-            const adminActionsHTML = `
+            adminContainer.insertAdjacentHTML('beforeend', `
                 <div id="admin-actions-area" class="px-5 space-y-3 mt-8 pb-8">
-                    <button class="w-full py-3 bg-gray-100 text-blue-600 rounded-xl font-bold text-sm active:scale-95 transition-all" onclick="openFullEdit('${gameId}')">
-                        <i class="fas fa-sliders-h mr-2"></i> Kelola Menu Game
-                    </button>
-                    <button class="w-full py-3 text-red-500 font-bold text-sm" onclick="deleteCurrentGame('${gameId}')">
-                        <i class="fas fa-trash-alt mr-2"></i> Hapus Game Permanen
-                    </button>
+                    <button class="w-full py-3 bg-gray-100 text-blue-600 rounded-xl font-bold text-sm active:scale-95 transition-all" onclick="openFullEdit('${gameId}')"><i class="fas fa-sliders-h mr-2"></i> Kelola Menu Game</button>
+                    <button class="w-full py-3 text-red-500 font-bold text-sm" onclick="deleteCurrentGame('${gameId}')"><i class="fas fa-trash-alt mr-2"></i> Hapus Game Permanen</button>
                 </div>
-            `;
-            // Tempelkan di bagian paling akhir dari konten curian
-            adminContainer.insertAdjacentHTML('beforeend', adminActionsHTML);
+            `);
+
+            // Inisialisasi Ulang Scroll Tikus (Drag)
+            initBridgeDragScroll(adminContainer);
 
             switchScreen('screen-visual-edit');
             showToast("Jembatan Visual Tersambung Sempurna!");
-        } catch (error) {
-            console.error("Fetch DOM Error:", error);
-            showToast("Gagal merender jembatan visual.");
-        }
+        } catch (error) { showToast("Gagal merender jembatan visual."); }
     }
 
     // =========================================================
-    // FUNGSI ADVANCED STUDIO (SAMA PERSIS DENGAN REFERENSI)
+    // FIX BUG 3: MOUSE DRAG SCROLL DI PRATINJAU JEMBATAN
     // =========================================================
-    function openAdvancedEditor(type, idx = 0) {
-        currentEditingImgType = type;
-        currentGameplayIdx = idx;
-        
-        const modal = document.getElementById('preview-modal');
-        const img = document.getElementById('preview-img');
-        const game = gamesDatabase.find(g => g.id === currentDetailedGameId);
-        if (!game) return;
-
-        if (type === 'main') {
-            img.src = game.image;
-        } else {
-            img.src = game.screenshots && game.screenshots[idx] ? game.screenshots[idx] : game.image;
-        }
-
-        document.getElementById('preview-interaction-layer').classList.remove('hidden');
-        modal.classList.remove('hidden-modal');
-        modal.classList.add('show-modal');
+    function initBridgeDragScroll(container) {
+        const sliders = container.querySelectorAll('.scroll-x');
+        sliders.forEach(slider => {
+            let isDown = false; let startX, scrollLeft, startMouseX;
+            slider.addEventListener('mousedown', (e) => {
+                isDown = true; slider.style.cursor = 'grabbing';
+                startX = e.pageX - slider.offsetLeft; startMouseX = e.pageX; scrollLeft = slider.scrollLeft;
+            });
+            const endDrag = () => { isDown = false; slider.style.cursor = 'grab'; };
+            slider.addEventListener('mouseleave', endDrag); 
+            slider.addEventListener('mouseup', endDrag);
+            slider.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                const walk = (e.pageX - slider.offsetLeft - startX) * 2;
+                if (Math.abs(e.pageX - startMouseX) > 3) { e.preventDefault(); slider.scrollLeft = scrollLeft - walk; }
+            });
+            slider.style.cursor = 'grab';
+        });
     }
 
-    function closePreview() {
-        const modal = document.getElementById('preview-modal');
-        modal.classList.remove('show-modal');
-        modal.classList.add('hidden-modal');
-    }
+    // =========================================================
+    // FIX BUG 2: UNGGAH GAMBAR LOKAL KE MEMORI (NAMA BARU)
+    // =========================================================
+    function handleAdminLocalImageUpload(event) {
+        const file = event.target.files[0];
+        if (!file || !currentDetailedGameId) return;
 
-    function navigateModalImage(direction) {
-        const game = gamesDatabase.find(g => g.id === currentDetailedGameId);
-        if (!game) return;
-        const screenshots = game.screenshots || [];
-        const totalScreenshots = screenshots.length;
-        
-        let currentIndex = currentEditingImgType === 'main' ? -1 : currentGameplayIdx;
-        let nextIndex = currentIndex + direction;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const base64Image = e.target.result;
+            const game = gamesDatabase.find(g => g.id === currentDetailedGameId);
+            if (game) {
+                if (currentUploadContext.type === 'main') {
+                    game.image = base64Image;
+                    const imgEl = document.getElementById('screen-visual-edit')?.querySelector('#detail-img');
+                    if (imgEl) imgEl.src = base64Image;
+                    showToast("Ikon berhasil diperbarui!");
+                } else {
+                    if (!game.screenshots) game.screenshots = [];
+                    game.screenshots[currentUploadContext.idx] = base64Image;
+                    const imgEl = document.getElementById('screen-visual-edit')?.querySelector(`#screenshot-img-${currentUploadContext.idx}`);
+                    if (imgEl) imgEl.src = base64Image;
+                    showToast(`Pratinjau ${currentUploadContext.idx + 1} diperbarui!`);
+                }
+                
+                const previewImg = document.getElementById('preview-img');
+                if (previewImg) previewImg.src = base64Image;
 
-        if (nextIndex < -1) nextIndex = totalScreenshots - 1;
-        if (nextIndex >= totalScreenshots) nextIndex = -1;
-
-        const previewImg = document.getElementById('preview-img');
-        previewImg.style.opacity = '0.3';
-        
-        setTimeout(() => {
-            if (nextIndex === -1) {
-                currentEditingImgType = 'main';
-                currentGameplayIdx = 0;
-                previewImg.src = game.image;
-            } else {
-                currentEditingImgType = 'gameplay';
-                currentGameplayIdx = nextIndex;
-                previewImg.src = screenshots[nextIndex];
+                const slotKey = currentUploadContext.type === 'main' ? 'main' : `ss${currentUploadContext.idx}`;
+                addAdminHistory(base64Image, slotKey);
             }
-            previewImg.style.opacity = '1';
-            showToast(currentEditingImgType === 'main' ? "Melihat Ikon Utama" : `Melihat Pratinjau ${currentGameplayIdx + 1}`);
-        }, 50);
+            // KUNCI FIX: Kosongkan value agar bisa upload ulang gambar yang sama
+            event.target.value = '';
+        };
+        reader.readAsDataURL(file);
     }
 
-    function addToHistory(img, slotKey) {
+    // =========================================================
+    // FIX BUG 1: KODE AI MAGIC TERISOLASI UNTUK ADMIN
+    // =========================================================
+    async function runAdminAiMagic(mode = 'general', screenshotIdx = null) {
+        if (!currentDetailedGameId) return;
+        const game = gamesDatabase.find(g => g.id === currentDetailedGameId);
+        if (!game) return;
+
+        const modal = document.getElementById('preview-modal');
+        const isAdvanced = modal.classList.contains('show-modal');
+        const promptInput = document.getElementById('preview-ai-prompt');
+        const userPrompt = (isAdvanced && promptInput) ? promptInput.value.trim() : "";
+        
+        const modalLoadingOverlay = document.getElementById('ai-loading-modal');
+        const targetIdx = screenshotIdx !== null ? screenshotIdx : (isAdvanced ? currentGameplayIdx : 0);
+        
+        const adminContainer = document.getElementById('screen-visual-edit');
+        const screenshotLoading = adminContainer ? adminContainer.querySelector(`#ai-loading-screenshot-${targetIdx}`) : null;
+        const iconLoading = adminContainer ? adminContainer.querySelector(`#ai-loading-icon`) : null;
+
+        if (isAdvanced && modalLoadingOverlay) {
+            modalLoadingOverlay.classList.remove('hidden');
+        } else if (mode === 'icon-gen' && iconLoading) {
+            iconLoading.classList.remove('hidden');
+            iconLoading.style.display = 'flex';
+            showToast("AI mengekstrak Ikon dari Cover...");
+        } else if (screenshotLoading || targetIdx !== null) {
+            if (screenshotLoading) {
+                screenshotLoading.classList.remove('hidden');
+                screenshotLoading.style.display = 'flex';
+            }
+            showToast(targetIdx === 0 ? "AI merestorasi Hero Cover..." : "AI memoles Gameplay...");
+        }
+
+        let inputImage = "";
+        const isIconContext = (mode === 'icon-gen') || (isAdvanced && currentEditingImgType === 'main');
+
+        if (isIconContext) {
+            inputImage = (game.screenshots && game.screenshots[0] && !game.screenshots[0].includes('placehold')) ? game.screenshots[0] : game.image;
+        } else if (isAdvanced) {
+            inputImage = document.getElementById('preview-img').src;
+        } else {
+            inputImage = game.screenshots[targetIdx];
+        }
+
+        let systemPrompt = isIconContext 
+            ? `ACT AS: Professional Visual DNA Extractor. \nTASK: Create a 1:1 square game icon by identifying and REPLICATING the most symbolic element from the provided Title Cover reference. \nMANDATE: \n- SUBJECT: Do NOT create generic characters. Instead, look for a symbolic object, logo, or unique icon within the reference. \n- STYLE CLONING: Mirror the EXACT art style, color palette, and texture of the reference image. \n- COMPOSITION: Extract the identified symbol and center it. \nSTRICT NEGATIVE: NO text or UI elements.`
+            : `ACT AS: Professional Image Upscaler & Visual Enhancer. \nTASK: Improve the quality of the provided game screenshot. \nMANDATE: Increase sharpness, clarify textures, and enhance color vibrancy. \nSTRICT RULE: DO NOT change the subject or art style. Maintain the original J2ME game look but make it look 'remastered'. ${targetIdx === 0 ? '\nSPECIAL MANDATE: Create a LANDSCAPE 16:9 cinematic composition suitable for a top-page banner.' : ''}`;
+
+        let parts = [{ text: systemPrompt + (userPrompt ? " Additional Instruction: " + userPrompt : "") }];
+        if (inputImage && inputImage.startsWith('data:image')) {
+            parts.push({ inlineData: { mimeType: "image/jpeg", data: inputImage.split(',')[1] } });
+        }
+
+        try {
+            const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ role: "user", parts: parts }], generationConfig: { responseModalities: ["IMAGE"] } })
+            });
+
+            const data = await response.json();
+            const imagePart = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+            if (!imagePart) throw new Error("AI Error");
+
+            const newImgBase64 = `data:image/jpeg;base64,${imagePart.inlineData.data}`;
+            const slotKey = isAdvanced ? (currentEditingImgType === 'main' ? 'main' : `ss${currentGameplayIdx}`) : (mode === 'icon-gen' ? 'main' : `ss${targetIdx}`);
+            
+            addAdminHistory(newImgBase64, slotKey);
+
+            if (isAdvanced) {
+                if (currentEditingImgType === 'main') {
+                    game.image = newImgBase64;
+                    const imgEl = adminContainer.querySelector('#detail-img');
+                    if(imgEl) imgEl.src = newImgBase64;
+                } else {
+                    game.screenshots[currentGameplayIdx] = newImgBase64;
+                    const imgEl = adminContainer.querySelector(`#screenshot-img-${currentGameplayIdx}`);
+                    if (imgEl) imgEl.src = newImgBase64;
+                }
+                document.getElementById('preview-img').src = newImgBase64;
+            } else if (mode === 'icon-gen') {
+                game.image = newImgBase64;
+                const imgEl = adminContainer.querySelector('#detail-img');
+                if(imgEl) imgEl.src = newImgBase64;
+            } else {
+                game.screenshots[targetIdx] = newImgBase64;
+                const imgEl = adminContainer.querySelector(`#screenshot-img-${targetIdx}`);
+                if (imgEl) imgEl.src = newImgBase64;
+            }
+
+            if (activeSelection) { activeSelection = null; const box = document.getElementById('preview-selection-box'); if (box) box.style.display = 'none'; }
+            showToast("AI Magic: Perubahan berhasil diterapkan!");
+        } catch (err) {
+            showToast("Gagal memproses AI.");
+        } finally {
+            if (modalLoadingOverlay) modalLoadingOverlay.classList.add('hidden');
+            if (iconLoading) { iconLoading.classList.add('hidden'); iconLoading.style.display = ''; }
+            if (screenshotLoading) { screenshotLoading.classList.add('hidden'); screenshotLoading.style.display = ''; }
+        }
+    }
+
+    // =========================================================
+    // HISTORY SYSTEM YANG TERISOLASI
+    // =========================================================
+    function addAdminHistory(img, slotKey) {
         if (!imageHistory[slotKey]) imageHistory[slotKey] = [];
         if (historyIndex[slotKey] < imageHistory[slotKey].length - 1) {
             imageHistory[slotKey] = imageHistory[slotKey].slice(0, historyIndex[slotKey] + 1);
@@ -1200,46 +1290,37 @@
         historyIndex[slotKey]++;
     }
 
-    function undoImage() {
+    function adminUndoImage() {
         const slotKey = currentEditingImgType === 'main' ? 'main' : `ss${currentGameplayIdx}`;
         if (historyIndex[slotKey] > 0) {
-            historyIndex[slotKey]--; applyHistoryImage(slotKey);
+            historyIndex[slotKey]--; applyAdminHistoryImage(slotKey);
         } else { showToast("Sudah di versi awal"); }
     }
 
-    function redoImage() {
+    function adminRedoImage() {
         const slotKey = currentEditingImgType === 'main' ? 'main' : `ss${currentGameplayIdx}`;
         if (historyIndex[slotKey] < imageHistory[slotKey].length - 1) {
-            historyIndex[slotKey]++; applyHistoryImage(slotKey);
+            historyIndex[slotKey]++; applyAdminHistoryImage(slotKey);
         } else { showToast("Sudah di versi terbaru"); }
     }
 
-    function applyHistoryImage(slotKey) {
+    function applyAdminHistoryImage(slotKey) {
         const img = imageHistory[slotKey][historyIndex[slotKey]];
         const game = gamesDatabase.find(g => g.id === currentDetailedGameId);
         if (!game) return;
 
         if (slotKey === 'main') {
             game.image = img;
-            document.getElementById('screen-visual-edit').querySelector('#detail-img').src = img;
+            const imgEl = document.getElementById('screen-visual-edit')?.querySelector('#detail-img');
+            if(imgEl) imgEl.src = img;
         } else {
             const idx = parseInt(slotKey.replace('ss', ''));
             game.screenshots[idx] = img;
-            document.getElementById('screen-visual-edit').querySelector(`#screenshot-img-${idx}`).src = img;
+            const imgEl = document.getElementById('screen-visual-edit')?.querySelector(`#screenshot-img-${idx}`);
+            if(imgEl) imgEl.src = img;
         }
         document.getElementById('preview-img').src = img;
         showToast(`Riwayat: ${historyIndex[slotKey] + 1}/${imageHistory[slotKey].length}`);
-    }
-
-    function downloadCurrentImage() {
-        const img = document.getElementById('preview-img').src;
-        const link = document.createElement('a');
-        link.href = img;
-        link.download = `AdriasMobiles_Visual_${Date.now()}.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        showToast("Gambar berhasil diunduh");
     }
 
     // Sambungkan Tombol Dasbor
