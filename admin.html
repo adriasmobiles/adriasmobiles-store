@@ -964,23 +964,22 @@
 	
 	
     // =========================================================
-    // STATE MANAGEMENT: STUDIO AI & JEMBATAN VISUAL (V4)
+    // STATE MANAGEMENT: STUDIO AI & JEMBATAN VISUAL (V5 FINAL)
     // =========================================================
     let currentDetailedGameId = null;
     let currentGameplayIdx = 0;
     let currentUploadContext = { type: 'main', idx: 0 };
+    let isBridgeDragging = false; // Mencegah klik terbuka saat geser mouse
     
-    // Menimpa memori lama untuk memastikan slot tidak tertukar
+    // Menimpa variabel bawaan admin lama
     currentEditingImgType = 'main'; 
     imageHistory = { main: [], ss0: [], ss1: [], ss2: [], ss3: [] };
     historyIndex = { main: -1, ss0: -1, ss1: -1, ss2: -1, ss3: -1 };
 
-    function prepareUpload(type, idx = 0) {
-        currentUploadContext = { type, idx };
-    }
+    function prepareUpload(type, idx = 0) { currentUploadContext = { type, idx }; }
 
     // =========================================================
-    // DOM FETCHER (SANG JEMBATAN) - FINAL FIX
+    // DOM FETCHER (SANG JEMBATAN)
     // =========================================================
     async function buildVisualBridge(gameId) {
         try {
@@ -993,7 +992,7 @@
             const doc = parser.parseFromString(text, 'text/html');
             const detailScreen = doc.getElementById('screen-detail');
 
-            // FIX BUG 3 (MOUSE DRAG): Tambahkan penolak drag bawaan browser
+            // Injector CSS
             if (!document.getElementById('bridge-css')) {
                 const style = document.createElement('style');
                 style.id = 'bridge-css';
@@ -1020,7 +1019,7 @@
             const game = gamesDatabase.find(g => g.id === gameId);
             currentDetailedGameId = gameId;
 
-            // Inisialisasi Slot & History
+            // Pastikan 4 Slot Tersedia
             if (!game.screenshots) game.screenshots = [game.image];
             const placeholders = ['https://placehold.co/400x600/1d1d1f/white?text=Gameplay+1','https://placehold.co/400x600/007aff/white?text=Gameplay+2','https://placehold.co/400x600/34c759/white?text=Gameplay+3'];
             while (game.screenshots.length < 4) { game.screenshots.push(placeholders[game.screenshots.length - 1]); }
@@ -1043,14 +1042,11 @@
             adminContainer.querySelector('#detail-resolution').innerText = game.resolution || '240x320';
             adminContainer.querySelector('#detail-size-stat').innerText = game.size || '0 MB';
 
-            // FIX BUG 1 (AI NGACAK): Ganti fungsi dengan nama "runAdminAiMagic" untuk menghindari bentrok fungsi lama
+            // Ikon Utama
             const mainImg = adminContainer.querySelector('#detail-img');
             mainImg.src = game.image;
-            const iconWrapper = mainImg.parentElement;
-            iconWrapper.innerHTML = `
-                <div id="ai-loading-icon" class="hidden absolute inset-0 bg-black/60 backdrop-blur-sm rounded-[24px] flex flex-col items-center justify-center z-30 text-white">
-                    <i class="fas fa-circle-notch fa-spin text-xl text-white/80 mb-2"></i>
-                </div>
+            mainImg.parentElement.innerHTML = `
+                <div id="ai-loading-icon" class="hidden absolute inset-0 bg-black/60 backdrop-blur-sm rounded-[24px] flex flex-col items-center justify-center z-30 text-white"><i class="fas fa-circle-notch fa-spin text-xl text-white/80 mb-2"></i></div>
                 <img id="detail-img" src="${game.image}" class="w-28 h-28 object-cover rounded-[24px] shadow-lg border-2 border-blue-400 cursor-pointer" onclick="openAdvancedEditor('main')">
                 <div class="absolute -top-2 -right-2 z-40 flex shadow-xl rounded-full">
                     <button type="button" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); runAdminAiMagic('icon-gen')" class="w-10 h-10 bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 text-white rounded-full flex items-center justify-center border-2 border-white transition-all active:scale-90" title="AI Icon Generator">
@@ -1059,32 +1055,25 @@
                 </div>
             `;
 
+            // Slot Screenshot Gameplay (Diinjeksi pelindung if(!isBridgeDragging))
             const screenshotSection = adminContainer.querySelector('#screenshot-section');
             const screenshotContainer = adminContainer.querySelector('.detail-image-container');
             screenshotSection.classList.remove('hidden');
             screenshotContainer.innerHTML = game.screenshots.map((src, idx) => `
                 <div class="relative flex-shrink-0 w-48 aspect-[2/3] rounded-2xl overflow-hidden border border-gray-100 shadow-sm group">
-                    <div id="ai-loading-screenshot-${idx}" class="hidden absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-20 text-white">
-                        <i class="fas fa-circle-notch fa-spin text-xl text-white/80 mb-2"></i>
-                    </div>
-                    <img id="screenshot-img-${idx}" src="${src}" class="w-full h-full object-cover cursor-pointer" onclick="openAdvancedEditor('gameplay', ${idx})">
+                    <div id="ai-loading-screenshot-${idx}" class="hidden absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-20 text-white"><i class="fas fa-circle-notch fa-spin text-xl text-white/80 mb-2"></i></div>
+                    <img id="screenshot-img-${idx}" src="${src}" class="w-full h-full object-cover cursor-pointer" onclick="if(!isBridgeDragging) openAdvancedEditor('gameplay', ${idx})">
                     <div class="absolute top-2 right-2 flex space-x-1">
-                        <button type="button" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); prepareUpload('gameplay', ${idx}); document.getElementById('local-file-input').click()" class="w-7 h-7 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center text-[10px]" title="Ganti Local">
-                            <i class="fas fa-upload"></i>
-                        </button>
-                        <button type="button" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); runAdminAiMagic('improve', ${idx})" class="w-7 h-7 bg-black/70 text-white rounded-full flex items-center justify-center text-[10px]" title="AI Polish">
-                            <i class="fas fa-wand-magic-sparkles"></i>
-                        </button>
+                        <button type="button" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); prepareUpload('gameplay', ${idx}); document.getElementById('local-file-input').click()" class="w-7 h-7 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center text-[10px]" title="Ganti Local"><i class="fas fa-upload"></i></button>
+                        <button type="button" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); runAdminAiMagic('improve', ${idx})" class="w-7 h-7 bg-black/70 text-white rounded-full flex items-center justify-center text-[10px]" title="AI Polish"><i class="fas fa-wand-magic-sparkles"></i></button>
                     </div>
-                    ${idx === 0 ? `<div class="absolute bottom-2 left-2 bg-black/60 text-white text-[8px] px-2 py-1 rounded font-bold uppercase">Hero Cover</div>` : ''}
                 </div>
             `).join('');
 
-            // Paksa Ganti Event Handler Upload dengan fungsi Admin khusus
+            // Modifikasi Navigasi Event
             const fileInput = document.getElementById('local-file-input');
             if (fileInput) fileInput.onchange = handleAdminLocalImageUpload;
 
-            // Modifikasi Navigasi Modal & Alat
             const undoBtn = document.querySelector('#preview-admin-tools button[title="Undo"]');
             if (undoBtn) undoBtn.onclick = adminUndoImage;
             
@@ -1097,7 +1086,6 @@
             const aiInput = document.getElementById('preview-ai-prompt');
             if (aiInput) aiInput.onkeydown = (e) => { if(e.key === 'Enter') runAdminAiMagic('general'); };
 
-            // Menghapus elemen yang tidak perlu
             adminContainer.querySelector('.fa-chevron-left').parentElement.onclick = (e) => { e.preventDefault(); switchScreen('screen-dashboard'); };
             const reviewArea = adminContainer.querySelector('#review-input-area');
             if (reviewArea) reviewArea.parentElement.parentElement.style.display = 'none';
@@ -1109,39 +1097,93 @@
                 </div>
             `);
 
-            // Inisialisasi Ulang Scroll Tikus (Drag)
             initBridgeDragScroll(adminContainer);
-
             switchScreen('screen-visual-edit');
             showToast("Jembatan Visual Tersambung Sempurna!");
         } catch (error) { showToast("Gagal merender jembatan visual."); }
     }
 
     // =========================================================
-    // FIX BUG 3: MOUSE DRAG SCROLL DI PRATINJAU JEMBATAN
+    // FUNGSI ADVANCED STUDIO YANG HILANG (RESTORASI)
+    // =========================================================
+    function openAdvancedEditor(type, idx = 0) {
+        currentEditingImgType = type; currentGameplayIdx = idx;
+        const modal = document.getElementById('preview-modal');
+        const img = document.getElementById('preview-img');
+        const game = gamesDatabase.find(g => g.id === currentDetailedGameId);
+        if (!game) return;
+
+        if (type === 'main') {
+            img.src = game.image;
+        } else {
+            img.src = game.screenshots && game.screenshots[idx] ? game.screenshots[idx] : game.image;
+        }
+        document.getElementById('preview-interaction-layer').classList.remove('hidden');
+        modal.classList.remove('hidden-modal'); modal.classList.add('show-modal');
+    }
+
+    function closePreview() {
+        const modal = document.getElementById('preview-modal');
+        modal.classList.remove('show-modal'); modal.classList.add('hidden-modal');
+    }
+
+    function navigateModalImage(direction) {
+        const game = gamesDatabase.find(g => g.id === currentDetailedGameId);
+        if (!game) return;
+        const screenshots = game.screenshots || [];
+        const totalScreenshots = screenshots.length;
+        
+        let currentIndex = currentEditingImgType === 'main' ? -1 : currentGameplayIdx;
+        let nextIndex = currentIndex + direction;
+
+        if (nextIndex < -1) nextIndex = totalScreenshots - 1;
+        if (nextIndex >= totalScreenshots) nextIndex = -1;
+
+        const previewImg = document.getElementById('preview-img');
+        previewImg.style.opacity = '0.3';
+        
+        setTimeout(() => {
+            if (nextIndex === -1) {
+                currentEditingImgType = 'main'; currentGameplayIdx = 0; previewImg.src = game.image;
+            } else {
+                currentEditingImgType = 'gameplay'; currentGameplayIdx = nextIndex; previewImg.src = screenshots[nextIndex];
+            }
+            previewImg.style.opacity = '1';
+            showToast(currentEditingImgType === 'main' ? "Melihat Ikon Utama" : `Melihat Pratinjau ${currentGameplayIdx + 1}`);
+        }, 50);
+    }
+
+    // =========================================================
+    // FIX BUG: DRAG SCROLL MOUSE VS KLIK
     // =========================================================
     function initBridgeDragScroll(container) {
         const sliders = container.querySelectorAll('.scroll-x');
         sliders.forEach(slider => {
             let isDown = false; let startX, scrollLeft, startMouseX;
             slider.addEventListener('mousedown', (e) => {
-                isDown = true; slider.style.cursor = 'grabbing';
+                isDown = true; isBridgeDragging = false; slider.style.cursor = 'grabbing';
                 startX = e.pageX - slider.offsetLeft; startMouseX = e.pageX; scrollLeft = slider.scrollLeft;
             });
-            const endDrag = () => { isDown = false; slider.style.cursor = 'grab'; };
+            const endDrag = () => { 
+                isDown = false; slider.style.cursor = 'grab'; 
+                // Jeda 50ms agar browser sempat membatalkan fungsi onclick di gambar
+                setTimeout(() => { isBridgeDragging = false; }, 50); 
+            };
             slider.addEventListener('mouseleave', endDrag); 
             slider.addEventListener('mouseup', endDrag);
             slider.addEventListener('mousemove', (e) => {
                 if (!isDown) return;
                 const walk = (e.pageX - slider.offsetLeft - startX) * 2;
-                if (Math.abs(e.pageX - startMouseX) > 3) { e.preventDefault(); slider.scrollLeft = scrollLeft - walk; }
+                if (Math.abs(e.pageX - startMouseX) > 3) { 
+                    isBridgeDragging = true; e.preventDefault(); slider.scrollLeft = scrollLeft - walk; 
+                }
             });
             slider.style.cursor = 'grab';
         });
     }
 
     // =========================================================
-    // FIX BUG 2: UNGGAH GAMBAR LOKAL KE MEMORI (NAMA BARU)
+    // MANAJEMEN UPLOAD & AI KHUSUS ADMIN
     // =========================================================
     function handleAdminLocalImageUpload(event) {
         const file = event.target.files[0];
@@ -1171,15 +1213,11 @@
                 const slotKey = currentUploadContext.type === 'main' ? 'main' : `ss${currentUploadContext.idx}`;
                 addAdminHistory(base64Image, slotKey);
             }
-            // KUNCI FIX: Kosongkan value agar bisa upload ulang gambar yang sama
-            event.target.value = '';
+            event.target.value = ''; // FIX BUG: Mengosongkan value agar bisa upload ulang
         };
         reader.readAsDataURL(file);
     }
 
-    // =========================================================
-    // FIX BUG 1: KODE AI MAGIC TERISOLASI UNTUK ADMIN
-    // =========================================================
     async function runAdminAiMagic(mode = 'general', screenshotIdx = null) {
         if (!currentDetailedGameId) return;
         const game = gamesDatabase.find(g => g.id === currentDetailedGameId);
@@ -1200,14 +1238,10 @@
         if (isAdvanced && modalLoadingOverlay) {
             modalLoadingOverlay.classList.remove('hidden');
         } else if (mode === 'icon-gen' && iconLoading) {
-            iconLoading.classList.remove('hidden');
-            iconLoading.style.display = 'flex';
+            iconLoading.classList.remove('hidden'); iconLoading.style.display = 'flex';
             showToast("AI mengekstrak Ikon dari Cover...");
         } else if (screenshotLoading || targetIdx !== null) {
-            if (screenshotLoading) {
-                screenshotLoading.classList.remove('hidden');
-                screenshotLoading.style.display = 'flex';
-            }
+            if (screenshotLoading) { screenshotLoading.classList.remove('hidden'); screenshotLoading.style.display = 'flex'; }
             showToast(targetIdx === 0 ? "AI merestorasi Hero Cover..." : "AI memoles Gameplay...");
         }
 
@@ -1216,10 +1250,8 @@
 
         if (isIconContext) {
             inputImage = (game.screenshots && game.screenshots[0] && !game.screenshots[0].includes('placehold')) ? game.screenshots[0] : game.image;
-        } else if (isAdvanced) {
-            inputImage = document.getElementById('preview-img').src;
         } else {
-            inputImage = game.screenshots[targetIdx];
+            inputImage = isAdvanced ? document.getElementById('preview-img').src : game.screenshots[targetIdx];
         }
 
         let systemPrompt = isIconContext 
@@ -1267,7 +1299,7 @@
                 if (imgEl) imgEl.src = newImgBase64;
             }
 
-            if (activeSelection) { activeSelection = null; const box = document.getElementById('preview-selection-box'); if (box) box.style.display = 'none'; }
+            if (typeof activeSelection !== 'undefined' && activeSelection) { activeSelection = null; const box = document.getElementById('preview-selection-box'); if (box) box.style.display = 'none'; }
             showToast("AI Magic: Perubahan berhasil diterapkan!");
         } catch (err) {
             showToast("Gagal memproses AI.");
@@ -1323,7 +1355,9 @@
         showToast(`Riwayat: ${historyIndex[slotKey] + 1}/${imageHistory[slotKey].length}`);
     }
 
-    // Sambungkan Tombol Dasbor
+    // =========================================================
+    // HOOK DASBOR ADMIN
+    // =========================================================
     const originalRenderAdminDashboard = renderAdminDashboard;
     renderAdminDashboard = function() {
         originalRenderAdminDashboard(); 
