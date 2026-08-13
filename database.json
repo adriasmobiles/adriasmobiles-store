@@ -1,5 +1,21 @@
 [
   {
+    "id": "g1786608786156",
+    "screenshots": [
+      "https://raw.githubusercontent.com/adriasmobiles/adriasmobiles-store/main/assets/g1786608786156_ss0_1786608786157.png"
+    ],
+    "title": "COPS: L.A. POLICE",
+    "category": "Aksi",
+    "resolution": "240x320",
+    "size": "1 MB",
+    "desc": "Cops L.A. Police adalah game aksi-petualangan berskala besar yang mengajak Anda merasakan kerasnya kehidupan kepolisian di Los Angeles. Anda akan mengendalikan empat anggota kepolisian dengan keahlian berbeda untuk menuntaskan total 9 misi utama yang penuh aksi. Game ini menggabungkan berbagai genre sekaligus: baku tembak taktis, kejar-kejaran mobil di jalanan kota, hingga investigasi tempat kejadian perkara (TKP). Menariknya, di sela-sela tugas berat, Anda juga bisa menikmati berbagai mini-game olahraga seperti basket dan bisbol untuk meningkatkan status karakter.",
+    "gameUrl": "",
+    "isBanner": true,
+    "isRecommended": false,
+    "rating": "4.0",
+    "downloads": "0"
+  },
+  {
     "id": "g1",
     "title": "The Oregon Trail: Gold Rush Bahasa Indonesia",
     "category": "Simulasi",
