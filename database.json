@@ -23,7 +23,7 @@
     "bannerDeveloper": "",
     "bannerExtraInfo": "Bahasa Indonesia",
     "statusLabel": "revisi",
-    "bannerSwapLayout": "standard",
+    "bannerSwapLayout": "swapped",
     "userReviews": []
   },
   {
@@ -49,9 +49,9 @@
     "gameSource": "link",
     "gameUrl": "",
     "isRevision": true,
-    "bannerSwapLayout": "standard",
+    "bannerSwapLayout": "swapped",
     "bannerDeveloper": "",
-    "bannerExtraInfo": "Bahasa Indonesia",
+    "bannerExtraInfo": "Indonesia",
     "statusLabel": "revisi",
     "userReviews": []
   }
