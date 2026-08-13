@@ -67,7 +67,7 @@
             display: flex;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
-            touch-action: pan-y;
+            touch-action: manipulation;
             -ms-overflow-style: none; 
             scrollbar-width: none; 
             user-select: none;
@@ -584,21 +584,21 @@
 
 <!-- SUPPORT DEVELOPER MODAL -->
 <div id="support-modal" class="fixed inset-0 z-[600] hidden flex items-center justify-center p-6 bg-black/60 backdrop-blur-md">
-    <div class="w-full max-w-[300px] bg-white rounded-[40px] p-8 text-center shadow-2xl transform transition-all scale-90 opacity-0" id="support-modal-content">
-        <div class="w-12 h-1.5 bg-gray-100 rounded-full mx-auto mb-4"></div>
-        <div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl shadow-inner">
+    <div class="w-full max-w-[350px] bg-white rounded-[40px] p-5 text-center shadow-2xl transform transition-all scale-90 opacity-0" id="support-modal-content">
+        <div class="w-12 h-1.5 bg-gray-100 rounded-full mx-auto mb-2"></div>
+        <div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-1 text-2xl shadow-inner">
             <i class="fas fa-heart"></i>
         </div>
-        <h3 class="text-lg font-black text-gray-900 leading-tight mb-1">Dukung Pengembang</h3>
-        <p class="text-[11px] text-gray-500 mb-3 px-2">Scan QR untuk mendukung pengembang.</p>
+        <h3 class="text-lg font-black text-gray-900 leading-tight mb-0.5">Dukung Pengembang</h3>
+        <p class="text-[11px] text-gray-500 mb-2 px-2">Scan QR untuk mendukung pengembang.</p>
         
-        <div class="bg-gray-50 rounded-[32px] mb-5 border border-gray-100 overflow-hidden aspect-square flex items-center justify-center p-5 shadow-inner">
-            <div class="w-full h-full bg-white rounded-[20px] p-3 shadow-sm flex items-center justify-center border border-gray-50">
-                <img id="support-qr-display" src="" class="w-full h-full object-contain" alt="QR Support">
+        <div class="bg-gray-50 rounded-[32px] mb-4 border border-gray-100 overflow-hidden aspect-square flex items-center justify-center p-1.5 shadow-inner">
+            <div class="w-full h-full bg-white rounded-[28px] p-0 shadow-sm flex items-center justify-center border border-gray-50 overflow-hidden">
+                <img id="support-qr-display" src="" class="w-full h-full object-cover" alt="QR Support">
             </div>
         </div>
 
-        <button class="w-full py-4 bg-gray-900 text-white rounded-full font-bold text-[10px] uppercase tracking-[0.15em] active:scale-95 transition-all shadow-lg" onclick="closeSupportModal()">Terima Kasih!</button>
+        <button class="w-full py-3 bg-gray-900 text-white rounded-full font-bold text-[10px] uppercase tracking-[0.15em] active:scale-95 transition-all shadow-lg" onclick="closeSupportModal()">Terima Kasih!</button>
     </div>
 </div>
 
@@ -647,6 +647,19 @@
     // Inisialisasi awal
     loadDatabase();
 
+    // Handle Mobile Back Gesture / Browser Back Button
+    window.addEventListener('popstate', (event) => {
+        if (event.state && event.state.screenId) {
+            navigationHistory.pop();
+            switchScreen(event.state.screenId, false, true);
+        } else {
+            switchScreen('screen-home', true, true);
+        }
+    });
+
+    // Set initial history state
+    history.replaceState({ screenId: 'screen-home' }, "", "");
+
     function toggleDarkMode() {
         const body = document.body;
         const toggle = document.getElementById('dark-mode-toggle');
@@ -669,26 +682,33 @@
     }
         
     // --- NAVIGATION ---
-    function switchScreen(screenId, clearHistory = false) {
+    function switchScreen(screenId, clearHistory = false, isPopState = false) {
         document.querySelectorAll('.screen').forEach(s => {
             s.classList.remove('active');
             s.style.display = 'none';
         });
         
         const targetScreen = document.getElementById(screenId);
+        if (!targetScreen) return;
         targetScreen.classList.add('active');
         targetScreen.style.display = 'flex';
         
         const bottomNav = document.getElementById('bottom-nav');
-        bottomNav.classList.remove('hidden');
-        bottomNav.classList.add('flex');
+        if (bottomNav) {
+            bottomNav.classList.remove('hidden');
+            bottomNav.classList.add('flex');
+        }
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
-        if (clearHistory) {
-            navigationHistory = [screenId];
-        } else if (navigationHistory.length === 0 || navigationHistory[navigationHistory.length - 1] !== screenId) {
-            navigationHistory.push(screenId);
+        if (!isPopState) {
+            if (clearHistory) {
+                history.replaceState({ screenId }, "", "");
+                navigationHistory = [screenId];
+            } else if (navigationHistory[navigationHistory.length - 1] !== screenId) {
+                history.pushState({ screenId }, "", "");
+                navigationHistory.push(screenId);
+            }
         }
 
         updateBottomNav(screenId);
@@ -702,9 +722,7 @@
 
     function goBack() {
         if (navigationHistory.length > 1) {
-            navigationHistory.pop();
-            const prevScreen = navigationHistory[navigationHistory.length - 1];
-            switchScreen(prevScreen, false);
+            history.back();
         } else {
             switchScreen('screen-home');
         }
