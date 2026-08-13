@@ -367,10 +367,10 @@
             </div>
         </div>
 
-        <!-- Section: Segera Rilis (Featured Banners) -->
+        <!-- Section: Rilisan Baru (Featured Banners) -->
         <div class="mb-8">
             <div class="px-5 mb-4">
-                <h2 class="text-lg font-black text-gray-900 tracking-tight">Segera Rilis</h2>
+                <h2 class="text-lg font-black text-gray-900 tracking-tight">Rilisan Baru</h2>
             </div>
             <div id="featured-game-container" class="relative overflow-hidden w-full py-1">
                 <!-- Injected via JS as Smooth Transform Slider -->
@@ -1074,7 +1074,13 @@
         }
 
         const btn = document.getElementById('btn-download');
-        if (myCollection.includes(gameId)) {
+        if (game.isRevision) {
+            btn.innerText = "SEGERA";
+            // Mode Gelap: Jadi Gelap | Mode Terang: Jadi Putih (Gaya Soft)
+            btn.className = isDark
+                ? "intel-card-outline active flex-1 bg-slate-900 text-white h-10 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-sm active:scale-95 transition-all"
+                : "intel-card-outline active flex-1 bg-white text-gray-900 h-10 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-sm active:scale-95 transition-all";
+        } else if (myCollection.includes(gameId)) {
             btn.innerText = "BUKA";
             // Mode Gelap: Buka jadi Putih | Mode Terang: Buka jadi Hitam
             btn.className = isDark
@@ -1186,6 +1192,12 @@
         if (!currentDetailedGameId) return;
         const btn = document.getElementById('btn-download');
         
+        const game = gamesDatabase.find(g => g.id === currentDetailedGameId);
+        if (game && game.isRevision) {
+            showToast("Game ini sedang dalam tahap revisi kualitas terjemahan.");
+            return;
+        }
+
         if (myCollection.includes(currentDetailedGameId)) {
             openInEmulator(currentDetailedGameId);
             return;
