@@ -219,6 +219,10 @@
         }
         
         .intel-card-outline.active::before { opacity: 1; }
+        .banner-extra-info-aura { background: rgba(20, 20, 22, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        .banner-extra-info-aura span { color: #ffffff !important; }
+        body.dark-theme .banner-extra-info-aura { background: #ffffff !important; }
+        body.dark-theme .banner-extra-info-aura span:not(.fas):not(.far) { color: #1d1d1f !important; }
         .category-pill.intel-card-outline::before { border-radius: 32px; overflow: visible; }
         .game-row-item.intel-card-outline::before { border-radius: 26px; }
         .game-card.intel-card-outline::before { border-radius: 30px; }
@@ -370,7 +374,7 @@
         <!-- Section: Rilisan Baru (Featured Banners) -->
         <div class="mb-8">
             <div class="px-5 mb-4">
-                <h2 class="text-lg font-black text-gray-900 tracking-tight">Rilisan Baru</h2>
+                <h2 class="text-lg font-black text-gray-900 tracking-tight">Segera Rilis</h2>
             </div>
             <div id="featured-game-container" class="relative overflow-hidden w-full py-1">
                 <!-- Injected via JS as Smooth Transform Slider -->
@@ -797,9 +801,33 @@
                 <div id="featured-slider-track" class="flex w-full" style="will-change: transform; transition: transform 1s cubic-bezier(0.45, 0.05, 0.55, 0.95);">
                     ${displayGames.map(game => {
                         const bannerImg = (game.screenshots && game.screenshots[0]) ? game.screenshots[0] : game.image;
+                        const isSwapped = game.bannerSwapLayout === 'swapped';
+                        const statusPos = isSwapped ? 'right-3' : 'left-3';
+                        const infoPos = isSwapped ? 'left-3' : 'right-3';
+                        const infoAlign = isSwapped ? 'items-start' : 'items-end';
+
                         return `
                         <div class="flex-shrink-0 w-full px-5" onclick="openGameDetail('${game.id}')">
                             <div class="intel-card-outline featured-banner active relative rounded-[24px] shadow-lg aspect-[16/9] bg-gray-200">
+                                
+                                <!-- Status Label (Left/Right Swappable) -->
+                                ${((game.statusLabel && game.statusLabel !== 'normal') || game.isRevision) ? `
+                                <div class="absolute top-3 ${statusPos} z-10 animate-pulse ${ (game.statusLabel === 'revisi' || game.isRevision) ? 'bg-red-500 shadow-red-500/40' : 'bg-blue-600 shadow-blue-500/40'} px-2.5 py-1 rounded-lg shadow-xl border border-white/20">
+                                    <span class="text-[7px] font-black text-white uppercase tracking-[0.15em] leading-none block">${(game.statusLabel === 'revisi' || game.isRevision) ? 'REVISI' : 'SUDAH RILIS'}</span>
+                                </div>` : ''}
+
+                                <!-- Info & Dev Container (Left/Right Swappable) -->
+                                <div class="absolute top-3 ${infoPos} z-10 flex flex-col ${infoAlign} space-y-1.5">
+                                    ${game.bannerExtraInfo ? `
+                                    <div class="intel-card-outline active banner-extra-info-aura px-2.5 py-1 rounded-lg shadow-xl border border-white/10">
+                                        <span class="text-[7px] font-black text-white uppercase tracking-[0.15em] leading-none block">${game.bannerExtraInfo}</span>
+                                    </div>` : ''}
+                                    ${game.bannerDeveloper ? `
+                                    <div class="bg-black/50 backdrop-blur-xl px-2.5 py-1 rounded-lg border border-white/20 shadow-lg">
+                                        <span class="text-[7px] font-black text-white uppercase tracking-[0.15em] leading-none block">${game.bannerDeveloper}</span>
+                                    </div>` : ''}
+                                </div>
+
                                 <div class="absolute inset-0 rounded-[24px] overflow-hidden border-2 border-white">
                                     <img src="${bannerImg}" class="w-full h-full object-cover" alt="${game.title}" loading="lazy" style="image-rendering: auto; transform: translateZ(0); backface-visibility: hidden; -webkit-backface-visibility: hidden;">
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
@@ -1076,10 +1104,8 @@
         const btn = document.getElementById('btn-download');
         if (game.isRevision) {
             btn.innerText = "SEGERA";
-            // Mode Gelap: Jadi Gelap | Mode Terang: Jadi Putih (Gaya Soft)
-            btn.className = isDark
-                ? "intel-card-outline active flex-1 bg-slate-900 text-white h-10 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-sm active:scale-95 transition-all"
-                : "intel-card-outline active flex-1 bg-white text-gray-900 h-10 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-sm active:scale-95 transition-all";
+            // Tombol Revisi: Putih Polos (Sama dengan tombol Dukung) agar kontras dan estetik di semua tema
+            btn.className = "intel-card-outline active flex-1 bg-white text-gray-900 h-10 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-sm active:scale-95 transition-all";
         } else if (myCollection.includes(gameId)) {
             btn.innerText = "BUKA";
             // Mode Gelap: Buka jadi Putih | Mode Terang: Buka jadi Hitam

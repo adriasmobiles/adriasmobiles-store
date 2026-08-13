@@ -60,6 +60,12 @@
         .intel-card-outline:hover::before, .intel-card-outline.active::before { opacity: 1; }
         @keyframes intel-flow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
+        /* Radius Overrides for Intel Aura */
+        .featured-banner.intel-card-outline::before { border-radius: 26px; }
+        .review-box-aura.intel-card-outline::before { border-radius: 24px; }
+        .game-card.intel-card-outline::before { border-radius: 30px; }
+        .category-pill.intel-card-outline::before { border-radius: 32px; }
+
         #toast {
             visibility: hidden; min-width: 120px; background: rgba(20, 20, 22, 0.85); backdrop-filter: blur(20px);
             color: #fff; text-align: center; border-radius: 32px; padding: 8px 16px; position: fixed; z-index: 9999;
@@ -266,18 +272,49 @@
                                 <button type="button" id="btn-place-recommended" class="flex-1 py-2.5 text-[8.5px] sm:text-[10px] font-black uppercase tracking-tight sm:tracking-widest rounded-[14px] transition-all z-10 truncate px-1" onclick="setPlacement('recommended')">Rekomendasi</button>
                                 <div id="placement-indicator" class="absolute top-1.5 bottom-1.5 left-1.5 w-[calc(33.33%-4px)] bg-white rounded-[14px] shadow-sm transition-all duration-300 intel-card-outline active"></div>
                             </div>
+
+                            <!-- Banner Specific Options -->
+                            <div id="banner-options-container" class="hidden mt-6 space-y-4 pt-4 border-t border-gray-100">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-[9px] font-black text-blue-500 mb-1.5 uppercase tracking-widest">Nama Developer</label>
+                                        <input type="text" id="upload-banner-developer" class="ios-input !py-3 !text-xs" placeholder="Gameloft...">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[9px] font-black text-blue-500 mb-1.5 uppercase tracking-widest">Info Tambahan</label>
+                                        <input type="text" id="upload-banner-info" class="ios-input !py-3 !text-xs" placeholder="Bahasa Indo...">
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
 
-                        <!-- Mode Revisi Toggle -->
-                        <div class="bg-blue-50/50 p-5 rounded-[32px] border border-blue-100/50 flex items-center justify-between">
-                            <div>
-                                <h4 class="text-[10px] font-black uppercase tracking-widest text-blue-700">Mode Revisi</h4>
-                                <p class="text-[8px] text-blue-500 font-medium mt-0.5">Matikan tombol unduh sementara.</p>
+                        <!-- Status Rilis Segmented Picker -->
+                        <div class="bg-blue-50/50 p-5 rounded-[32px] border border-blue-100/50">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h4 class="text-[10px] font-black uppercase tracking-widest text-blue-700">Status Rilis</h4>
+                                    <p class="text-[8px] text-blue-500 font-medium mt-0.5">Tentukan label status pada konten.</p>
+                                </div>
+                                <div id="status-badge-preview" class="hidden px-2 py-0.5 rounded-full text-[7px] font-black uppercase tracking-widest"></div>
                             </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" id="upload-is-revision" class="sr-only peer">
-                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
-                            </label>
+                            
+                            <div class="flex p-1 bg-blue-900/5 rounded-[18px] relative">
+                                <button type="button" id="btn-status-normal" class="flex-1 py-2 text-[9px] font-black uppercase tracking-widest rounded-[14px] transition-all z-10 text-blue-600" onclick="setStatus('normal')">Normal</button>
+                                <button type="button" id="btn-status-revisi" class="flex-1 py-2 text-[9px] font-black uppercase tracking-widest rounded-[14px] transition-all z-10" onclick="setStatus('revisi')">Revisi</button>
+                                <button type="button" id="btn-status-rilis" class="flex-1 py-2 text-[9px] font-black uppercase tracking-widest rounded-[14px] transition-all z-10" onclick="setStatus('rilis')">Rilis</button>
+                                <div id="status-indicator" class="absolute top-1 bottom-1 left-1 w-[calc(33.33%-2.6px)] bg-white rounded-[14px] shadow-sm transition-all duration-300"></div>
+                            </div>
+
+                            <!-- Tata Letak Label (Pindah ke sini agar logis) -->
+                            <div id="banner-layout-container" class="hidden mt-6 pt-4 border-t border-blue-100/50">
+                                <label class="block text-[9px] font-black text-blue-500 mb-2 uppercase tracking-widest">Tata Letak Label Banner</label>
+                                <div class="flex p-1 bg-blue-900/5 rounded-[16px] relative">
+                                    <button type="button" id="btn-layout-std" class="flex-1 py-2 text-[8px] font-black uppercase tracking-widest rounded-[12px] transition-all z-10 text-blue-600" onclick="setBannerLayout('standard')">Status Kiri</button>
+                                    <button type="button" id="btn-layout-swap" class="flex-1 py-2 text-[8px] font-black uppercase tracking-widest rounded-[12px] transition-all z-10" onclick="setBannerLayout('swapped')">Status Kanan</button>
+                                    <div id="banner-layout-indicator" class="absolute top-1 bottom-1 left-1 w-[calc(50%-2px)] bg-white rounded-[12px] shadow-sm transition-all duration-300"></div>
+                                </div>
+                            </div>
                         </div>
 
                         <div>
@@ -315,11 +352,14 @@
                         </div>
                     </div>
 
-                    <div class="pt-6">
+                                        <div class="pt-6 space-y-3">
+                        <button type="button" onclick="previewChanges()" class="intel-card-outline active w-full py-4 bg-gray-900 text-white rounded-[20px] text-[10px] font-black uppercase tracking-[0.2em] active:scale-[0.98] transition-all shadow-lg">
+                            <i class="fas fa-eye mr-2"></i> Pratinjau Perubahan
+                        </button>
                         <div class="p-1.5 bg-black/5 rounded-[24px] relative">
                             <button type="submit" class="intel-card-outline btn-publish active w-full py-4 bg-white rounded-[18px] text-[11px] font-black uppercase tracking-[0.2em] text-gray-900 shadow-sm transition-all active:scale-[0.98]">
-    <i class="fas fa-sparkles mr-2 text-indigo-500"></i> Publikasikan Perubahan
-</button>
+                                <i class="fas fa-sparkles mr-2 text-indigo-500"></i> Publikasikan Perubahan
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -792,6 +832,7 @@
     function setPlacement(val) {
         selectedPlacement = val;
         const indicator = document.getElementById('placement-indicator');
+        const bannerOptions = document.getElementById('banner-options-container');
         const btns = {
             'none': document.getElementById('btn-place-none'),
             'banner': document.getElementById('btn-place-banner'),
@@ -799,9 +840,66 @@
         };
         Object.values(btns).forEach(btn => btn.classList.remove('text-blue-600'));
         btns[val].classList.add('text-blue-600');
-        if (val === 'none') indicator.style.transform = 'translateX(0)';
+        
+                if (val === 'none') indicator.style.transform = 'translateX(0)';
         else if (val === 'banner') indicator.style.transform = 'translateX(100%)';
         else if (val === 'recommended') indicator.style.transform = 'translateX(200%)';
+
+        // Show/Hide Banner Specific Options
+        if (val === 'banner') {
+            bannerOptions.classList.remove('hidden');
+            document.getElementById('banner-layout-container').classList.remove('hidden');
+        } else {
+            bannerOptions.classList.add('hidden');
+            document.getElementById('banner-layout-container').classList.add('hidden');
+        }
+    }
+
+    let selectedBannerLayout = 'standard';
+    function setBannerLayout(val) {
+        selectedBannerLayout = val;
+        const indicator = document.getElementById('banner-layout-indicator');
+        const btnStd = document.getElementById('btn-layout-std');
+        const btnSwap = document.getElementById('btn-layout-swap');
+        btnStd.classList.remove('text-blue-600');
+        btnSwap.classList.remove('text-blue-600');
+        if (val === 'standard') {
+            indicator.style.transform = 'translateX(0)';
+            btnStd.classList.add('text-blue-600');
+        } else {
+            indicator.style.transform = 'translateX(100%)';
+            btnSwap.classList.add('text-blue-600');
+        }
+    }
+
+    let selectedStatus = 'normal';
+    function setStatus(val) {
+        selectedStatus = val;
+        const indicator = document.getElementById('status-indicator');
+        const badge = document.getElementById('status-badge-preview');
+        const btns = {
+            'normal': document.getElementById('btn-status-normal'),
+            'revisi': document.getElementById('btn-status-revisi'),
+            'rilis': document.getElementById('btn-status-rilis')
+        };
+        
+        Object.values(btns).forEach(btn => btn.classList.remove('text-blue-600'));
+        btns[val].classList.add('text-blue-600');
+
+        if (val === 'normal') {
+            indicator.style.transform = 'translateX(0)';
+            badge.classList.add('hidden');
+        } else if (val === 'revisi') {
+            indicator.style.transform = 'translateX(100%)';
+            badge.innerText = 'REVISI';
+            badge.className = 'px-2 py-0.5 rounded-full text-[7px] font-black uppercase tracking-widest bg-red-100 text-red-600';
+            badge.classList.remove('hidden');
+        } else if (val === 'rilis') {
+            indicator.style.transform = 'translateX(200%)';
+            badge.innerText = 'SUDAH RILIS';
+            badge.className = 'px-2 py-0.5 rounded-full text-[7px] font-black uppercase tracking-widest bg-green-100 text-green-600';
+            badge.classList.remove('hidden');
+        }
     }
 
     function checkCustom(select, containerId) {
@@ -827,7 +925,10 @@
 
         document.getElementById('custom-category-container').classList.add('hidden');
         document.getElementById('custom-resolution-container').classList.add('hidden');
-        document.getElementById('upload-is-revision').checked = false;
+        document.getElementById('upload-banner-developer').value = '';
+        document.getElementById('upload-banner-info').value = '';
+        setBannerLayout('standard');
+        setStatus('normal');
         setPlacement('none');
 
         // Tampilkan QR Global jika sudah ada
@@ -840,6 +941,54 @@
 
         if (categoryId !== 'Semua') document.getElementById('upload-category').value = categoryId;
         switchScreen('screen-upload');
+    }
+
+    function previewChanges() {
+        const title = document.getElementById('upload-title').value.trim();
+        if (!title) return showToast("Judul game wajib diisi untuk pratinjau!");
+
+        const category = document.getElementById('upload-category').value === 'Lainnya' ? document.getElementById('upload-custom-category').value.trim() : document.getElementById('upload-category').value;
+        const resolution = document.getElementById('upload-resolution').value === 'Lainnya' ? document.getElementById('upload-custom-resolution').value.trim() : document.getElementById('upload-resolution').value;
+        const size = document.getElementById('upload-size').value.trim() + ' ' + document.getElementById('upload-size-unit').value;
+        const desc = document.getElementById('upload-desc').value.trim();
+        const gameUrl = document.getElementById('upload-game-url').value.trim();
+
+        let gameId = editingGameId || 'temp_' + Date.now();
+        let existingGame = gamesDatabase.find(g => g.id === gameId) || {};
+
+        // Handle Screenshots (Prioritaskan Base64 baru, jika tidak ada gunakan yang lama)
+        const tempScreenshots = [...(existingGame.screenshots || [])];
+        tempScreenshots[0] = tempUploadCover || tempScreenshots[0] || "https://placehold.co/800x450/1d1d1f/white?text=Cover";
+
+        const tempGame = {
+            ...existingGame,
+            id: gameId,
+            title: title,
+            category: category,
+            resolution: resolution,
+            size: size,
+            desc: desc,
+            image: tempUploadIcon || existingGame.image || "https://placehold.co/300x300/3b82f6/white?text=Icon",
+            screenshots: tempScreenshots,
+            isBanner: selectedPlacement === 'banner',
+            isRecommended: selectedPlacement === 'recommended',
+            bannerDeveloper: document.getElementById('upload-banner-developer').value.trim(),
+            bannerExtraInfo: document.getElementById('upload-banner-info').value.trim(),
+            bannerSwapLayout: selectedBannerLayout,
+            statusLabel: selectedStatus,
+            isRevision: (selectedStatus === 'revisi'),
+            gameUrl: gameUrl,
+            rating: existingGame.rating || "4.5",
+            userReviews: existingGame.userReviews || []
+        };
+
+        // Simpan sementara ke memori Admin
+        const idx = gamesDatabase.findIndex(g => g.id === gameId);
+        if (idx !== -1) gamesDatabase[idx] = tempGame;
+        else gamesDatabase.unshift(tempGame);
+
+        showToast("Membuka Pratinjau Lokal...");
+        openVisualEditor(gameId);
     }
 
     function openFullEdit(gameId) {
@@ -891,11 +1040,18 @@
             document.getElementById('file-label').innerText = "Ganti File .jar";
         }
         
-        if (game.isBanner) setPlacement('banner');
-        else if (game.isRecommended) setPlacement('recommended');
-        else setPlacement('none');
+        if (game.isBanner) {
+            setPlacement('banner');
+            document.getElementById('upload-banner-developer').value = game.bannerDeveloper || '';
+            document.getElementById('upload-banner-info').value = game.bannerExtraInfo || '';
+            setBannerLayout(game.bannerSwapLayout || 'standard');
+        } else if (game.isRecommended) {
+            setPlacement('recommended');
+        } else {
+            setPlacement('none');
+        }
 
-        document.getElementById('upload-is-revision').checked = game.isRevision || false;
+        setStatus(game.statusLabel || (game.isRevision ? 'revisi' : 'normal'));
 
         // Prioritaskan QR Global untuk ditampilkan
         const displayQr = globalSupportQr || tempSupportQr;
@@ -1340,7 +1496,26 @@
                 
                 game.isBanner = (typeof selectedPlacement !== 'undefined') ? (selectedPlacement === 'banner') : false;
                 game.isRecommended = (typeof selectedPlacement !== 'undefined') ? (selectedPlacement === 'recommended') : false;
-                game.isRevision = document.getElementById('upload-is-revision').checked;
+                
+                // Metadata Banner Baru
+                if (game.isBanner) {
+                    game.bannerDeveloper = document.getElementById('upload-banner-developer').value.trim();
+                    game.bannerExtraInfo = document.getElementById('upload-banner-info').value.trim();
+                    game.bannerSwapLayout = selectedBannerLayout;
+                    
+                    // Global Consistency: Force all banners to use the same layout
+                    gamesDatabase.forEach(g => {
+                        if (g.isBanner) g.bannerSwapLayout = selectedBannerLayout;
+                    });
+                } else {
+                    delete game.bannerDeveloper;
+                    delete game.bannerExtraInfo;
+                    delete game.bannerSwapLayout;
+                }
+
+                // Status Rilis Baru
+                game.statusLabel = selectedStatus;
+                game.isRevision = (selectedStatus === 'revisi');
 
                                 if (typeof tempUploadIcon !== 'undefined' && tempUploadIcon) game.image = tempUploadIcon;
                 if (typeof tempUploadCover !== 'undefined' && tempUploadCover) {
@@ -1502,16 +1677,55 @@
         game.screenshots.forEach((src, idx) => { imageHistory[`ss${idx}`] = [src]; historyIndex[`ss${idx}`] = 0; });
 
         const screenshotContainer = document.getElementById('edit-screenshot-container');
-        screenshotContainer.innerHTML = game.screenshots.map((src, idx) => `
-            <div class="relative flex-shrink-0 w-48 aspect-[2/3] rounded-2xl overflow-hidden border border-gray-100 shadow-sm group select-none">
+        screenshotContainer.innerHTML = game.screenshots.map((src, idx) => {
+            const isBannerSlot = (idx === 0 && game.isBanner);
+            const status = game.statusLabel || (game.isRevision ? 'revisi' : 'normal');
+            
+            return `
+            <div class="relative flex-shrink-0 ${isBannerSlot ? 'w-72 aspect-video' : 'w-48 aspect-[2/3]'} rounded-2xl overflow-hidden border border-gray-100 shadow-sm group select-none transition-all duration-500">
                 <div id="native-ai-loading-${idx}" class="hidden absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-20 text-white"><i class="fas fa-circle-notch fa-spin text-xl text-white/80 mb-2"></i></div>
+                
+                <!-- Banner Labels Overlay (iOS Style) -->
+                ${isBannerSlot ? `
+                    ${(() => {
+                        const isSwapped = game.bannerSwapLayout === 'swapped';
+                        const statusPos = isSwapped ? 'right-3' : 'left-3';
+                        const infoPos = isSwapped ? 'left-3' : 'right-3';
+                        
+                        return `
+                            ${game.bannerExtraInfo ? `
+                                <div class="absolute top-3 ${infoPos} z-10 bg-white/95 backdrop-blur-md px-2.5 py-1 rounded-lg shadow-xl border border-white">
+                                    <span class="text-[7px] font-black text-blue-600 uppercase tracking-[0.15em] leading-none block">${game.bannerExtraInfo}</span>
+                                </div>
+                            ` : ''}
+                            ${game.bannerDeveloper ? `
+                                <div class="absolute top-9 ${infoPos} z-10 bg-black/50 backdrop-blur-xl px-2.5 py-1 rounded-lg border border-white/20 shadow-lg">
+                                    <span class="text-[7px] font-black text-white uppercase tracking-[0.15em] leading-none block">${game.bannerDeveloper}</span>
+                                </div>
+                            ` : ''}
+                                                        ${(idx === 0 && status !== 'normal') ? `
+                                <div class="absolute top-3 ${statusPos} z-10 ${status === 'revisi' ? 'bg-red-500 shadow-red-500/40' : 'bg-green-600 shadow-green-500/40'} px-3 py-1 rounded-full shadow-2xl border border-white/40 animate-pulse">
+                                    <span class="text-[7px] font-black text-white uppercase tracking-[0.2em] whitespace-nowrap leading-none block">${status === 'revisi' ? 'REVISI' : 'SUDAH RILIS'}</span>
+                                </div>
+                            ` : ''}
+                        `;
+                    })()}
+                ` : `
+                    <!-- Status Label Overlay (Reguler Mode) -->
+                    ${(idx === 0 && status !== 'normal') ? `
+                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 ${status === 'revisi' ? 'bg-red-500 shadow-red-500/40' : 'bg-green-600 shadow-green-500/40'} px-3 py-1 rounded-full shadow-2xl border border-white/40 animate-pulse">
+                            <span class="text-[7px] font-black text-white uppercase tracking-[0.2em] whitespace-nowrap leading-none block">${status === 'revisi' ? 'REVISI' : 'SUDAH RILIS'}</span>
+                        </div>
+                    ` : ''}
+                `}
+
                 <img id="edit-screenshot-img-${idx}" src="${src}" class="w-full h-full object-cover cursor-pointer" draggable="false" onclick="if(!isVisualDragScrolling) openAdvancedEditor('gameplay', ${idx})">
                 <div class="absolute top-2 right-2 flex space-x-1">
                     <button type="button" onclick="prepareUpload('gameplay', ${idx}); document.getElementById('local-file-input').click()" class="w-7 h-7 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center text-[10px]" title="Ganti Local"><i class="fas fa-upload"></i></button>
                     <button type="button" onclick="runNativeAiMagic('improve', ${idx})" class="w-7 h-7 bg-black/70 text-white rounded-full flex items-center justify-center text-[10px]" title="AI Polish"><i class="fas fa-wand-magic-sparkles"></i></button>
                 </div>
             </div>
-        `).join('');
+        `;}).join('');
 
         // 3. Setup STATISTIK ULASAN REAL-TIME (Sync with Reference)
         const avgDisplay = document.getElementById('edit-review-avg');
