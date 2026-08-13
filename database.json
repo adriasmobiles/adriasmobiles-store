@@ -21,8 +21,10 @@
     "supportQr": "https://raw.githubusercontent.com/adriasmobiles/adriasmobiles-store/main/assets/g1_qr.png",
     "isRevision": true,
     "bannerDeveloper": "",
-    "bannerExtraInfo": "",
-    "statusLabel": "revisi"
+    "bannerExtraInfo": "Bahasa Indonesia",
+    "statusLabel": "revisi",
+    "bannerSwapLayout": "swapped",
+    "userReviews": []
   },
   {
     "id": "g1",
