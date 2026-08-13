@@ -18,7 +18,8 @@
     "rating": "4.0",
     "downloads": "0",
     "image": "https://raw.githubusercontent.com/adriasmobiles/adriasmobiles-store/main/assets/g1786608786156_icon_1786611538303.png",
-    "supportQr": "https://raw.githubusercontent.com/adriasmobiles/adriasmobiles-store/main/assets/g1_qr.png"
+    "supportQr": "https://raw.githubusercontent.com/adriasmobiles/adriasmobiles-store/main/assets/g1_qr.png",
+    "isRevision": true
   },
   {
     "id": "g1",
