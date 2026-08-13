@@ -224,6 +224,9 @@
         .game-card.intel-card-outline::before { border-radius: 30px; }
         .featured-banner.intel-card-outline::before { border-radius: 26px; }
         .rec-icon.intel-card-outline::before { border-radius: 26px; }
+        .profile-card.intel-card-outline::before { border-radius: 32px; }
+        .collection-item.intel-card-outline::before { border-radius: 24px; }
+        #empty-collection.intel-card-outline::before { border-radius: 48px; }
 
         /* Dynamic Notification Toast */
         #toast {
@@ -275,31 +278,57 @@
         #zoom-img:active { cursor: grabbing; }
 
         /* Dark Mode Global Overrides */
-        body.dark-theme { background-color: #000; color: #fff; }
-        body.dark-theme .ios-ambient-bg { background: #000; }
+        body.dark-theme { background-color: #000 !important; color: #fff; }
+        body.dark-theme .ios-ambient-bg { background: #000 !important; }
         body.dark-theme .ios-ambient-bg::before { background: radial-gradient(circle, rgba(10,132,255,0.15) 0%, rgba(10,132,255,0) 70%); }
         body.dark-theme .ios-ambient-bg::after { background: radial-gradient(circle, rgba(94,92,230,0.15) 0%, rgba(94,92,230,0) 70%); }
-                body.dark-theme .bg-white:not(#btn-download):not(#btn-support), 
-        body.dark-theme .bg-white/60:not(#btn-download):not(#btn-support), 
-        body.dark-theme .bg-white/70:not(#btn-download):not(#btn-support), 
-        body.dark-theme .bg-white/40:not(#btn-download):not(#btn-support), 
-        body.dark-theme .bg-white/80:not(#btn-download):not(#btn-support) { 
-            background-color: rgba(28, 28, 30, 0.7) !important; 
-            backdrop-filter: blur(30px) !important;
+
+        /* Card Backgrounds - Obsidian Solid */
+        body.dark-theme [class*="bg-white"], 
+        body.dark-theme .bg-white, 
+        body.dark-theme .bg-gray-50, 
+        body.dark-theme .bg-gray-100 { 
+            background-color: #1c1c1e !important; 
+            backdrop-filter: blur(20px) !important;
             border-color: rgba(255,255,255,0.1) !important;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4) !important;
         }
-        body.dark-theme .text-gray-900:not(#btn-download):not(#btn-support), 
-        body.dark-theme .text-gray-800:not(#btn-download):not(#btn-support), 
-        body.dark-theme .text-gray-700:not(#btn-download):not(#btn-support) { color: #fff !important; }
-        body.dark-theme .text-gray-500, body.dark-theme .text-gray-400 { color: #8e8e93 !important; }
-        body.dark-theme .ios-input { background: #1c1c1e; color: #fff; border-color: #3a3a3c; }
-        body.dark-theme .glass-nav { background: rgba(20, 20, 20, 0.8); border-top-color: rgba(255,255,255,0.1); }
-        body.dark-theme .category-pill { background: #1c1c1e; color: #fff; border-color: #3a3a3c; }
-        body.dark-theme .category-pill.active { background: #1d1d1f; color: #fff; border-color: rgba(255,255,255,0.2); }
+
+        /* Text Visibility - High Contrast Override */
+        body.dark-theme h1, body.dark-theme h2, body.dark-theme h3, 
+        body.dark-theme p, body.dark-theme span:not(.fas):not(.far), 
+        body.dark-theme .text-gray-900, body.dark-theme .text-gray-800, 
+        body.dark-theme .text-gray-700, body.dark-theme .text-gray-600 { 
+            color: #ffffff !important; 
+        }
+        
+        body.dark-theme .text-gray-500, 
+        body.dark-theme .text-gray-400 { 
+            color: #a1a1a6 !important; 
+        }
+
+        /* Screen Backgrounds - Pure Black */
+        body.dark-theme .screen, 
+        body.dark-theme #screen-list, 
+        body.dark-theme #screen-detail, 
+        body.dark-theme #screen-profile, 
+        body.dark-theme #screen-collection { 
+            background-color: #000 !important; 
+        }
+
+        /* UI Elements Overrides */
+        body.dark-theme .ios-input { background: #1c1c1e !important; color: #fff !important; border-color: #3a3a3c !important; }
+        body.dark-theme .glass-nav { background: rgba(20, 20, 20, 0.8) !important; border-top-color: rgba(255,255,255,0.1) !important; }
+        body.dark-theme .category-pill { background: #1c1c1e !important; color: #fff !important; border-color: #3a3a3c !important; }
+        body.dark-theme .category-pill.active { background: #ffffff !important; color: #000 !important; border-color: #ffffff !important; }
         body.dark-theme .game-card, body.dark-theme .game-row-item { background: #1c1c1e !important; border-color: #3a3a3c !important; }
-        body.dark-theme #screen-list, body.dark-theme #screen-detail, body.dark-theme #screen-profile, body.dark-theme #screen-collection { background-color: #000 !important; }
-        body.dark-theme .bg-gray-50 { background-color: #1c1c1e !important; }
-        body.dark-theme .bg-gray-100 { background-color: #2c2c2e !important; }
+        
+        /* Protect Action Buttons from Global Text Override */
+        body.dark-theme #btn-download, 
+        body.dark-theme #btn-support, 
+        body.dark-theme #support-modal button { 
+            /* Colors dynamically handled by JS logic */
+        }
     </style>
 </head>
 <body>
@@ -367,7 +396,7 @@
 </div>
 
 <!-- 2. GAME LIST SCREEN -->
-<div id="screen-list" class="screen pt-10 md:pt-16 px-4 md:px-8 lg:px-20 pb-28" style="background-color: #f2f6fa;">
+<div id="screen-list" class="screen pt-10 md:pt-16 px-4 md:px-8 lg:px-20 pb-28">
     <div class="max-w-7xl mx-auto w-full">
         <div class="flex justify-between items-end mb-6 md:mb-8">
             <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 leading-tight">Jelajah</h1>
@@ -518,9 +547,9 @@
             <!-- Injected via JS -->
         </div>
 
-        <div id="empty-collection" class="hidden flex-col items-center justify-center py-24 text-gray-400 bg-white/30 backdrop-blur-3xl rounded-[48px] border border-white/60 shadow-sm">
-            <div class="w-20 h-20 bg-gray-100/50 rounded-full flex items-center justify-center mb-6 shadow-inner">
-                <i class="fas fa-folder-open text-3xl opacity-20"></i>
+        <div id="empty-collection" class="hidden flex-col items-center justify-center py-24 text-gray-400 bg-white/30 backdrop-blur-3xl rounded-[48px] border border-white/60 shadow-sm intel-card-outline">
+            <div class="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                <i class="fas fa-folder-open text-3xl opacity-40 text-blue-500/60"></i>
             </div>
             <p class="font-black text-[10px] uppercase tracking-[0.3em] text-gray-400">Belum ada koleksi</p>
             <button class="mt-8 px-8 py-3 bg-blue-600 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl shadow-blue-500/20 active:scale-95 transition-all" onclick="switchScreen('screen-list')">Jelajah Game</button>
@@ -533,8 +562,8 @@
     <div class="max-w-2xl mx-auto w-full">
         <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 leading-tight mb-8">Profil & Pengaturan</h1>
         
-        <div class="bg-white/60 backdrop-blur-[40px] rounded-[30px] p-6 shadow-sm border border-white mb-6">
-            <div class="flex items-center space-x-4 mb-6 pb-6 border-b border-gray-200/50">
+        <div class="intel-card-outline profile-card bg-white/60 backdrop-blur-[40px] rounded-[30px] p-6 shadow-sm border border-white mb-6 group">
+            <div class="flex items-center space-x-4 mb-6 pb-6 border-b border-gray-300">
                 <div class="w-16 h-16 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-2xl font-bold">
                     <i class="far fa-user"></i>
                 </div>
@@ -592,13 +621,17 @@
         <h3 class="text-lg font-black text-gray-900 leading-tight mb-0.5">Dukung Pengembang</h3>
         <p class="text-[11px] text-gray-500 mb-2 px-2">Scan QR untuk mendukung pengembang.</p>
         
-        <div class="bg-gray-50 rounded-[32px] mb-4 border border-gray-100 overflow-hidden aspect-square flex items-center justify-center p-1.5 shadow-inner">
+        <div class="bg-gray-50 rounded-[32px] mb-3 border border-gray-100 overflow-hidden aspect-square flex items-center justify-center p-1.5 shadow-inner">
             <div class="w-full h-full bg-white rounded-[28px] p-0 shadow-sm flex items-center justify-center border border-gray-50 overflow-hidden">
                 <img id="support-qr-display" src="" class="w-full h-full object-cover" alt="QR Support">
             </div>
         </div>
 
-        <button class="w-full py-3 bg-gray-900 text-white rounded-full font-bold text-[10px] uppercase tracking-[0.15em] active:scale-95 transition-all shadow-lg" onclick="closeSupportModal()">Terima Kasih!</button>
+        <button class="intel-card-outline active w-full py-2 mb-2 bg-white text-gray-900 border border-gray-100 rounded-full font-bold text-[9px] uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center" onclick="saveQrCode()">
+            <i class="fas fa-download mr-1.5 text-blue-500"></i> Simpan QR ke Galeri
+        </button>
+
+        <button class="intel-card-outline active w-full py-3 bg-gray-900 text-white rounded-full font-bold text-[10px] uppercase tracking-[0.15em] active:scale-95 transition-all shadow-lg" onclick="closeSupportModal()">Terima Kasih!</button>
     </div>
 </div>
 
@@ -960,9 +993,9 @@
             const game = gamesDatabase.find(g => g.id === gameId);
             if(game) {
                 container.innerHTML += `
-                    <div class="bg-white/70 backdrop-blur-3xl p-2.5 rounded-[22px] flex items-center shadow-sm border border-white/80 active:scale-[0.98] transition-all intel-card-outline group">
-                        <div class="relative w-12 h-12 rounded-[16px] overflow-hidden flex-shrink-0 shadow-sm cursor-pointer" onclick="openGameDetail('${game.id}')" style="isolation: isolate; box-shadow: inset 0 0 0.5px rgba(0,0,0,0.1);">
-                            <img src="${game.image}" class="absolute inset-0 w-full h-full object-cover" alt="${game.title}" loading="lazy" style="image-rendering: auto; transform: translateZ(0); backface-visibility: hidden; -webkit-backface-visibility: hidden; will-change: transform; border-radius: inherit;">
+                    <div class="bg-white/70 backdrop-blur-3xl p-2.5 rounded-[22px] flex items-center shadow-sm border border-white/80 active:scale-[0.98] transition-all intel-card-outline collection-item group">
+                        <div class="relative w-12 h-12 rounded-[16px] overflow-hidden flex-shrink-0 shadow-sm cursor-pointer bg-transparent" onclick="openGameDetail('${game.id}')">
+                            <img src="${game.image}" class="absolute inset-0 w-full h-full object-cover z-10" alt="${game.title}" loading="lazy" style="image-rendering: auto; transform: translateZ(0); backface-visibility: hidden; -webkit-backface-visibility: hidden; will-change: transform; border-radius: inherit;">
                         </div>
                         <div class="ml-3.5 flex-1 min-w-0 cursor-pointer" onclick="openGameDetail('${game.id}')">
                             <div class="flex items-center">
@@ -1209,6 +1242,42 @@
         content.classList.add('scale-90', 'opacity-0');
         content.classList.remove('scale-100', 'opacity-100');
         setTimeout(() => modal.classList.add('hidden'), 200);
+    }
+
+    async function saveQrCode() {
+        const qrImg = document.getElementById('support-qr-display');
+        if (!qrImg || !qrImg.src || qrImg.src === "" || qrImg.src.includes('window.location')) {
+            showToast("Gagal menyimpan QR Code.");
+            return;
+        }
+        
+        try {
+            showToast("Menyimpan ke galeri...");
+            const response = await fetch(qrImg.src);
+            if (!response.ok) throw new Error('Gagal mengunduh gambar');
+            
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `QR_Support_AdriasMobiles.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            showToast("QR berhasil disimpan!");
+        } catch (error) {
+            console.error("Download error:", error);
+            // Fallback: Buka di tab baru untuk simpan manual jika Blob gagal
+            const link = document.createElement('a');
+            link.href = qrImg.src;
+            link.target = '_blank';
+            link.download = 'QR_Support_AdriasMobiles.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("Membuka gambar QR...");
+        }
     }
 
     // --- REVIEWS ---
