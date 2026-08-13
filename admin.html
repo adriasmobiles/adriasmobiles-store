@@ -178,13 +178,13 @@
 
                 <form id="upload-form" class="space-y-6 bg-white/40 backdrop-blur-[60px] p-6 md:p-8 rounded-[40px] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-white/60">
                     
-                    <div class="flex flex-row gap-4 md:gap-6">
+                    <div class="flex flex-row gap-4 md:gap-6 items-start">
                         <!-- Icon Upload -->
                         <div class="space-y-2">
                             <label class="block text-[9px] font-black text-slate-400 ml-1 uppercase tracking-widest">Ikon (Square)</label>
-                            <div class="intel-card-outline relative w-20 h-20 md:w-24 md:h-24 rounded-[22px] flex flex-col items-center justify-center cursor-pointer overflow-hidden transition-all bg-white/50 border-2 border-dashed border-blue-200/50 hover:bg-blue-50/50 group" onclick="document.getElementById('upload-icon-input').click()">
+                            <div class="intel-card-outline relative w-28 h-28 md:w-36 md:h-36 rounded-[24px] flex flex-col items-center justify-center cursor-pointer overflow-hidden transition-all bg-white/50 border-2 border-dashed border-blue-200/50 hover:bg-blue-50/50 group" onclick="document.getElementById('upload-icon-input').click()" style="transform: translateZ(0); -webkit-backface-visibility: hidden; backface-visibility: hidden; isolation: isolate;">
                                 <div class="absolute inset-0 overflow-hidden rounded-[inherit] border-2 border-white shadow-inner">
-                                    <img id="upload-preview-icon" src="" class="absolute inset-0 w-full h-full object-cover hidden" onclick="event.stopPropagation(); openAdvancedEditor('main')">
+                                    <img id="upload-preview-icon" src="" class="absolute inset-0 w-full h-full object-cover hidden" onclick="event.stopPropagation(); openAdvancedEditor('main')" style="image-rendering: auto; transform: scale(1.01) translateZ(0); backface-visibility: hidden; -webkit-backface-visibility: hidden; will-change: transform;">
                                 </div>
                                 <div id="upload-placeholder-icon" class="flex flex-col items-center justify-center z-10 text-center pointer-events-none">
                                     <i class="fas fa-plus text-blue-500 mb-1 text-[10px]"></i>
@@ -196,9 +196,9 @@
                         <!-- Cover Upload -->
                         <div class="space-y-2 flex-1">
                             <label class="block text-[9px] font-black text-slate-400 ml-1 uppercase tracking-widest">Hero Cover (Landscape)</label>
-                            <div class="intel-card-outline relative h-20 md:h-24 rounded-[22px] flex flex-col items-center justify-center cursor-pointer overflow-hidden transition-all bg-white/50 border-2 border-dashed border-blue-200/50 hover:bg-blue-50/50 group" onclick="document.getElementById('upload-cover-input').click()">
+                            <div class="intel-card-outline relative h-32 md:h-44 rounded-[18px] flex flex-col items-center justify-center cursor-pointer overflow-hidden transition-all bg-white/50 border-2 border-dashed border-blue-200/50 hover:bg-blue-50/50 group" onclick="document.getElementById('upload-cover-input').click()" style="transform: translateZ(0); -webkit-backface-visibility: hidden; backface-visibility: hidden; isolation: isolate;">
                                 <div class="absolute inset-0 overflow-hidden rounded-[inherit] border-2 border-white shadow-inner">
-                                    <img id="upload-preview-cover" src="" class="absolute inset-0 w-full h-full object-cover hidden" onclick="event.stopPropagation(); openAdvancedEditor('cover')">
+                                    <img id="upload-preview-cover" src="" class="absolute inset-0 w-full h-full object-cover hidden" onclick="event.stopPropagation(); openAdvancedEditor('cover')" style="image-rendering: auto; transform: scale(1.01) translateZ(0); backface-visibility: hidden; -webkit-backface-visibility: hidden; will-change: transform;">
                                 </div>
                                 <div id="upload-placeholder-cover" class="flex flex-col items-center justify-center z-10 text-center pointer-events-none">
                                     <i class="fas fa-image text-blue-500 mb-1 text-xs"></i>
@@ -206,16 +206,6 @@
                                 </div>
                             </div>
                             <input type="file" id="upload-cover-input" class="hidden" accept="image/*" onchange="handleUploadPreview(event, 'cover')">
-                        </div>
-                    </div>
-                    
-                    <div class="bg-purple-50 p-4 rounded-[24px] border border-purple-100 flex items-center justify-between cursor-pointer" onclick="showToast('Pilih dan klik gambar di atas terlebih dahulu untuk menggunakan AI')">
-                        <div>
-                            <h4 class="text-[10px] font-black uppercase tracking-widest text-purple-700">AI Magic Studio</h4>
-                            <p class="text-[9px] text-purple-500 font-medium mt-0.5">Klik pada gambar yang sudah diunggah untuk membuka Editor AI.</p>
-                        </div>
-                        <div class="w-8 h-8 rounded-full bg-purple-200 text-purple-600 flex items-center justify-center shadow-sm">
-                            <i class="fas fa-wand-magic-sparkles text-xs"></i>
                         </div>
                     </div>
 
@@ -278,6 +268,18 @@
                             </div>
                         </div>
 
+                        <!-- Mode Revisi Toggle -->
+                        <div class="bg-blue-50/50 p-5 rounded-[32px] border border-blue-100/50 flex items-center justify-between">
+                            <div>
+                                <h4 class="text-[10px] font-black uppercase tracking-widest text-blue-700">Mode Revisi</h4>
+                                <p class="text-[8px] text-blue-500 font-medium mt-0.5">Matikan tombol unduh sementara.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="upload-is-revision" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+                            </label>
+                        </div>
+
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 mb-1.5 ml-1 uppercase tracking-widest">Deskripsi Game</label>
                             <textarea id="upload-desc" class="ios-input h-32 resize-none !text-sm !rounded-2xl" placeholder="Tulis detail game di sini..." required></textarea>
@@ -285,10 +287,17 @@
 
                         <!-- Technical & Support Assets -->
                         <div class="bg-blue-50/50 p-5 rounded-[32px] border border-blue-100/50 space-y-4">
-                            <div>
-                                <label class="block text-[9px] font-black text-blue-400 mb-2 uppercase tracking-widest">Sumber Tautan (File .jar)</label>
-                                <input type="text" id="upload-game-url" class="ios-input !text-xs w-full" placeholder="https://raw.githubusercontent.com/...">
+                                                    <div>
+                            <label class="block text-[9px] font-black text-blue-400 mb-2 uppercase tracking-widest">Sumber Tautan (File .jar)</label>
+                            <div class="flex items-center space-x-3">
+                                <button type="button" onclick="document.getElementById('upload-game-file').click()" class="px-4 py-2.5 bg-white border border-blue-200 text-blue-600 rounded-xl text-[10px] font-black uppercase tracking-widest active:scale-95 transition-all shadow-sm flex items-center">
+                                    <i class="fas fa-file-archive mr-2"></i> <span id="file-label">Pilih File .jar</span>
+                                </button>
+                                <input type="file" id="upload-game-file" class="hidden" accept=".jar" onchange="handleGameFileUpload(event)">
+                                <input type="hidden" id="upload-game-url">
                             </div>
+                            <p id="file-status" class="text-[8px] text-gray-400 mt-2 ml-1 italic">Belum ada file dipilih.</p>
+                        </div>
 
                             <div>
                                 <label class="block text-[9px] font-black text-blue-400 mb-2 uppercase tracking-widest">QR Dukungan (Saweria/Trakteer)</label>
@@ -346,10 +355,10 @@
                     
                     <div class="ml-5 flex-1 flex flex-col justify-between py-1">
                         <div>
-                            <h1 id="edit-detail-title" class="text-xl font-bold text-gray-900 leading-tight rounded p-1 border border-dashed border-gray-300 focus:border-blue-500 outline-none transition-colors" contenteditable="true">Judul Game</h1>
+                            <h1 id="edit-detail-title" class="text-xl font-bold text-gray-900 leading-tight rounded-lg p-1 border border-transparent hover:border-blue-200 hover:bg-blue-50/30 focus:bg-blue-50/50 focus:border-blue-500 outline-none transition-all" contenteditable="true">Judul Game</h1>
                         </div>
                         <div class="flex items-center space-x-2 mt-2">
-                            <button id="edit-btn-download" class="intel-card-outline active flex-1 bg-gray-900 text-white h-10 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-black/20 cursor-not-allowed" onclick="showToast('Tombol dimatikan di Mode Admin')">UNDUH</button>
+                            <button id="edit-btn-download" class="intel-card-outline active flex-1 bg-gray-900 text-white h-10 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-black/20 transition-all" onclick="showToast('Tombol dimatikan di Mode Admin')">UNDUH</button>
                             <button id="edit-btn-support" class="hidden intel-card-outline active flex-1 h-10 bg-white text-gray-900 rounded-2xl font-bold text-[10px] uppercase tracking-widest flex items-center justify-center active:scale-95 transition-all shadow-sm" onclick="showSupportModal()">
                                 <i class="fas fa-heart mr-1.5 text-red-500"></i> DUKUNG
                             </button>
@@ -397,7 +406,7 @@
                         <h2 class="text-xl font-bold text-gray-900">Detail Game</h2>
                         <i class="fas fa-info-circle text-gray-300 ml-2"></i>
                     </div>
-                    <div id="edit-detail-desc" class="text-gray-700 leading-relaxed text-sm p-3 rounded-xl border border-dashed border-gray-300 focus:border-blue-500 focus:bg-blue-50/30 outline-none transition-colors min-h-[100px]" contenteditable="true">
+                    <div id="edit-detail-desc" class="text-gray-700 leading-relaxed text-sm p-4 rounded-2xl bg-gray-50/50 border border-transparent hover:border-blue-200 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all min-h-[120px]" contenteditable="true">
                         Deskripsi game...
                     </div>
                 </div>
@@ -548,7 +557,26 @@
     let tempUploadIcon = null;
     let tempUploadCover = null;
     let tempSupportQr = null;
+    let tempGameFile = null;
     let globalSupportQr = null;
+
+    function handleGameFileUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const label = document.getElementById('file-label');
+        const status = document.getElementById('file-status');
+        label.innerText = "Membaca...";
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            tempGameFile = e.target.result;
+            label.innerText = "File Siap";
+            status.innerText = `Terpilih: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+            showToast("File Game siap diunggah!");
+        };
+        reader.readAsDataURL(file);
+    }
 
     // --- AI STUDIO STATE ---
     let isSelectionToolActive = false;
@@ -784,9 +812,11 @@
 
     function openUploadScreen(categoryId = 'Semua') {
         editingGameId = null;
-        tempUploadIcon = null; tempUploadCover = null; tempSupportQr = null;
+        tempUploadIcon = null; tempUploadCover = null; tempSupportQr = null; tempGameFile = null;
         document.getElementById('upload-form').reset();
         document.getElementById('upload-screen-title').innerText = "Tambah Game Baru";
+        document.getElementById('file-label').innerText = "Pilih File .jar";
+        document.getElementById('file-status').innerText = "Belum ada file dipilih.";
         
         ['icon', 'cover', 'support-qr'].forEach(type => {
             const preview = document.getElementById(`preview-${type}`) || document.getElementById(`upload-preview-${type}`);
@@ -797,6 +827,7 @@
 
         document.getElementById('custom-category-container').classList.add('hidden');
         document.getElementById('custom-resolution-container').classList.add('hidden');
+        document.getElementById('upload-is-revision').checked = false;
         setPlacement('none');
 
         // Tampilkan QR Global jika sudah ada
@@ -855,10 +886,16 @@
 
         document.getElementById('upload-desc').value = game.desc;
         document.getElementById('upload-game-url').value = game.gameUrl || "";
+        if (game.gameUrl) {
+            document.getElementById('file-status').innerText = "File saat ini: " + game.gameUrl.split('/').pop();
+            document.getElementById('file-label').innerText = "Ganti File .jar";
+        }
         
         if (game.isBanner) setPlacement('banner');
         else if (game.isRecommended) setPlacement('recommended');
         else setPlacement('none');
+
+        document.getElementById('upload-is-revision').checked = game.isRevision || false;
 
         // Prioritaskan QR Global untuk ditampilkan
         const displayQr = globalSupportQr || tempSupportQr;
@@ -963,10 +1000,17 @@
                 finalCoverUrl = await uploadToGitHub(`assets/${gameId}_cover.png`, tempUploadCover, `Upload cover: ${title}`);
             }
 
-            let finalQrUrl = tempSupportQr;
+                        let finalQrUrl = tempSupportQr;
             if (tempSupportQr && tempSupportQr.startsWith('data:image')) {
                 showToast("Mengunggah QR Dukungan...");
                 finalQrUrl = await uploadToGitHub(`assets/${gameId}_qr.png`, tempSupportQr, `Upload QR Dukungan: ${title}`);
+            }
+
+            let finalGameUrl = document.getElementById('upload-game-url').value.trim();
+            if (tempGameFile && tempGameFile.startsWith('data:')) {
+                showToast("Mengunggah File Game ke GitHub...");
+                const fileName = title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                finalGameUrl = await uploadToGitHub(`files/${gameId}_${fileName}.jar`, tempGameFile, `Upload game file: ${title}`);
             }
 
             const gameData = {
@@ -976,7 +1020,8 @@
                 image: finalIconUrl, screenshots: [finalCoverUrl], desc: desc,
                 isBanner: selectedPlacement === 'banner',
                 isRecommended: selectedPlacement === 'recommended',
-                supportQr: finalQrUrl, gameSource: 'link', gameUrl: gameUrl
+                isRevision: document.getElementById('upload-is-revision').checked,
+                supportQr: finalQrUrl, gameSource: 'file', gameUrl: finalGameUrl
             };
 
             if (currentEditingId) {
@@ -1295,6 +1340,7 @@
                 
                 game.isBanner = (typeof selectedPlacement !== 'undefined') ? (selectedPlacement === 'banner') : false;
                 game.isRecommended = (typeof selectedPlacement !== 'undefined') ? (selectedPlacement === 'recommended') : false;
+                game.isRevision = document.getElementById('upload-is-revision').checked;
 
                                 if (typeof tempUploadIcon !== 'undefined' && tempUploadIcon) game.image = tempUploadIcon;
                 if (typeof tempUploadCover !== 'undefined' && tempUploadCover) {
@@ -1308,6 +1354,14 @@
                     gamesDatabase.forEach(g => g.supportQr = finalQr);
                     game.supportQr = finalQr;
                 }
+
+                let finalGameUrl = document.getElementById('upload-game-url').value.trim();
+                if (typeof tempGameFile !== 'undefined' && tempGameFile && tempGameFile.startsWith('data:')) {
+                    showToast("Mengunggah File Game ke GitHub...");
+                    const fileName = game.title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                    finalGameUrl = await uploadToGitHub(`files/${game.id}_${fileName}.jar`, tempGameFile, `Upload game file: ${game.title}`);
+                }
+                game.gameUrl = finalGameUrl;
 
                 if (isNew) {
                     game.rating = (Math.random() * (5 - 4) + 4).toFixed(1);
@@ -1412,6 +1466,18 @@
         document.getElementById('edit-detail-rating').innerText = game.rating;
         document.getElementById('edit-detail-resolution').innerText = game.resolution || '240x320';
         document.getElementById('edit-detail-size-stat').innerText = game.size || '0 MB';
+
+        // 1.4 Setup Download/Revision Button
+        const downloadBtn = document.getElementById('edit-btn-download');
+        if (game.isRevision) {
+            downloadBtn.innerText = "SEGERA";
+            downloadBtn.className = "intel-card-outline active flex-1 bg-white text-gray-900 h-10 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg transition-all";
+            downloadBtn.onclick = () => showToast("Mohon maaf, game ini sedang dalam tahap revisi.");
+        } else {
+            downloadBtn.innerText = "UNDUH";
+            downloadBtn.className = "intel-card-outline active flex-1 bg-gray-900 text-white h-10 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-black/20 transition-all";
+            downloadBtn.onclick = () => showToast("Tombol dimatikan di Mode Admin");
+        }
 
         // 1.5 Setup Support Button (Sync with Global QR)
         const isDark = document.body.classList.contains('dark-theme');
