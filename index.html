@@ -67,7 +67,7 @@
             display: flex;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
-            touch-action: pan-x;
+            touch-action: pan-y;
             -ms-overflow-style: none; 
             scrollbar-width: none; 
             user-select: none;
@@ -279,12 +279,18 @@
         body.dark-theme .ios-ambient-bg { background: #000; }
         body.dark-theme .ios-ambient-bg::before { background: radial-gradient(circle, rgba(10,132,255,0.15) 0%, rgba(10,132,255,0) 70%); }
         body.dark-theme .ios-ambient-bg::after { background: radial-gradient(circle, rgba(94,92,230,0.15) 0%, rgba(94,92,230,0) 70%); }
-        body.dark-theme .bg-white, body.dark-theme .bg-white\/60, body.dark-theme .bg-white\/70, body.dark-theme .bg-white\/40, body.dark-theme .bg-white\/80 { 
+                body.dark-theme .bg-white:not(#btn-download):not(#btn-support), 
+        body.dark-theme .bg-white/60:not(#btn-download):not(#btn-support), 
+        body.dark-theme .bg-white/70:not(#btn-download):not(#btn-support), 
+        body.dark-theme .bg-white/40:not(#btn-download):not(#btn-support), 
+        body.dark-theme .bg-white/80:not(#btn-download):not(#btn-support) { 
             background-color: rgba(28, 28, 30, 0.7) !important; 
             backdrop-filter: blur(30px) !important;
             border-color: rgba(255,255,255,0.1) !important;
         }
-        body.dark-theme .text-gray-900, body.dark-theme .text-gray-800, body.dark-theme .text-gray-700 { color: #fff !important; }
+        body.dark-theme .text-gray-900:not(#btn-download):not(#btn-support), 
+        body.dark-theme .text-gray-800:not(#btn-download):not(#btn-support), 
+        body.dark-theme .text-gray-700:not(#btn-download):not(#btn-support) { color: #fff !important; }
         body.dark-theme .text-gray-500, body.dark-theme .text-gray-400 { color: #8e8e93 !important; }
         body.dark-theme .ios-input { background: #1c1c1e; color: #fff; border-color: #3a3a3c; }
         body.dark-theme .glass-nav { background: rgba(20, 20, 20, 0.8); border-top-color: rgba(255,255,255,0.1); }
@@ -409,32 +415,29 @@
                 <div>
                     <h1 id="detail-title" class="text-2xl font-bold text-gray-900 leading-tight rounded">Judul Game</h1>
                 </div>
-                <div class="flex items-center space-x-2">
-                    <button id="btn-download" class="bg-[#34C759] text-white px-6 py-1.5 rounded-full font-bold text-sm uppercase tracking-wide shadow-sm active:scale-95 transition-all min-w-[120px]" onclick="downloadGame()">UNDUH</button>
-                    <button class="w-8 h-8 bg-gray-100 text-blue-600 rounded-full flex items-center justify-center">
-                        <i class="fas fa-ellipsis-h"></i>
+                <div class="flex items-center space-x-2 mt-2">
+                    <button id="btn-download" class="intel-card-outline active flex-1 bg-gray-900 text-white h-10 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-black/20 active:scale-95 transition-all" onclick="downloadGame()">UNDUH</button>
+                    <button id="btn-support" class="hidden intel-card-outline active flex-1 h-10 bg-white text-gray-900 rounded-2xl font-bold text-[10px] uppercase tracking-widest flex items-center justify-center active:scale-95 transition-all shadow-sm" onclick="showSupportModal()">
+                        <i class="fas fa-heart mr-1.5 text-red-500"></i> DUKUNG
                     </button>
                 </div>
-                <button id="btn-support" class="hidden mt-3 w-full py-2.5 bg-indigo-50 text-indigo-600 rounded-xl font-bold text-[10px] uppercase tracking-widest flex items-center justify-center border border-indigo-100 active:scale-95 transition-all" onclick="showSupportModal()">
-                    <i class="fas fa-heart mr-2 text-indigo-400"></i> Dukung Pengembang
-                </button>
             </div>
         </div>
 
         <!-- Stats Grid -->
-        <div class="grid grid-cols-4 gap-0 border-y border-gray-100/80 py-2.5 mb-8">
-            <div class="flex flex-col items-center border-r border-gray-100/80">
+        <div class="grid grid-cols-4 gap-0 border-y border-gray-300 py-2.5 mb-8">
+            <div class="flex flex-col items-center border-r border-gray-300">
                 <span class="text-[8px] font-black text-gray-400 uppercase tracking-[0.12em] mb-0.5">Rating</span>
                 <div class="flex items-center text-gray-800 font-bold text-[13px]">
                     <span id="detail-rating">4.8</span>
                     <i class="fas fa-star text-[9px] ml-1 text-orange-400"></i>
                 </div>
             </div>
-            <div class="flex flex-col items-center border-r border-gray-100/80 px-1">
+            <div class="flex flex-col items-center border-r border-gray-300 px-1">
                 <span class="text-[8px] font-black text-gray-400 uppercase tracking-[0.12em] mb-0.5">Genre</span>
                 <span id="detail-category" class="text-gray-800 font-bold text-[13px] truncate w-full text-center">Aksi</span>
             </div>
-            <div class="flex flex-col items-center border-r border-gray-100/80">
+            <div class="flex flex-col items-center border-r border-gray-300">
                 <span class="text-[8px] font-black text-gray-400 uppercase tracking-[0.12em] mb-0.5">Resolusi</span>
                 <span id="detail-resolution" class="text-gray-800 font-bold text-[13px]">240x320</span>
             </div>
@@ -474,7 +477,7 @@
                 <!-- Review Input Area -->
                 <div id="review-input-area" class="mb-6 pb-6 border-b border-gray-200">
                     <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Tulis Ulasan Anda</p>
-                    <textarea id="user-review-text" class="ios-input h-24 resize-none mb-3" placeholder="Bagaimana kualitas game ini?"></textarea>
+                    <textarea id="user-review-text" class="ios-input h-24 resize-none mb-3" placeholder="Bagaimana kualitas terjemahan game ini?"></textarea>
                     <div class="flex justify-between items-center">
                         <div class="flex space-x-1" id="user-rating-stars">
                             <i class="fas fa-star text-gray-300 text-lg cursor-pointer" onclick="setRating(1)"></i>
@@ -580,20 +583,22 @@
 <div id="toast">Message here</div>
 
 <!-- SUPPORT DEVELOPER MODAL -->
-<div id="support-modal" class="fixed inset-0 z-[600] hidden flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm">
-    <div class="w-full max-w-[280px] bg-white rounded-[40px] p-8 text-center shadow-2xl transform transition-all scale-90 opacity-0" id="support-modal-content">
-        <div class="w-12 h-1.5 bg-gray-100 rounded-full mx-auto mb-6"></div>
-        <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+<div id="support-modal" class="fixed inset-0 z-[600] hidden flex items-center justify-center p-6 bg-black/60 backdrop-blur-md">
+    <div class="w-full max-w-[300px] bg-white rounded-[40px] p-8 text-center shadow-2xl transform transition-all scale-90 opacity-0" id="support-modal-content">
+        <div class="w-12 h-1.5 bg-gray-100 rounded-full mx-auto mb-4"></div>
+        <div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl shadow-inner">
             <i class="fas fa-heart"></i>
         </div>
-        <h3 class="text-lg font-black text-gray-900 leading-tight mb-2">Dukung Pengembang</h3>
-        <p class="text-[11px] text-gray-500 mb-6">Scan QR Code di bawah untuk memberikan apresiasi kepada pengembang game ini.</p>
+        <h3 class="text-lg font-black text-gray-900 leading-tight mb-1">Dukung Pengembang</h3>
+        <p class="text-[11px] text-gray-500 mb-3 px-2">Scan QR untuk mendukung pengembang.</p>
         
-        <div class="bg-gray-50 rounded-[32px] mb-8 border border-gray-100 overflow-hidden aspect-square flex items-center justify-center">
-            <img id="support-qr-display" src="" class="w-full h-full object-contain shadow-sm" alt="QR Support">
+        <div class="bg-gray-50 rounded-[32px] mb-5 border border-gray-100 overflow-hidden aspect-square flex items-center justify-center p-5 shadow-inner">
+            <div class="w-full h-full bg-white rounded-[20px] p-3 shadow-sm flex items-center justify-center border border-gray-50">
+                <img id="support-qr-display" src="" class="w-full h-full object-contain" alt="QR Support">
+            </div>
         </div>
 
-        <button class="w-full py-4 bg-gray-900 text-white rounded-full font-bold text-xs uppercase tracking-widest active:scale-95 transition-all" onclick="closeSupportModal()">Selesai</button>
+        <button class="w-full py-4 bg-gray-900 text-white rounded-full font-bold text-[10px] uppercase tracking-[0.15em] active:scale-95 transition-all shadow-lg" onclick="closeSupportModal()">Terima Kasih!</button>
     </div>
 </div>
 
@@ -675,13 +680,8 @@
         targetScreen.style.display = 'flex';
         
         const bottomNav = document.getElementById('bottom-nav');
-        if (screenId === 'screen-detail') {
-             bottomNav.classList.add('hidden');
-             bottomNav.classList.remove('flex');
-        } else {
-             bottomNav.classList.remove('hidden');
-             bottomNav.classList.add('flex');
-        }
+        bottomNav.classList.remove('hidden');
+        bottomNav.classList.add('flex');
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -994,7 +994,7 @@
             screenshotSection.classList.remove('hidden');
             screenshotContainer.innerHTML = displayScreenshots.map((src, idx) => `
                 <div class="relative flex-shrink-0 w-48 aspect-[2/3] rounded-2xl overflow-hidden border border-gray-100 shadow-sm group/item">
-                    <img id="screenshot-img-${idx}" src="${src}" class="w-full h-full object-cover cursor-pointer" onclick="document.getElementById('detail-img').src='${src}'; openZoomPreview();">
+                    <img id="screenshot-img-${idx}" src="${src}" class="w-full h-full object-cover cursor-pointer" onclick="if(!wasDragging) openZoomPreview('${src}')">
                 </div>
             `).join('');
         } else {
@@ -1003,9 +1003,14 @@
 
         renderReviews();
 
+        const isDark = document.body.classList.contains('dark-theme');
         const supportBtn = document.getElementById('btn-support');
         if(globalSupportQr) {
              supportBtn.classList.remove('hidden');
+             // Mode Gelap: Dukung jadi Hitam | Mode Terang: Dukung jadi Putih
+             supportBtn.className = isDark 
+                ? "intel-card-outline active flex-1 h-10 bg-slate-900 text-white rounded-2xl font-bold text-[10px] uppercase tracking-widest flex items-center justify-center active:scale-95 transition-all shadow-sm"
+                : "intel-card-outline active flex-1 h-10 bg-white text-gray-900 rounded-2xl font-bold text-[10px] uppercase tracking-widest flex items-center justify-center active:scale-95 transition-all shadow-sm";
         } else {
              supportBtn.classList.add('hidden');
         }
@@ -1013,18 +1018,24 @@
         const btn = document.getElementById('btn-download');
         if (myCollection.includes(gameId)) {
             btn.innerText = "BUKA";
-            btn.style.backgroundColor = '#007aff';
+            // Mode Gelap: Buka jadi Putih | Mode Terang: Buka jadi Hitam
+            btn.className = isDark
+                ? "intel-card-outline active flex-1 bg-white text-gray-900 h-10 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg active:scale-95 transition-all"
+                : "intel-card-outline active flex-1 bg-slate-900 text-white h-10 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-black/20 active:scale-95 transition-all";
         } else {
             btn.innerText = "UNDUH";
-            btn.style.backgroundColor = '#34C759';
+            // Mode Gelap: Unduh jadi Putih | Mode Terang: Unduh jadi Hitam
+            btn.className = isDark
+                ? "intel-card-outline active flex-1 bg-white text-gray-900 h-10 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg active:scale-95 transition-all"
+                : "intel-card-outline active flex-1 bg-gray-900 text-white h-10 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-black/20 active:scale-95 transition-all";
         }
 
         switchScreen('screen-detail');
     }
 
     // --- ZOOM PREVIEW MODAL ---
-    function openZoomPreview() {
-        const src = document.getElementById('detail-img').src;
+    function openZoomPreview(specificSrc = null) {
+        const src = specificSrc || document.getElementById('detail-img').src;
         const modal = document.getElementById('zoom-modal');
         const img = document.getElementById('zoom-img');
         
@@ -1122,9 +1133,15 @@
             return;
         }
 
+        const isDark = document.body.classList.contains('dark-theme');
         let progress = 0;
         btn.disabled = true;
-        btn.classList.add('opacity-70');
+        
+        // Visual Transisi: Berubah warna saat mulai unduh (Inverted logic)
+        // Mode Gelap: Jadi Gelap | Mode Terang: Jadi Putih
+        btn.className = isDark
+            ? "intel-card-outline active flex-1 bg-slate-900 text-white h-10 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-sm active:scale-95 transition-all"
+            : "intel-card-outline active flex-1 bg-white text-gray-900 h-10 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-sm active:scale-95 transition-all";
         
         const interval = setInterval(() => {
             progress += Math.floor(Math.random() * 15) + 5;
@@ -1133,13 +1150,19 @@
                 clearInterval(interval);
                 myCollection.push(currentDetailedGameId);
                 btn.disabled = false;
-                btn.classList.remove('opacity-70');
+                
+                // Visual Transisi: Kembali ke warna asal saat selesai
+                // Mode Gelap: Kembali Putih | Mode Terang: Kembali Hitam
                 btn.innerText = "BUKA";
-                btn.style.backgroundColor = '#007aff';
+                btn.className = isDark
+                    ? "intel-card-outline active flex-1 bg-white text-gray-900 h-10 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg active:scale-95 transition-all"
+                    : "intel-card-outline active flex-1 bg-slate-900 text-white h-10 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-black/20 active:scale-95 transition-all";
+                
                 showToast("Unduhan selesai secara internal!");
                 renderCollection();
+            } else {
+                btn.innerText = `UNDUH (${progress}%)`;
             }
-            btn.innerText = `UNDUH (${progress}%)`;
         }, 250);
     }
 
