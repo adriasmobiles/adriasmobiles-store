@@ -2,7 +2,10 @@
   {
     "id": "g1786608786156",
     "screenshots": [
-      "https://raw.githubusercontent.com/adriasmobiles/adriasmobiles-store/main/assets/g1786608786156_ss0_1786608786157.png"
+      "https://raw.githubusercontent.com/adriasmobiles/adriasmobiles-store/main/assets/g1786608786156_ss0_1786611542060.png",
+      "https://raw.githubusercontent.com/adriasmobiles/adriasmobiles-store/main/assets/g1786608786156_ss1_1786611545379.png",
+      "https://placehold.co/400x600/007aff/white?text=Gameplay+2",
+      "https://placehold.co/400x600/34c759/white?text=Gameplay+3"
     ],
     "title": "COPS: L.A. POLICE",
     "category": "Aksi",
@@ -13,7 +16,8 @@
     "isBanner": true,
     "isRecommended": false,
     "rating": "4.0",
-    "downloads": "0"
+    "downloads": "0",
+    "image": "https://raw.githubusercontent.com/adriasmobiles/adriasmobiles-store/main/assets/g1786608786156_icon_1786611538303.png"
   },
   {
     "id": "g1",
