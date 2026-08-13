@@ -49,6 +49,10 @@
     "gameSource": "link",
     "gameUrl": "",
     "isRevision": true,
-    "bannerSwapLayout": "standard"
+    "bannerSwapLayout": "standard",
+    "bannerDeveloper": "",
+    "bannerExtraInfo": "Bahasa Indonesia",
+    "statusLabel": "revisi",
+    "userReviews": []
   }
 ]
