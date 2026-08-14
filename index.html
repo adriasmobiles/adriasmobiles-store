@@ -237,6 +237,7 @@
         .stat-item-aura.intel-card-outline::before { border-radius: 12px; }
         .review-box-aura.intel-card-outline::before { border-radius: 24px; }
         .review-item-aura.intel-card-outline::before { border-radius: 16px; }
+        .banner-extra-info-aura.intel-card-outline::before { border-radius: 9999px; }
 
         /* Dynamic Notification Toast */
         #toast {
@@ -294,8 +295,8 @@
         body.dark-theme .ios-ambient-bg::after { background: radial-gradient(circle, rgba(94,92,230,0.15) 0%, rgba(94,92,230,0) 70%); }
 
         /* Card Backgrounds - Obsidian Solid */
-        body.dark-theme [class*="bg-white"], 
-        body.dark-theme .bg-white, 
+        body.dark-theme [class*="bg-white"]:not(#btn-download):not(#btn-support), 
+        body.dark-theme .bg-white:not(#btn-download):not(#btn-support), 
         body.dark-theme .bg-gray-50, 
         body.dark-theme .bg-gray-100 { 
             background-color: #1c1c1e !important; 
@@ -306,14 +307,17 @@
 
         /* Text Visibility - High Contrast Override */
         body.dark-theme h1, body.dark-theme h2, body.dark-theme h3, 
-        body.dark-theme p, body.dark-theme span:not(.fas):not(.far), 
-        body.dark-theme .text-gray-900, body.dark-theme .text-gray-800, 
+        body.dark-theme p, 
+        body.dark-theme i:not(.tab-item *):not(.banner-extra-info-aura *):not(.text-orange-400), 
+        body.dark-theme span:not(.fas):not(.far):not(#btn-download *):not(#btn-support *):not(.banner-extra-info-aura *), 
+        body.dark-theme .text-gray-900:not(#btn-download):not(#btn-support):not(.banner-extra-info-aura *), 
+        body.dark-theme .text-gray-800, 
         body.dark-theme .text-gray-700, body.dark-theme .text-gray-600 { 
             color: #ffffff !important; 
         }
         
         body.dark-theme .text-gray-500, 
-        body.dark-theme .text-gray-400 { 
+        body.dark-theme .text-gray-400:not(i) { 
             color: #a1a1a6 !important; 
         }
 
@@ -328,6 +332,8 @@
 
         /* UI Elements Overrides */
         body.dark-theme .ios-input { background: #1c1c1e !important; color: #fff !important; border-color: #3a3a3c !important; }
+        body.dark-theme .search-box-aura div.absolute { z-index: 20 !important; }
+        body.dark-theme .search-box-aura i { color: #ffffff !important; opacity: 1 !important; }
         body.dark-theme .glass-nav { background: rgba(20, 20, 20, 0.8) !important; border-top-color: rgba(255,255,255,0.1) !important; }
         body.dark-theme .category-pill { background: #1c1c1e !important; color: #fff !important; border-color: #3a3a3c !important; }
         body.dark-theme .category-pill.active { background: #ffffff !important; color: #000 !important; border-color: #ffffff !important; }
@@ -355,8 +361,8 @@
                 <h1 class="text-2xl font-black tracking-tighter text-gray-900">AdriasMobiles</h1>
             </div>
             <div class="flex space-x-3">
-                <button class="intel-card-outline active header-btn-aura w-10 h-10 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center transition-transform active:scale-90">
-                    <i class="far fa-bell text-gray-800 text-lg"></i>
+                <button onclick="toggleDarkMode()" class="intel-card-outline active header-btn-aura w-9 h-9 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center transition-transform active:scale-90">
+                    <i id="theme-icon-header" class="fas fa-moon text-gray-800 text-lg"></i>
                 </button>
             </div>
         </div>
@@ -374,7 +380,7 @@
         <!-- Section: Rilisan Baru (Featured Banners) -->
         <div class="mb-8">
             <div class="px-5 mb-4">
-                <h2 class="text-lg font-black text-gray-900 tracking-tight">Segera Rilis</h2>
+                <h2 class="text-lg font-black text-gray-900 tracking-tight">Rilisan Baru</h2>
             </div>
             <div id="featured-game-container" class="relative overflow-hidden w-full py-1">
                 <!-- Injected via JS as Smooth Transform Slider -->
@@ -446,17 +452,17 @@
         <!-- Header Section: Icon & Title -->
         <div class="flex px-5 mb-8">
             <div class="flex flex-col items-center flex-shrink-0">
-                <div class="relative group w-28 h-28">
-                    <img id="detail-img" src="" class="w-28 h-28 object-cover rounded-[24px] shadow-lg border border-gray-100 cursor-pointer" alt="Game Icon" onclick="openZoomPreview()">
+                <div class="relative group w-24 h-24">
+                    <img id="detail-img" src="" class="w-24 h-24 object-cover rounded-[24px] shadow-lg border border-gray-100 cursor-pointer" alt="Game Icon" onclick="openZoomPreview()">
                 </div>
             </div>
             <div class="ml-5 flex-1 flex flex-col justify-between py-1">
                 <div>
-                    <h1 id="detail-title" class="text-xl font-bold text-gray-900 leading-tight rounded">Judul Game</h1>
+                    <h1 id="detail-title" class="text-lg font-bold text-gray-900 leading-tight rounded">Judul Game</h1>
                 </div>
                 <div class="flex items-center space-x-2 mt-2">
-                    <button id="btn-download" class="intel-card-outline active flex-1 bg-gray-900 text-white h-10 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-black/20 active:scale-95 transition-all" onclick="downloadGame()">UNDUH</button>
-                    <button id="btn-support" class="hidden intel-card-outline active flex-1 h-10 bg-white text-gray-900 rounded-2xl font-bold text-[10px] uppercase tracking-widest flex items-center justify-center active:scale-95 transition-all shadow-sm" onclick="showSupportModal()">
+                    <button id="btn-download" class="intel-card-outline active flex-1 bg-gray-900 text-white h-9 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-black/20 active:scale-95 transition-all" onclick="downloadGame()">UNDUH</button>
+                    <button id="btn-support" class="hidden intel-card-outline active flex-1 h-9 bg-white text-gray-900 rounded-2xl font-bold text-[10px] uppercase tracking-widest flex items-center justify-center active:scale-95 transition-all shadow-sm" onclick="showSupportModal()">
                         <i class="fas fa-heart mr-1.5 text-red-500"></i> DUKUNG
                     </button>
                 </div>
@@ -707,15 +713,20 @@
         const body = document.body;
         const toggle = document.getElementById('dark-mode-toggle');
         const knob = document.getElementById('dark-mode-knob');
+        const headerIcon = document.getElementById('theme-icon-header');
+        
         body.classList.toggle('dark-theme');
         const isDark = body.classList.contains('dark-theme');
+        
         if (isDark) {
-            toggle.classList.replace('bg-gray-200', 'bg-green-500');
-            knob.style.transform = 'translateX(16px)';
+            if (toggle) toggle.classList.replace('bg-gray-200', 'bg-green-500');
+            if (knob) knob.style.transform = 'translateX(16px)';
+            if (headerIcon) headerIcon.classList.replace('fa-moon', 'fa-sun');
             localStorage.setItem('theme', 'dark');
         } else {
-            toggle.classList.replace('bg-green-500', 'bg-gray-200');
-            knob.style.transform = 'translateX(0)';
+            if (toggle) toggle.classList.replace('bg-green-500', 'bg-gray-200');
+            if (knob) knob.style.transform = 'translateX(0)';
+            if (headerIcon) headerIcon.classList.replace('fa-sun', 'fa-moon');
             localStorage.setItem('theme', 'light');
         }
     }
@@ -795,7 +806,7 @@
 
         const recentGames = gamesDatabase.filter(g => !bannerIds.includes(g.id) && !recommendedIds.includes(g.id));
 
-        if (bannerGames.length > 0) {
+                if (bannerGames.length > 0) {
             const displayGames = [...bannerGames, bannerGames[0]];
             featuredContainer.innerHTML = `
                 <div id="featured-slider-track" class="flex w-full" style="will-change: transform; transition: transform 1s cubic-bezier(0.45, 0.05, 0.55, 0.95);">
@@ -816,12 +827,8 @@
                                     <span class="text-[7px] font-black text-white uppercase tracking-[0.15em] leading-none block">${(game.statusLabel === 'revisi' || game.isRevision) ? 'REVISI' : 'SUDAH RILIS'}</span>
                                 </div>` : ''}
 
-                                <!-- Info & Dev Container (Left/Right Swappable) -->
+                                <!-- Developer Label (Top Swappable) -->
                                 <div class="absolute top-3 ${infoPos} z-10 flex flex-col ${infoAlign} space-y-1.5">
-                                    ${game.bannerExtraInfo ? `
-                                    <div class="intel-card-outline active banner-extra-info-aura px-2.5 py-1 rounded-lg shadow-xl border border-white/10">
-                                        <span class="text-[7px] font-black text-white uppercase tracking-[0.15em] leading-none block">${game.bannerExtraInfo}</span>
-                                    </div>` : ''}
                                     ${game.bannerDeveloper ? `
                                     <div class="bg-black/50 backdrop-blur-xl px-2.5 py-1 rounded-lg border border-white/20 shadow-lg">
                                         <span class="text-[7px] font-black text-white uppercase tracking-[0.15em] leading-none block">${game.bannerDeveloper}</span>
@@ -832,8 +839,17 @@
                                     <img src="${bannerImg}" class="w-full h-full object-cover" alt="${game.title}" loading="lazy" style="image-rendering: auto; transform: translateZ(0); backface-visibility: hidden; -webkit-backface-visibility: hidden;">
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
                                 </div>
+
+                                <!-- Bottom Info Section: Category, Extra Info & Title -->
                                 <div class="absolute bottom-4 left-5">
-                                    <p class="text-[9px] font-black text-blue-400 uppercase tracking-widest mb-1">${game.category}</p>
+                                    <div class="flex items-center space-x-2 mb-1.5">
+                                        <p class="text-[9px] font-black text-blue-400 uppercase tracking-widest">${game.category}</p>
+                                        ${game.bannerExtraInfo ? `
+                                        <div class="intel-card-outline active banner-extra-info-aura px-2.5 py-1 rounded-full">
+                                            <span class="text-[7px] font-black text-white uppercase tracking-[0.15em] leading-none block">${game.bannerExtraInfo}</span>
+                                        </div>
+                                        ` : ''}
+                                    </div>
                                     <h3 class="text-lg font-black text-white tracking-tight">${game.title}</h3>
                                 </div>
                             </div>
@@ -842,8 +858,6 @@
                 </div>
             `;
             startFeaturedSlider(bannerGames.length);
-        } else {
-            featuredContainer.innerHTML = '<p class="text-center text-gray-400 text-xs py-10">Belum ada banner utama.</p>';
         }
 
         if (recommendedGames.length > 0) {
@@ -893,20 +907,25 @@
     function startFeaturedSlider(count) {
         if (featuredInterval) clearInterval(featuredInterval);
         const track = document.getElementById('featured-slider-track');
-        if (!track) return;
+        if (!track || count <= 0) return;
 
         let index = 0;
         featuredInterval = setInterval(() => {
             index++;
+            // Mulai transisi ke slide berikutnya
             track.style.transition = 'transform 1s cubic-bezier(0.45, 0.05, 0.55, 0.95)';
             track.style.transform = `translateX(-${index * 100}%)`;
 
+            // Jika mencapai slide klon (akhir track)
             if (index === count) {
+                // Tunggu hingga animasi selesai (1s) dengan sedikit buffer (50ms) untuk mencegah flicker
                 setTimeout(() => {
                     track.style.transition = 'none';
                     index = 0;
                     track.style.transform = 'translateX(0)';
-                }, 1000); 
+                    // Force reflow untuk memastikan browser menerapkan 'transition: none' sebelum interval berikutnya
+                    track.offsetWidth; 
+                }, 1050);
             }
         }, 5000);
     }
@@ -1095,29 +1114,31 @@
              supportBtn.classList.remove('hidden');
              // Mode Gelap: Dukung jadi Hitam | Mode Terang: Dukung jadi Putih
              supportBtn.className = isDark 
-                ? "intel-card-outline active flex-1 h-10 bg-slate-900 text-white rounded-2xl font-bold text-[10px] uppercase tracking-widest flex items-center justify-center active:scale-95 transition-all shadow-sm"
-                : "intel-card-outline active flex-1 h-10 bg-white text-gray-900 rounded-2xl font-bold text-[10px] uppercase tracking-widest flex items-center justify-center active:scale-95 transition-all shadow-sm";
+                ? "intel-card-outline active flex-1 h-9 bg-slate-900 text-white rounded-2xl font-bold text-[10px] uppercase tracking-widest flex items-center justify-center active:scale-95 transition-all shadow-sm"
+                : "intel-card-outline active flex-1 h-9 bg-white text-gray-900 rounded-2xl font-bold text-[10px] uppercase tracking-widest flex items-center justify-center active:scale-95 transition-all shadow-sm";
         } else {
              supportBtn.classList.add('hidden');
         }
 
         const btn = document.getElementById('btn-download');
         if (game.isRevision) {
-            btn.innerText = "SEGERA";
-            // Tombol Revisi: Putih Polos (Sama dengan tombol Dukung) agar kontras dan estetik di semua tema
-            btn.className = "intel-card-outline active flex-1 bg-white text-gray-900 h-10 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-sm active:scale-95 transition-all";
+            btn.innerHTML = '<div class="flex flex-col items-center justify-center leading-[1.1]"><span>SEGERA</span><span>HADIR</span></div>';
+            // Mode Gelap: Putih | Mode Terang: Hitam (Kontras Maksimal)
+            btn.className = isDark 
+                ? "intel-card-outline active flex-1 bg-white text-gray-900 h-9 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-sm active:scale-95 transition-all"
+                : "intel-card-outline active flex-1 bg-gray-900 text-white h-9 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-sm active:scale-95 transition-all";
         } else if (myCollection.includes(gameId)) {
             btn.innerText = "BUKA";
             // Mode Gelap: Buka jadi Putih | Mode Terang: Buka jadi Hitam
             btn.className = isDark
-                ? "intel-card-outline active flex-1 bg-white text-gray-900 h-10 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg active:scale-95 transition-all"
-                : "intel-card-outline active flex-1 bg-slate-900 text-white h-10 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-black/20 active:scale-95 transition-all";
+                ? "intel-card-outline active flex-1 bg-white text-gray-900 h-9 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg active:scale-95 transition-all"
+                : "intel-card-outline active flex-1 bg-slate-900 text-white h-9 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-black/20 active:scale-95 transition-all";
         } else {
             btn.innerText = "UNDUH";
             // Mode Gelap: Unduh jadi Putih | Mode Terang: Unduh jadi Hitam
             btn.className = isDark
-                ? "intel-card-outline active flex-1 bg-white text-gray-900 h-10 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg active:scale-95 transition-all"
-                : "intel-card-outline active flex-1 bg-gray-900 text-white h-10 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-black/20 active:scale-95 transition-all";
+                ? "intel-card-outline active flex-1 bg-white text-gray-900 h-9 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg active:scale-95 transition-all"
+                : "intel-card-outline active flex-1 bg-gray-900 text-white h-9 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-black/20 active:scale-95 transition-all";
         }
 
         switchScreen('screen-detail');
@@ -1236,8 +1257,8 @@
         // Visual Transisi: Berubah warna saat mulai unduh (Inverted logic)
         // Mode Gelap: Jadi Gelap | Mode Terang: Jadi Putih
         btn.className = isDark
-            ? "intel-card-outline active flex-1 bg-slate-900 text-white h-10 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-sm active:scale-95 transition-all"
-            : "intel-card-outline active flex-1 bg-white text-gray-900 h-10 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-sm active:scale-95 transition-all";
+            ? "intel-card-outline active flex-1 bg-slate-900 text-white h-9 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-sm active:scale-95 transition-all"
+            : "intel-card-outline active flex-1 bg-white text-gray-900 h-9 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-sm active:scale-95 transition-all";
         
         const interval = setInterval(() => {
             progress += Math.floor(Math.random() * 15) + 5;
@@ -1251,8 +1272,8 @@
                 // Mode Gelap: Kembali Putih | Mode Terang: Kembali Hitam
                 btn.innerText = "BUKA";
                 btn.className = isDark
-                    ? "intel-card-outline active flex-1 bg-white text-gray-900 h-10 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg active:scale-95 transition-all"
-                    : "intel-card-outline active flex-1 bg-slate-900 text-white h-10 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-black/20 active:scale-95 transition-all";
+                    ? "intel-card-outline active flex-1 bg-white text-gray-900 h-9 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg active:scale-95 transition-all"
+                    : "intel-card-outline active flex-1 bg-slate-900 text-white h-9 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-black/20 active:scale-95 transition-all";
                 
                 showToast("Unduhan selesai secara internal!");
                 renderCollection();
