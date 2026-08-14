@@ -21,9 +21,9 @@
     "supportQr": "https://raw.githubusercontent.com/adriasmobiles/adriasmobiles-store/main/assets/g1_qr.png",
     "isRevision": true,
     "bannerDeveloper": "",
-    "bannerExtraInfo": "Indonesia",
+    "bannerExtraInfo": "Bahasa Indonesia",
     "statusLabel": "revisi",
-    "bannerSwapLayout": "swapped",
+    "bannerSwapLayout": "standard",
     "userReviews": []
   },
   {
@@ -49,7 +49,7 @@
     "gameSource": "link",
     "gameUrl": "",
     "isRevision": true,
-    "bannerSwapLayout": "swapped",
+    "bannerSwapLayout": "standard",
     "bannerDeveloper": "",
     "bannerExtraInfo": "Indonesia",
     "statusLabel": "revisi",
