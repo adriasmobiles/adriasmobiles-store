@@ -5,7 +5,7 @@
     "category": "Aksi",
     "resolution": "240x320",
     "size": "1 MB",
-    "desc": "",
+    "desc": "Jurassic Park merupakan judul aksi-petualangan yang dikembangkan oleh Gameloft dan dirilis pada tahun 2010 untuk platform Java (J2ME). Adaptasi ini menghadirkan representasi visual dua dimensi yang mendetail, merangkum atmosfer berbahaya dari Isla Nublar ke dalam format layar kecil perangkat seluler masa itu.\n\nPermainan ini menempatkan Dr. Alan Grant sebagai tokoh utama yang harus bertahan hidup di tengah kekacauan ekosistem prasejarah. Mekanisme gameplay menitikberatkan pada aksi platforming dan pertempuran taktis melawan berbagai jenis dinosaurus, mulai dari Compsognathus hingga Tyrannosaurus Rex, menggunakan berbagai senjata serta perlengkapan khusus.\n\nDapatkah Dr. Alan Grant menavigasi rintangan mematikan dan keluar dari pulau tersebut hidup-hidup sebelum predator puncak mengakhiri misinya secara permanen?",
     "image": "https://raw.githubusercontent.com/adriasmobiles/adriasmobiles-store/main/assets/temp_1786806311155_icon_1786806488347.png",
     "screenshots": [
       "https://raw.githubusercontent.com/adriasmobiles/adriasmobiles-store/main/assets/temp_1786806311155_ss0_1786806492239.png",
@@ -15,14 +15,12 @@
     ],
     "isBanner": false,
     "isRecommended": false,
-    "bannerDeveloper": "",
-    "bannerExtraInfo": "",
-    "bannerSwapLayout": "standard",
     "statusLabel": "normal",
     "isRevision": false,
     "gameUrl": "",
     "rating": "4.5",
-    "userReviews": []
+    "userReviews": [],
+    "supportQr": "https://raw.githubusercontent.com/adriasmobiles/adriasmobiles-store/main/assets/g1_qr.png"
   },
   {
     "id": "temp_1786805874250",
@@ -47,7 +45,8 @@
     "isRevision": false,
     "gameUrl": "",
     "rating": "4.5",
-    "userReviews": []
+    "userReviews": [],
+    "supportQr": "https://raw.githubusercontent.com/adriasmobiles/adriasmobiles-store/main/assets/g1_qr.png"
   },
   {
     "id": "temp_1786805347915",
@@ -72,7 +71,8 @@
     "isRevision": false,
     "gameUrl": "",
     "rating": "4.5",
-    "userReviews": []
+    "userReviews": [],
+    "supportQr": "https://raw.githubusercontent.com/adriasmobiles/adriasmobiles-store/main/assets/g1_qr.png"
   },
   {
     "id": "temp_1786805121466",
