@@ -1,5 +1,30 @@
 [
   {
+    "id": "temp_1786806311155",
+    "title": "Jurassic Park",
+    "category": "Aksi",
+    "resolution": "240x320",
+    "size": "1 MB",
+    "desc": "",
+    "image": "https://raw.githubusercontent.com/adriasmobiles/adriasmobiles-store/main/assets/temp_1786806311155_icon_1786806488347.png",
+    "screenshots": [
+      "https://raw.githubusercontent.com/adriasmobiles/adriasmobiles-store/main/assets/temp_1786806311155_ss0_1786806492239.png",
+      "https://placehold.co/400x600/1d1d1f/white?text=Gameplay+1",
+      "https://placehold.co/400x600/007aff/white?text=Gameplay+2",
+      "https://placehold.co/400x600/34c759/white?text=Gameplay+3"
+    ],
+    "isBanner": false,
+    "isRecommended": false,
+    "bannerDeveloper": "",
+    "bannerExtraInfo": "",
+    "bannerSwapLayout": "standard",
+    "statusLabel": "normal",
+    "isRevision": false,
+    "gameUrl": "",
+    "rating": "4.5",
+    "userReviews": []
+  },
+  {
     "id": "temp_1786805874250",
     "title": "American Gangster",
     "category": "Aksi",
