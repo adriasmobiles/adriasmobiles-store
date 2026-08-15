@@ -1,5 +1,28 @@
 [
   {
+    "id": "g1786811602063",
+    "title": "Lost: The Official Mobile Game",
+    "category": "Aksi",
+    "resolution": "240x320",
+    "size": "1 MB",
+    "desc": "Lost: The Official Mobile Game merupakan judul aksi-petualangan yang dikembangkan oleh Gameloft dan dirilis pada tahun 2007. Diadaptasi dari serial televisi populer produksi ABC, permainan ini dirancang khusus untuk platform Java (J2ME) dengan menyajikan visual isometrik yang mendetail pada masanya.\n\nMekanisme permainan berfokus pada eksplorasi pulau misterius melalui sudut pandang karakter utama, Jack Shephard. Pemain harus menyelesaikan berbagai teka-teki lingkungan, mengumpulkan sumber daya penting, serta berinteraksi dengan tokoh lain seperti Kate dan Locke untuk bertahan hidup. Tantangan utama melibatkan navigasi medan yang berbahaya sembari menghindari ancaman entitas misterius yang mengintai di balik pepohonan.\n\nMampukah Jack Shephard mengungkap rahasia kelam di balik keberadaan pulau tersebut dan memimpin para penyintas menuju jalan keluar sebelum kekuatan gelap melenyapkan mereka tanpa jejak?",
+    "image": "https://raw.githubusercontent.com/adriasmobiles/adriasmobiles-store/main/assets/g1786811602063_icon_1786811910859.png",
+    "screenshots": [
+      "https://raw.githubusercontent.com/adriasmobiles/adriasmobiles-store/main/assets/g1786811602063_ss0_1786811915465.png",
+      "https://placehold.co/400x600/1d1d1f/white?text=Gameplay+1",
+      "https://placehold.co/400x600/007aff/white?text=Gameplay+2",
+      "https://placehold.co/400x600/34c759/white?text=Gameplay+3"
+    ],
+    "rating": "4.5",
+    "downloads": "0",
+    "isBanner": false,
+    "isRecommended": false,
+    "statusLabel": "normal",
+    "userReviews": [],
+    "btnDownloadLabel": "UNDUH",
+    "btnSupportLabel": "DUKUNG"
+  },
+  {
     "id": "temp_1786806311155",
     "title": "Jurassic Park",
     "category": "Aksi",
