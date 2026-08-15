@@ -1,5 +1,30 @@
 [
   {
+    "id": "temp_1786805874250",
+    "title": "American Gangster",
+    "category": "Aksi",
+    "resolution": "240x320",
+    "size": "1 MB",
+    "desc": "American Gangster adalah game aksi-petualangan resmi dari Gameloft yang diadaptasi langsung dari film kriminal legendaris Universal Pictures. Game ini membawa Anda ke atmosfer New York tahun 1970-an yang penuh dengan perebutan kekuasaan, uang, dan pengkhianatan.\n\nAnda akan bermain sebagai Frank Lucas, seorang pria ambisius yang memulai karier dari supir bos mafia hingga bertransformasi menjadi penguasa kartel narkoba terbesar di Harlem. Di saat bersamaan, Anda harus menghindari kejaran Richie Roberts, seorang detektif polisi jujur yang bertekad kuat untuk menjatuhkan kekaisaran bisnis ilegal Anda.",
+    "image": "https://raw.githubusercontent.com/adriasmobiles/adriasmobiles-store/main/assets/temp_1786805874250_icon_1786805974608.png",
+    "screenshots": [
+      "https://raw.githubusercontent.com/adriasmobiles/adriasmobiles-store/main/assets/temp_1786805874250_ss0_1786805978523.png",
+      "https://placehold.co/400x600/1d1d1f/white?text=Gameplay+1",
+      "https://placehold.co/400x600/007aff/white?text=Gameplay+2",
+      "https://placehold.co/400x600/34c759/white?text=Gameplay+3"
+    ],
+    "isBanner": false,
+    "isRecommended": false,
+    "bannerDeveloper": "",
+    "bannerExtraInfo": "",
+    "bannerSwapLayout": "standard",
+    "statusLabel": "normal",
+    "isRevision": false,
+    "gameUrl": "",
+    "rating": "4.5",
+    "userReviews": []
+  },
+  {
     "id": "temp_1786805347915",
     "title": "A Good Day To Die Hard",
     "category": "Aksi",
