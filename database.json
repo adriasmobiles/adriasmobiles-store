@@ -1,5 +1,30 @@
 [
   {
+    "id": "temp_1786805347915",
+    "title": "A Good Day To Die Hard",
+    "category": "Aksi",
+    "resolution": "240x320",
+    "size": "1 MB",
+    "desc": "A Good Day to Die Hard adalah game aksi penembak resmi besutan Gameloft yang diadaptasi langsung dari film ke-5 waralaba Die Hard. Rasakan ketegangan maksimal saat detektif kawakan John McClane harus terbang ke Moskow untuk menyelamatkan putranya, Jack McClane. Tak disangka, keduanya justru terjebak di tengah konspirasi pencurian senjata nuklir global!",
+    "image": "https://raw.githubusercontent.com/adriasmobiles/adriasmobiles-store/main/assets/temp_1786805347915_icon_1786805678464.png",
+    "screenshots": [
+      "https://raw.githubusercontent.com/adriasmobiles/adriasmobiles-store/main/assets/temp_1786805347915_ss0_1786805683449.png",
+      "https://placehold.co/400x600/1d1d1f/white?text=Gameplay+1",
+      "https://placehold.co/400x600/007aff/white?text=Gameplay+2",
+      "https://placehold.co/400x600/34c759/white?text=Gameplay+3"
+    ],
+    "isBanner": false,
+    "isRecommended": false,
+    "bannerDeveloper": "",
+    "bannerExtraInfo": "",
+    "bannerSwapLayout": "standard",
+    "statusLabel": "normal",
+    "isRevision": false,
+    "gameUrl": "",
+    "rating": "4.5",
+    "userReviews": []
+  },
+  {
     "id": "temp_1786805121466",
     "title": "Zombiewood",
     "category": "Aksi",
